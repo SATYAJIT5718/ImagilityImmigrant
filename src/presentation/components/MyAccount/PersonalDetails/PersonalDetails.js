@@ -786,7 +786,7 @@ const PersonalDetails = () => {
           title={content.title}
           noMarginVertical={true}
           data={content.data}
-          expanded={props.expanded || false}
+          expanded={content.expanded || false}
           noMarginLeft={true}
           backgroundColor={true}
         />

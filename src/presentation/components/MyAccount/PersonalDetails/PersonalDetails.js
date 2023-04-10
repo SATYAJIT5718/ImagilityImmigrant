@@ -1,5 +1,5 @@
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, memo} from 'react';
 import {
   CustomInput,
   CustomButton,
@@ -15,11 +15,11 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useFormik} from 'formik';
+import {useFormik, Form} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
-const PersonalDetails = () => {
+const PersonalDetails = props => {
   const navigation = useNavigation();
   const FormFields = PersonalDetailsJSON;
   const [selectedValue, setSelectedValue] = useState('');
@@ -30,117 +30,118 @@ const PersonalDetails = () => {
   let initialValue = {};
 
   FormFields?.fields?.forEach(property => {
-    switch (property.type) {
-      case 'text':
-        initialValue[property.name] = '';
-        break;
-      case 'email':
-        initialValue[property.name] = '';
-        break;
-      case 'multi':
-        property.content.map(val => {
-          initialValue[val?.name] = '';
-        });
-        break;
-      case 'password':
-        initialValue[property.name] = '';
-        break;
-      case 'radio':
-        initialValue[property.name] = '';
-        break;
-      case 'dropdown':
-        initialValue[property.name] = '';
-        break;
-      case 'checkbox':
-        initialValue[property.name] = '';
-        break;
-      case 'phoneInput':
-        initialValue[property.name] = '';
-        break;
-      // Add cases for other data types as needed
-      default:
-        // initialValue[property.name] = '';
-        break;
-    }
+    property.contents.map(itemz => {
+      switch (itemz.type) {
+        case 'text':
+          initialValue[itemz.name] = '';
+          break;
+        case 'email':
+          initialValue[itemz.name] = '';
+          break;
+        case 'multi':
+          itemz.content.map(val => {
+            initialValue[val?.name] = '';
+          });
+          break;
+        case 'password':
+          initialValue[itemz.name] = '';
+          break;
+        case 'radio':
+          initialValue[itemz.name] = '';
+          break;
+        case 'dropdown':
+          initialValue[itemz.name] = '';
+          break;
+        case 'checkbox':
+          initialValue[itemz.name] = '';
+          break;
+        case 'phoneInput':
+          initialValue[itemz.name] = '';
+          break;
+        // Add cases for other data types as needed
+        default:
+          // initialValue[itemz.name] = '';
+          break;
+      }
+    });
   });
 
   const createValidationSchema = fields => {
     const schema = {};
     fields?.forEach(field => {
-      switch (field.type) {
-        case 'text':
-          schema[field?.name] = field?.required
-            ? yup.string().required(`${field?.label} is required`)
-            : yup.string();
-          break;
-        case 'email':
-          schema[field?.name] = field?.required
-            ? yup
-                .string()
-                .email('Please enter valid Email')
-                .required(`${field?.label} is required`)
-            : yup.string();
-          break;
-        case 'multi':
-          field?.content?.map(val => {
-            schema[val?.name] = val?.required
-              ? yup.string().required(`${val?.label} is required`)
+      field.contents.map(itemz => {
+        switch (itemz.type) {
+          case 'text':
+            schema[itemz?.name] = itemz?.required
+              ? yup.string().required(`${itemz?.label} is required`)
               : yup.string();
-          });
-          break;
-        case 'password':
-          field.view === 'multi'
-            ? field.content.map(val => {
-                schema[val?.name] = val?.required
-                  ? yup.string().required(`${val?.label} is required`)
-                  : yup.string();
-              })
-            : (schema[field?.name] = field?.required
-                ? yup.string().required(`${field?.label} is required`)
-                : yup.string());
-          break;
-        case 'dropdown':
-          schema[field?.name] = field?.required
-            ? yup.string().required(`${field?.label} is required`)
-            : yup.string();
-          break;
-        case 'phoneInput':
-          schema[field?.name] = field?.required
-            ? yup
-                .string()
-                .matches(/^\S*$/, 'Space is not allowed')
-                .matches(
-                  /^[^!@#$%^&*()\"/?'=+{}; :,<.>]*$/,
-                  'Special character is not allowed',
-                )
-                .min(10)
-                .max(10)
-                .typeError("That doesn't look like a phone number")
-                .required(`${field?.label} is required`)
-            : yup.number();
-          break;
-        case 'radio':
-          schema[field?.name] = field?.required
-            ? yup.string().required(`${field?.label} is required`)
-            : yup.string().nullable();
-          break;
-        case 'checkbox':
-          schema[field?.name] = field?.required
-            ? yup.boolean().oneOf([true], `You must accept ${field?.label}`)
-            : yup.boolean();
-          break;
-        default:
-          break;
-      }
+            break;
+          case 'email':
+            schema[itemz?.name] = itemz?.required
+              ? yup
+                  .string()
+                  .email('Please enter valid Email')
+                  .required(`${itemz?.label} is required`)
+              : yup.string();
+            break;
+          case 'multi':
+            itemz?.content?.map(val => {
+              schema[val?.name] = val?.required
+                ? yup.string().required(`${val?.label} is required`)
+                : yup.string();
+            });
+            break;
+          case 'password':
+            itemz.view === 'multi'
+              ? itemz.content.map(val => {
+                  schema[val?.name] = val?.required
+                    ? yup.string().required(`${val?.label} is required`)
+                    : yup.string();
+                })
+              : (schema[itemz?.name] = itemz?.required
+                  ? yup.string().required(`${itemz?.label} is required`)
+                  : yup.string());
+            break;
+          case 'dropdown':
+            schema[itemz?.name] = itemz?.required
+              ? yup.string().required(`${itemz?.label} is required`)
+              : yup.string();
+            break;
+          case 'phoneInput':
+            schema[itemz?.name] = itemz?.required
+              ? yup
+                  .string()
+                  .matches(/^\S*$/, 'Space is not allowed')
+                  .matches(
+                    /^[^!@#$%^&*()\"/?'=+{}; :,<.>]*$/,
+                    'Special character is not allowed',
+                  )
+                  .min(10)
+                  .max(10)
+                  .typeError("That doesn't look like a phone number")
+                  .required(`${itemz?.label} is required`)
+              : yup.number();
+            break;
+          case 'radio':
+            schema[itemz?.name] = itemz?.required
+              ? yup.string().required(`${itemz?.label} is required`)
+              : yup.string().nullable();
+            break;
+          case 'checkbox':
+            schema[itemz?.name] = itemz?.required
+              ? yup.boolean().oneOf([true], `You must accept ${itemz?.label}`)
+              : yup.boolean();
+            break;
+          default:
+            break;
+        }
+      });
     });
     return yup.object().shape(schema);
   };
   const validationSchema = createValidationSchema(FormFields?.fields);
   const formHnadler = value => {
-    !checkBoxStatus
-      ? setCheckBoxMessage('Please read & accept terms and conditions')
-      : (setCheckBoxMessage(''),
-        console.log('fianl submit handler =>>>>>', value));
+    console.log('fianl submit handler =>>>>>', value);
   };
   const {
     handleChange,
@@ -162,7 +163,7 @@ const PersonalDetails = () => {
   console.log('initialValue', initialValue);
   console.log('values', values);
 
-  const singleViewConstroller = item => {
+  const singleViewController = item => {
     {
       if (item.type === 'text') {
         return (
@@ -186,7 +187,7 @@ const PersonalDetails = () => {
               name={item.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              // value={item.value}
+              value={item.value}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
@@ -231,7 +232,7 @@ const PersonalDetails = () => {
               name={item.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              // value={item.value}
+              //   value={values.email}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
@@ -382,21 +383,22 @@ const PersonalDetails = () => {
       }
     }
   };
-  const multiViewConstroller = item => {
+  const multiViewController = item => {
+    console.log('multi item', item);
     return (
       <View
-        key={item.id}
+        key={item?.content?.[0]?.id}
         style={{
           flexDirection: 'row',
           flex: 1,
           justifyContent: 'center',
           alignItems: 'center',
-          zIndex: item.content?.[0]?.type === 'dropdown' ? 100 : 0,
+          zIndex: item?.content?.[0]?.type === 'dropdown' ? 100 : 0,
         }}>
         <View style={{flex: 1, paddingRight: scale(2), zIndex: 90}}>
           {item.content?.[0]?.type === 'text' ? (
             <View
-              key={item.content?.[0]?.id}
+              key={item?.content?.[0]?.id}
               style={{
                 flex: 1,
               }}>
@@ -414,18 +416,20 @@ const PersonalDetails = () => {
                 ) : null}
               </Text>
               <CustomInput
-                name={item.content?.[0]?.name}
-                placeholder={item.content?.[0]?.placeholder}
+                name={item?.content?.[0]?.name}
+                placeholder={item?.content?.[0]?.placeholder}
                 placeholderTextColor={
-                  item.content?.[0]?.placeholderTextColor || '#4D4F5C'
+                  item?.content?.[0]?.placeholderTextColor || '#4D4F5C'
                 }
-                // value={item.value}
-                onBlur={handleBlur(`${item.content?.[0]?.name}`)}
-                onChangeText={handleChange(`${item.content?.[0]?.name}`)}
+                value={item?.content?.[0]?.value}
+                onBlur={handleBlur(`${item?.content?.[0]?.name}`)}
+                onChangeText={handleChange(`${item?.content?.[0]?.name}`)}
                 autoCorrect={false}
-                style={item.content?.[0]?.style ? item.content?.[0]?.style : {}}
-                multiline={item.content?.[0]?.multiline}
-                secureTextEntry={item.content?.[0]?.secureTextEntry}
+                style={
+                  item?.content?.[0]?.style ? item?.content?.[0]?.style : {}
+                }
+                multiline={item?.content?.[0]?.multiline}
+                secureTextEntry={item?.content?.[0]?.secureTextEntry}
               />
               {touched[item.content?.[0]?.name] &&
                 errors[item.content?.[0]?.name] && (
@@ -465,7 +469,7 @@ const PersonalDetails = () => {
                 placeholderTextColor={
                   item.content?.[0]?.placeholderTextColor || '#4D4F5C'
                 }
-                // value={item.value}
+                value={item.content?.[0]?.value}
                 onBlur={handleBlur(`${item.content?.[0]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[0]?.name}`)}
                 autoCorrect={false}
@@ -574,7 +578,7 @@ const PersonalDetails = () => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                // value={item.value}
+                value={item.content?.[1]?.value}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
@@ -707,78 +711,15 @@ const PersonalDetails = () => {
     );
   };
 
-  const personalInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
+  const personalInfoDetails = apiData => {
+    console.log('apiData', apiData);
+    return apiData.map(item => {
+      return item.view === 'single'
+        ? singleViewController(item)
+        : multiViewController(item);
+    });
   };
-  const maritalInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
-  const currentAddressInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
-  const permanentAddressInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
-  const foreignAddressInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
-  const placeOfBirthInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
-  const biographicInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
-  const passoprtInfoDetails = () => {
-    return (
-      <>
-        <View>
-          <Text>Personal Info Details</Text>
-        </View>
-      </>
-    );
-  };
+
   const MinimizedAccordion = content => {
     return (
       <View style={{marginVertical: scale(5)}}>
@@ -807,103 +748,17 @@ const PersonalDetails = () => {
           nestedScrollEnabled={true}
           contentContainerStyle={{flexGrow: 1}}>
           <View style={{flex: 1, padding: scale(5)}}>
-            <MinimizedAccordion
-              title="Personal Info"
-              expanded={true}
-              data={personalInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Marital Status"
-              data={maritalInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Current Address Details"
-              data={currentAddressInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Permanent Address Details"
-              data={permanentAddressInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Foreign Address Details"
-              data={foreignAddressInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Place of Birth"
-              data={placeOfBirthInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Biographic Information"
-              data={biographicInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
-            <MinimizedAccordion
-              title="Passport Details"
-              data={passoprtInfoDetails(
-                values,
-                errors,
-                handleChange,
-                handleBlur,
-                touched,
-                isValid,
-                setFieldValue,
-              )}
-            />
+            {PersonalDetailsJSON?.fields?.map(item => {
+              return (
+                <>
+                  <MinimizedAccordion
+                    title={item.name}
+                    expanded={true}
+                    data={personalInfoDetails(item.contents)}
+                  />
+                </>
+              );
+            })}
           </View>
         </ScrollView>
         <View
@@ -933,4 +788,4 @@ const PersonalDetails = () => {
   );
 };
 
-export default PersonalDetails;
+export default memo(PersonalDetails);

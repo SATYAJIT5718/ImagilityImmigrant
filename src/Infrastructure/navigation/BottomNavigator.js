@@ -7,6 +7,7 @@ import {Provider} from 'react-native-paper';
 import Back from '../component/back/Back';
 import ComingSoon from '../component/ComingSoon/ComingSoon';
 import {scale} from '../utils/screenUtility';
+import myAccountNavigator from './MyAccountNavigator';
 const BottomStack = createBottomTabNavigator();
 
 const BottomNavigator = props => {
@@ -95,7 +96,7 @@ const BottomNavigator = props => {
         />
         <BottomStack.Screen
           name="My Account"
-          component={ComingSoon}
+          component={myAccountNavigator}
           options={{
             headerLeft: () => <Back />,
             headerShown: false,

@@ -16,95 +16,13 @@ import * as yup from 'yup';
 import styles from './styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
+import {AuthContext} from '../../../Infrastructure/utils/context';
+import {LoginJSON} from '../../../Infrastructure/JSONData/LoginScreen';
 const LoginScreen = props => {
+  const {signIn} = React.useContext(AuthContext);
+  const FormFields = LoginJSON;
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(true);
-  const [FormFields, setFormFieldValue] = useState({
-    title: '',
-    logo: true,
-    fields: [
-      {
-        id: 1,
-        name: 'username',
-        label: 'User Name / ID',
-        type: 'text',
-        placeholder: 'Enter User Name / ID',
-        multiline: false,
-        required: true,
-        secureTextEntry: false,
-        style: {
-          backgroundColor: 'white',
-          borderColor: '#C3D0DE',
-          borderWidth: 1,
-          borderRadius: 5,
-          padding: scale(10),
-          height: scale(40),
-          fontSize: scale(14),
-          fontFamily: 'SourceSansPro-Regular',
-          color: '#4D4F5C',
-        },
-      },
-      {
-        id: 2,
-        name: 'password',
-        label: 'Password',
-        type: 'password',
-        placeholder: 'Enter Password',
-        secureTextEntry: true,
-        required: true,
-        style: {
-          backgroundColor: 'white',
-          borderColor: '#C3D0DE',
-          borderWidth: 1,
-          borderRadius: 5,
-          padding: 10,
-          height: scale(40),
-          flex: 1,
-          marginTop: scale(5),
-          fontSize: scale(14),
-          fontFamily: 'SourceSansPro-Regular',
-          color: '#4D4F5C',
-        },
-      },
-
-      {
-        id: 3,
-        type: 'button',
-        text: 'Submit',
-        name: 'Submit',
-        required: false,
-        label: 'LOGIN',
-        navigation: () => {},
-        nextApi: '',
-        style: {
-          backgroundColor: '#349beb',
-          height: scale(40),
-          borderRadius: 4,
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          marginTop: scale(20),
-        },
-      },
-      {
-        id: 4,
-        type: 'link',
-        label: 'Forgot User Name / ID ?',
-        navigation: () => {},
-        style: {},
-        required: false,
-      },
-      {
-        id: 5,
-        type: 'link',
-        label: 'Forgot Password ?',
-        navigation: () => {},
-        style: {},
-        required: false,
-      },
-    ],
-  });
-
   let initialValue = {};
   FormFields?.fields?.forEach(property => {
     switch (property.type) {
@@ -145,6 +63,7 @@ const LoginScreen = props => {
   const validationSchema = createValidationSchema(FormFields?.fields);
   const formHandler = value => {
     console.log('fianl submit handler =>>>>>', value);
+    signIn();
   };
   const {
     handleChange,

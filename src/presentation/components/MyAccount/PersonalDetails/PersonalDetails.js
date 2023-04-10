@@ -711,28 +711,13 @@ const PersonalDetails = props => {
     );
   };
 
-  const personalInfoDetails = apiData => {
+  const contentDetails = apiData => {
     console.log('apiData', apiData);
     return apiData.map(item => {
       return item.view === 'single'
         ? singleViewController(item)
         : multiViewController(item);
     });
-  };
-
-  const MinimizedAccordion = content => {
-    return (
-      <View style={{marginVertical: scale(5)}}>
-        <Accordion
-          title={content.title}
-          noMarginVertical={true}
-          data={content.data}
-          expanded={content.expanded || false}
-          noMarginLeft={true}
-          backgroundColor={true}
-        />
-      </View>
-    );
   };
   return (
     <KeyboardAvoidingView
@@ -751,11 +736,16 @@ const PersonalDetails = props => {
             {PersonalDetailsJSON?.fields?.map(item => {
               return (
                 <>
-                  <MinimizedAccordion
-                    title={item.name}
-                    expanded={true}
-                    data={personalInfoDetails(item.contents)}
-                  />
+                  <View style={{marginVertical: scale(5)}}>
+                    <Accordion
+                      title={item.name}
+                      noMarginVertical={true}
+                      data={contentDetails(item.contents)}
+                      expanded={item.expanded || false}
+                      noMarginLeft={true}
+                      backgroundColor={true}
+                    />
+                  </View>
                 </>
               );
             })}

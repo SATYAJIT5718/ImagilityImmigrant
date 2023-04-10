@@ -3,7 +3,7 @@ export const MyAccountData = [
     id: 1,
     componentType: 'TimelineCard',
     title: 'Beneficiary Details',
-    navigation: 'BeneficiaryDetails',
+    navigation: 'PersonalDetails',
     iconName: 'filetext1',
   },
   {
@@ -17,7 +17,7 @@ export const MyAccountData = [
     id: 3,
     componentType: 'TimelineCard',
     title: 'Other Dependant Details',
-    navigation: 'Other Dependant Details',
+    navigation: 'OtherDependantDetails',
     iconName: 'filetext1',
   },
   {

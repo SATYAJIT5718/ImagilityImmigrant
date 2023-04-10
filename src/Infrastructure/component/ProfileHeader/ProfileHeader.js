@@ -15,7 +15,7 @@ const ProfileHeader = props => {
         height: scale(80),
       }}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        {props?.profilePic !== null ? (
+        {props?.profilePic !== null && props?.profilePic ? (
           <View>
             <Image
               style={{

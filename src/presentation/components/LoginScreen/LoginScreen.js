@@ -16,7 +16,9 @@ import * as yup from 'yup';
 import styles from './styles';
 import Feather from 'react-native-vector-icons/Feather';
 import {useNavigation} from '@react-navigation/native';
+import {AuthContext} from '../../../Infrastructure/utils/context';
 const LoginScreen = props => {
+  const {signIn} = React.useContext(AuthContext);
   const navigation = useNavigation();
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [FormFields, setFormFieldValue] = useState({
@@ -144,6 +146,7 @@ const LoginScreen = props => {
 
   const validationSchema = createValidationSchema(FormFields?.fields);
   const formHandler = value => {
+    signIn();
     console.log('fianl submit handler =>>>>>', value);
   };
   const {

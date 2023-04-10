@@ -7,6 +7,7 @@ import Back from '../component/back/Back';
 import {useNavigation} from '@react-navigation/native';
 import LOGOSVG from '../../Infrastructure/assets/images/splashScreenLogo.svg';
 import ComingSoon from '../component/ComingSoon/ComingSoon';
+import TimeLineComponent from '../../presentation/components/TimeLine/TimeLine';
 const HomeStack = createStackNavigator();
 const HeaderLeft = props => {
   return (
@@ -41,7 +42,8 @@ const HomeNavigator = props => {
         <>
           <HomeStack.Screen
             name="Dashboard"
-            component={ComingSoon}
+            component={TimeLineComponent}
+            // component={ComingSoon}
             options={{
               headerStyle: {
                 borderBottomWidth: 1,

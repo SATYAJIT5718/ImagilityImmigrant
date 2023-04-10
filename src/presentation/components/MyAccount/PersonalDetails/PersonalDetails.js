@@ -5,8 +5,7 @@ import {
   CustomButton,
   CustomCheckBox,
   CustomDropdownPicker,
-  CustomRadioButton,
-} from '../../../Infrastructure/CommonComponents/index';
+} from '../../../../Infrastructure/CommonComponents/index';
 import PhoneInput from 'react-native-phone-number-input';
 import {
   SafeAreaView,
@@ -15,13 +14,14 @@ import {
   Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {scale} from '../../../Infrastructure/utils/screenUtility';
+import {scale} from '../../../../Infrastructure/utils/screenUtility';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {RegistrationJSON} from '../../../Infrastructure/JSONData/RegistrrationScreen';
-const RegistrationScreen = () => {
+import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
+import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
+const PersonalDetails = () => {
   const navigation = useNavigation();
-  const FormFields = RegistrationJSON;
+  const FormFields = PersonalDetailsJSON;
   const [selectedValue, setSelectedValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const phoneInput = useRef(null);
@@ -150,6 +150,7 @@ const RegistrationScreen = () => {
     values,
     touched,
     errors,
+    isValid,
   } = useFormik({
     initialValues: initialValue,
     enableReinitialize: true,
@@ -705,6 +706,93 @@ const RegistrationScreen = () => {
       </View>
     );
   };
+
+  const personalInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const maritalInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const currentAddressInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const permanentAddressInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const foreignAddressInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const placeOfBirthInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const biographicInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const passoprtInfoDetails = () => {
+    return (
+      <>
+        <View>
+          <Text>Personal Info Details</Text>
+        </View>
+      </>
+    );
+  };
+  const MinimizedAccordion = content => {
+    return (
+      <View style={{marginVertical: scale(5)}}>
+        <Accordion
+          title={content.title}
+          noMarginVertical={true}
+          data={content.data}
+          expanded={content.expanded || false}
+          noMarginLeft={true}
+          backgroundColor={true}
+        />
+      </View>
+    );
+  };
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -718,99 +806,104 @@ const RegistrationScreen = () => {
         <ScrollView
           nestedScrollEnabled={true}
           contentContainerStyle={{flexGrow: 1}}>
-          <View style={{flex: 1, paddingHorizontal: scale(10)}}>
-            {FormFields?.logo ? (
-              <View
-                style={{
-                  marginVertical: scale(10),
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Image
-                  style={{
-                    height: scale(50),
-                    width: scale(200),
-                    resizeMode: 'contain',
-                  }}
-                  source={require('../../../Infrastructure/assets/images/ImagilityLogo.png')}
-                />
-              </View>
-            ) : null}
-            <View>
-              <Text
-                style={{
-                  fontSize: scale(20),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: '#4D4F5C',
-                  marginVertical: scale(10),
-                }}>
-                {FormFields?.title}
-              </Text>
-            </View>
-            <View>
-              {FormFields?.fields?.map((item, index) => {
-                return item.view === 'single'
-                  ? singleViewConstroller(item)
-                  : multiViewConstroller(item);
-              })}
-              <>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    marginBottom: scale(5),
-                  }}>
-                  <CustomCheckBox
-                    name={'terms'}
-                    status={checkBoxStatus}
-                    color={'#00A0DA'}
-                    uncheckedColor={'#00A0DA'}
-                    onPressHandler={value => {
-                      setCheckBoxStatus(!checkBoxStatus);
-                      //   setFieldValue('checkbox', !values.checkbox);
-                      //   handleChange('checkbox');
-                    }}
-                  />
-                  <View
-                    style={{
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                    }}>
-                    <Text
-                      style={{
-                        fontSize: scale(12),
-                        fontFamily: 'SourceSansPro-Regular',
-                        color: '#24262F',
-                      }}>
-                      I have read & accepted{' '}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('Terms & Conditions')}>
-                      <Text
-                        style={{
-                          fontSize: scale(12),
-                          fontFamily: 'SourceSansPro-Regular',
-                          color: '#00A0DA',
-                        }}>
-                        Terms and Conditions
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {!checkBoxStatus && (
-                  <Text
-                    style={{
-                      fontSize: scale(10),
-                      fontFamily: 'SourceSansPro-Regular',
-                      color: 'red',
-                      marginLeft: scale(5),
-                      marginBottom: scale(5),
-                    }}>
-                    {checkBoxMessage}
-                  </Text>
-                )}
-              </>
-            </View>
+          <View style={{flex: 1, padding: scale(5)}}>
+            <MinimizedAccordion
+              title="Personal Info"
+              expanded={true}
+              data={personalInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Marital Status"
+              data={maritalInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Current Address Details"
+              data={currentAddressInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Permanent Address Details"
+              data={permanentAddressInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Foreign Address Details"
+              data={foreignAddressInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Place of Birth"
+              data={placeOfBirthInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Biographic Information"
+              data={biographicInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
+            <MinimizedAccordion
+              title="Passport Details"
+              data={passoprtInfoDetails(
+                values,
+                errors,
+                handleChange,
+                handleBlur,
+                touched,
+                isValid,
+                setFieldValue,
+              )}
+            />
           </View>
         </ScrollView>
         <View
@@ -840,4 +933,4 @@ const RegistrationScreen = () => {
   );
 };
 
-export default RegistrationScreen;
+export default PersonalDetails;

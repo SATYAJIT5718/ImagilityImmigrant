@@ -62,6 +62,7 @@ const LoginScreen = props => {
 
   const validationSchema = createValidationSchema(FormFields?.fields);
   const formHandler = value => {
+    signIn();
     console.log('fianl submit handler =>>>>>', value);
     signIn();
   };

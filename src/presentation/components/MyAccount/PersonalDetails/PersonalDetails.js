@@ -678,7 +678,11 @@ const PersonalDetails = props => {
               modal
               mode="date"
               open={values[item?.isOpenTitle]}
-              date={date}
+              date={
+                values[item?.name] === ''
+                  ? new Date()
+                  : new Date(values[item?.name])
+              }
               onConfirm={date => {
                 setFieldValue(
                   `${item?.isOpenTitle}`,

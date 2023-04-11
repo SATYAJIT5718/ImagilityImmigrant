@@ -5,6 +5,7 @@ import {
   CustomButton,
   CustomCheckBox,
   CustomDropdownPicker,
+  CustomRadioButton,
 } from '../../../../Infrastructure/CommonComponents/index';
 import PhoneInput from 'react-native-phone-number-input';
 import {
@@ -187,7 +188,7 @@ const PersonalDetails = props => {
               name={item.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              value={item.value}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
@@ -378,6 +379,67 @@ const PersonalDetails = props => {
                 {errors[item?.name]}
               </Text>
             )}
+          </View>
+        );
+      }
+      if (item.type === 'button') {
+        return (
+          <View key={item.id} style={{marginBottom: scale(5)}}>
+            <Text
+              style={{
+                marginBottom: scale(5),
+                fontSize: scale(14),
+                fontFamily: 'SourceSansPro-Regular',
+                color: '#24262F',
+                marginTop: scale(5),
+              }}>
+              {item.label}
+              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+            </Text>
+            <View style={{flexDirection: 'row'}}>
+              <CustomButton
+                buttonText={'Upload'}
+                buttonTextStyle={{
+                  fontSize: scale(14),
+                  fontFamily: 'SourceSansPro-SemiBold',
+                  color: '#349beb',
+                }}
+                buttonStyle={{
+                  backgroundColor: '#fff',
+                  height: scale(35),
+                  width: scale(80),
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  borderRadius: scale(4),
+                  borderWidth: 1,
+                  borderColor: '#349beb',
+                }}
+                onPressHandler={() => {}}
+              />
+              {errors[item?.name] && (
+                <Text
+                  style={{
+                    fontSize: scale(10),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: 'red',
+                    marginLeft: scale(5),
+                    marginBottom: scale(5),
+                  }}>
+                  {errors[item?.name]}
+                </Text>
+              )}
+
+              {/* <Text              // Upload text
+                style={{
+                  fontSize: scale(16),
+                  fontFamily: 'SourceSansPro-SemiBold',
+                  color: '#349beb',
+                  left: scale(5),
+                }}>
+                ssfsd
+              </Text> */}
+            </View>
           </View>
         );
       }

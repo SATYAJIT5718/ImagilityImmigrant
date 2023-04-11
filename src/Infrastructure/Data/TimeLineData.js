@@ -15,14 +15,14 @@ export const TimeLineStudentDate = [
     id: 2,
     componentType: 'TimelineCard',
     title: 'Next Steps in your Journey',
-    navigation: 'Next Steps in your Journey',
+    navigation: 'NextStepsInYourJourney',
     iconImage: NextStepsInYourJourney,
   },
   {
     id: 3,
     componentType: 'TimelineCard',
     title: 'Universities',
-    navigation: 'Find University',
+    navigation: 'FindUniversity',
     iconImage: Universities,
   },
   {

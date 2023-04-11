@@ -62,6 +62,7 @@ export const CustomDropdownPicker = props => {
           color: '#4D4F5C',
         }
       }
+      onSelectItem={props.onSelectItem}
       style={
         props.style || {
           marginTop: scale(5),

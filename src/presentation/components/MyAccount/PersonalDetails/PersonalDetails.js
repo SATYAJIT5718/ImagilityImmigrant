@@ -60,7 +60,7 @@ const PersonalDetails = props => {
           break;
         case 'dropdown':
           initialValue[itemz.name] = '';
-          initialValue[itemz.isOpenTitle] = itemz.isOpen;
+          initialValue[itemz.isOpenTitle] = false;
           break;
         case 'checkbox':
           initialValue[itemz.name] = itemz.isSelected;
@@ -406,7 +406,9 @@ const PersonalDetails = props => {
       }
       if (item.type === 'dropdown') {
         return (
-          <View key={item.id} style={{zIndex: 80, marginBottom: scale(5)}}>
+          <View
+            key={item.id}
+            style={{zIndex: item.zIndex || 90, marginBottom: scale(5)}}>
             <Text
               style={{
                 marginBottom: scale(5),
@@ -420,13 +422,21 @@ const PersonalDetails = props => {
             </Text>
             <CustomDropdownPicker
               listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
-              open={isOpen}
-              value={selectedValue}
+              open={values[item?.isOpenTitle]}
+              value={values[item?.name]}
               items={item.data}
-              setOpen={setIsOpen}
-              setValue={setSelectedValue}
+              setOpen={() => {
+                setFieldValue(
+                  `${item?.isOpenTitle}`,
+                  !values[item?.isOpenTitle],
+                );
+              }}
+              onSelectItem={value => {
+                setFieldValue(`${item.name}`, value.value);
+              }}
+              // setValue={setSelectedValue}
               // setItems={item.data}
-              onChangeValue={handleChange(`${item.name}`)}
+              // onChangeValue={handleChange(`${item.name}`)}
               placeholder={item.placeholder || 'Select'}
               placeholderStyle={
                 item.placeholderStyle || {

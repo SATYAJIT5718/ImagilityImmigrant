@@ -65,6 +65,75 @@ export const PersonalDetailsJSON = {
           ],
         },
         {
+          id: 11,
+          view: 'single',
+          name: 'title4',
+          label: 'Title4',
+          title: 'title4',
+          type: 'dropdown',
+          isOpenTitle: 'isTitleOpen4',
+          required: true,
+          placeholder: 'Select',
+          zIndex: 90,
+          data: [
+            {
+              id: 1,
+              value: 'Mr.',
+              label: 'Mr.',
+            },
+            {
+              id: 2,
+              value: 'Mrs.',
+              label: 'Mrs.',
+            },
+            {
+              id: 3,
+              value: 'Ms',
+              label: 'Ms',
+            },
+            {
+              id: 4,
+              value: 'Others',
+              label: 'Others',
+            },
+          ],
+        },
+        {
+          id: 12,
+          view: 'single',
+          name: 'title2',
+          label: 'Title2',
+          title: 'title2',
+          type: 'dropdown',
+          isOpenTitle: 'isTitleOpen2',
+          required: true,
+          zIndex: 80,
+
+          placeholder: 'Select',
+          data: [
+            {
+              id: 1,
+              value: 'Mr.',
+              label: 'Mr.',
+            },
+            {
+              id: 2,
+              value: 'Mrs.',
+              label: 'Mrs.',
+            },
+            {
+              id: 3,
+              value: 'Ms',
+              label: 'Ms',
+            },
+            {
+              id: 4,
+              value: 'Others',
+              label: 'Others',
+            },
+          ],
+        },
+        {
           id: 2,
           view: 'multi',
           type: 'multi',

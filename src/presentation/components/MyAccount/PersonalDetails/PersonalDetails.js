@@ -687,8 +687,6 @@ const PersonalDetails = props => {
                 // setOpen(!open);
                 setFieldValue(`${item?.name}`, date);
                 // setDate(date);
-                console.log('date', date);
-                console.log('date2', new Date(date));
               }}
               onCancel={() => {
                 setOpen(false);

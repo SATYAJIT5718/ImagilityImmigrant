@@ -4,6 +4,9 @@ import {Checkbox, RadioButton} from 'react-native-paper';
 import DropDownPicker from 'react-native-dropdown-picker';
 import PhoneInput from 'react-native-phone-input';
 import {scale} from '../utils/screenUtility';
+import DatePicker from 'react-native-date-picker';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import moment from 'moment';
 
 export const CustomInput = props => {
   return (
@@ -17,6 +20,7 @@ export const CustomInput = props => {
       autoCorrect={false}
       style={props.style}
       secureTextEntry={props.secureTextEntry}
+      keyboardType={props.keyboardType || 'default'}
     />
   );
 };
@@ -91,7 +95,7 @@ export const CustomRadioButton = props => {
                     color={props.color || '#0089CF'}
                     label={props.label}
                   />
-                  <Text style={props.radioTitle}>{item.title}</Text>
+                  <Text style={props.radioTitleStyle}>{item.title}</Text>
                 </View>
               );
             })
@@ -168,3 +172,112 @@ export const CustomPhoneInput = props => {
     </View>
   );
 };
+
+export const CustomDatePicker = props => {
+  return (
+    <>
+      <TouchableOpacity onPress={props.openToggler}>
+        <View
+          style={
+            props.parentStyle || {
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginBottom: scale(5),
+            }
+          }>
+          <CustomInput
+            name={props.name}
+            placeholder={props.placeholder}
+            placeholderTextColor={props.placeholderTextColor || '#4D4F5C'}
+            value={
+              props.value
+              // values[item?.name] === ''
+              //   ? ''
+              //   : moment(values[item?.name]).format('MM/DD/YYYY')
+              // // emptyDate === ''
+              // //   ? studentInfo?.dob
+              // //     ? moment(studentInfo?.dob).format('MM/DD/YYYY')
+              // //     : ''
+              // //   : dateformat
+            }
+            editable={props.editable || false}
+            autoCorrect={props.autoCorrect || false}
+            style={item.style || {}}
+          />
+          <AntDesign
+            name="calendar"
+            size={20}
+            style={{
+              position: 'absolute',
+              right: scale(10),
+              color: 'grey',
+            }}
+          />
+        </View>
+        {props.dateError && (
+          <Text
+            style={{
+              fontSize: scale(10),
+              fontFamily: 'SourceSansPro-Regular',
+              color: 'red',
+              marginLeft: scale(5),
+              marginBottom: scale(5),
+            }}>
+            {props.dateErrorTitle}
+          </Text>
+        )}
+      </TouchableOpacity>
+      <DatePicker
+        modal
+        mode={props.mode || 'date'}
+        open={props.open}
+        date={props.date}
+        onConfirm={props.onConfirm}
+        onCancel={props.onCancel}
+      />
+    </>
+  );
+};
+
+{
+  /* <CustomDatePicker
+  openToggler={setFieldValue(
+    `${item?.isOpenTitle}`,
+    !values[item?.isOpenTitle],
+  )}
+  parentStyle={{
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: scale(5),
+  }}
+  name={item.name}
+  placeholder={item.placeholder}
+  placeholderTextColor="#4D4F5C"
+  value={
+    values[item?.name] === ''
+      ? ''
+      : moment(values[item?.name]).format('MM/DD/YYYY')
+  }
+  editable={false}
+  autoCorrect={false}
+  style={item.style || {}}
+  dateError={touched[item?.name] && errors[item?.name]}
+  dateErrorTitle={errors[item?.name]}
+  mode="date"
+  open={values[item?.isOpenTitle]}
+  date={date}
+  onConfirm={date => {
+    setFieldValue(`${item?.isOpenTitle}`, !values[item?.isOpenTitle]);
+    setFieldValue(`${item?.name}`, date);
+    console.log('date', date);
+    console.log('date2', new Date(date));
+  }}
+  onCancel={() => {
+    setOpen(false);
+  }}
+/>; */
+}

@@ -6,6 +6,7 @@ import {
   CustomCheckBox,
   CustomDropdownPicker,
   CustomRadioButton,
+  CustomDatePicker,
 } from '../../../../Infrastructure/CommonComponents/index';
 import PhoneInput from 'react-native-phone-number-input';
 import {
@@ -20,14 +21,18 @@ import {useFormik, Form} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
+import DatePicker from 'react-native-date-picker';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import moment from 'moment';
 const PersonalDetails = props => {
   const navigation = useNavigation();
   const FormFields = PersonalDetailsJSON;
   const [selectedValue, setSelectedValue] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const phoneInput = useRef(null);
-  const [checkBoxStatus, setCheckBoxStatus] = useState(false);
-  const [checkBoxMessage, setCheckBoxMessage] = useState('');
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState(new Date());
+
   let initialValue = {};
 
   FormFields?.fields?.forEach(property => {
@@ -52,12 +57,19 @@ const PersonalDetails = props => {
           break;
         case 'dropdown':
           initialValue[itemz.name] = '';
+          initialValue[itemz.isOpenTitle] = itemz.isOpen;
+
           break;
         case 'checkbox':
           initialValue[itemz.name] = '';
           break;
         case 'phoneInput':
           initialValue[itemz.name] = '';
+          initialValue[itemz.countryName] = 'IN';
+          break;
+        case 'date':
+          initialValue[itemz.name] = '';
+          initialValue[itemz.isOpenTitle] = itemz.isOpen;
           break;
         // Add cases for other data types as needed
         default:
@@ -133,6 +145,11 @@ const PersonalDetails = props => {
               ? yup.boolean().oneOf([true], `You must accept ${itemz?.label}`)
               : yup.boolean();
             break;
+          case 'date':
+            schema[itemz?.name] = itemz?.required
+              ? yup.string().required(`${itemz?.label} is required`)
+              : yup.string();
+            break;
           default:
             break;
         }
@@ -140,9 +157,64 @@ const PersonalDetails = props => {
     });
     return yup.object().shape(schema);
   };
+
   const validationSchema = createValidationSchema(FormFields?.fields);
-  const formHnadler = value => {
+
+  const formHandler = value => {
     console.log('fianl submit handler =>>>>>', value);
+    const payload = {
+      id: benID ? benID : '',
+      fName: formData.firstName,
+      mName: formData.middleName,
+      lName: formData.lastName,
+      greScore: formData.GREscore,
+      toeflScore: formData.TOEFLscore,
+      title: formData.title,
+      // aliasName: otherNameCheck
+      //   ? [
+      //       {
+      //         fName: '',
+      //         title: '',
+      //       },
+      //     ]
+      //   : [],
+      gender: {
+        id:
+          formData.gender === 'FEML'
+            ? 7
+            : formData.gender === 'MALE'
+            ? 6
+            : null,
+        name: formData.gender,
+      },
+      dob: '',
+      ssn: formData.SocialSecurityNumber,
+      emailContacts: [
+        {
+          email: formData.email,
+          id: '',
+          type: {
+            code: 'PRIM',
+            id: 34,
+          },
+        },
+      ],
+      phoneContacts: [
+        {
+          phoneNo: formData.phoneNumber,
+          id: '',
+          type: {
+            code: 'MOBL',
+            id: 31,
+          },
+          countryCode: {
+            countryCode: formData.countryName ? formData.countryName : '',
+            phoneCode: '',
+          },
+        },
+      ],
+    };
+    console.log('payload', payload);
   };
   const {
     handleChange,
@@ -158,7 +230,7 @@ const PersonalDetails = props => {
     enableReinitialize: true,
     validateOnBlur: true,
     validateOnChange: true,
-    onSubmit: value => formHnadler(value),
+    onSubmit: value => formHandler(value),
     validationSchema,
   });
   console.log('initialValue', initialValue);
@@ -195,6 +267,7 @@ const PersonalDetails = props => {
               style={item.style ? item.style : {}}
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
+              keyboardType={item.keyboardType || 'default'}
             />
             {touched[item?.name] && errors[item?.name] && (
               <Text
@@ -314,8 +387,8 @@ const PersonalDetails = props => {
             <View>
               <PhoneInput
                 ref={phoneInput}
-                defaultValue={values.phoneNumber}
-                defaultCode={values.countryName}
+                defaultValue={values[item?.name]}
+                defaultCode={values[item?.countryName]}
                 // layout="second"
                 layout="first"
                 onChangeText={text => {
@@ -382,6 +455,104 @@ const PersonalDetails = props => {
           </View>
         );
       }
+      if (item.type === 'dropdown') {
+        return (
+          <View key={item.id} style={{zIndex: 80, marginBottom: scale(5)}}>
+            <Text
+              style={{
+                marginBottom: scale(5),
+                fontSize: scale(14),
+                fontFamily: 'SourceSansPro-Regular',
+                color: '#24262F',
+                // marginTop: scale(5),
+              }}>
+              {item.label}
+              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+            </Text>
+            <CustomDropdownPicker
+              listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
+              open={isOpen}
+              value={selectedValue}
+              items={item.data}
+              setOpen={setIsOpen}
+              setValue={setSelectedValue}
+              // setItems={item.data}
+              onChangeValue={handleChange(`${item.name}`)}
+              placeholder={item.placeholder || 'Select'}
+              placeholderStyle={
+                item.placeholderStyle || {
+                  color: '#4D4F5C',
+                }
+              }
+              maxHeight={scale(250)}
+              style={
+                item.style || {
+                  minHeight: scale(40),
+                  borderRadius: scale(5),
+                  borderColor: '#C3D0DE',
+                  paddingVertical: -20,
+                  width: '100%',
+                  height: scale(40),
+                }
+              }
+            />
+            {touched[item.name] && errors[item.name] && (
+              <Text
+                style={{
+                  fontSize: scale(10),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: 'red',
+                  marginLeft: scale(5),
+                  marginBottom: scale(5),
+                }}>
+                {errors[item.name]}
+              </Text>
+            )}
+          </View>
+        );
+      }
+      if (item.type === 'radio') {
+        return (
+          <>
+            <View>
+              <Text
+                style={{
+                  fontSize: scale(14),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: '#24262F',
+                  marginTop: scale(5),
+                }}>
+                {item.label}
+                {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+              </Text>
+              <CustomRadioButton
+                onValueChange={handleChange(`${item?.name}`)}
+                value={values[item?.name]}
+                itemList={item.data || []}
+                color="#0089CF"
+                uncheckedColor="grey"
+                radioTitleStyle={{
+                  fontSize: scale(14),
+                  color: '#4D4F5C',
+                  fontFamily: 'SourceSansPro-Regular',
+                }}
+              />
+              {touched[item?.name] && errors[item?.name] && (
+                <Text
+                  style={{
+                    fontSize: scale(10),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: 'red',
+                    marginLeft: scale(5),
+                    marginBottom: scale(5),
+                  }}>
+                  {errors[item?.name]}
+                </Text>
+              )}
+            </View>
+          </>
+        );
+      }
       if (item.type === 'button') {
         return (
           <View key={item.id} style={{marginBottom: scale(5)}}>
@@ -429,24 +600,106 @@ const PersonalDetails = props => {
                   {errors[item?.name]}
                 </Text>
               )}
-
-              {/* <Text              // Upload text
-                style={{
-                  fontSize: scale(16),
-                  fontFamily: 'SourceSansPro-SemiBold',
-                  color: '#349beb',
-                  left: scale(5),
-                }}>
-                ssfsd
-              </Text> */}
             </View>
+          </View>
+        );
+      }
+      if (item.type === 'date') {
+        return (
+          <View>
+            <Text
+              style={{
+                marginBottom: scale(5),
+                fontSize: scale(14),
+                fontFamily: 'SourceSansPro-Regular',
+                color: '#24262F',
+                marginTop: scale(5),
+              }}>
+              {item.label}
+              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setFieldValue(
+                  `${item?.isOpenTitle}`,
+                  !values[item?.isOpenTitle],
+                );
+              }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: scale(5),
+                }}>
+                <CustomInput
+                  name={item.name}
+                  placeholder={item.placeholder}
+                  placeholderTextColor="#4D4F5C"
+                  value={
+                    values[item?.name] === ''
+                      ? ''
+                      : moment(values[item?.name]).format('MM/DD/YYYY')
+                    // emptyDate === ''
+                    //   ? studentInfo?.dob
+                    //     ? moment(studentInfo?.dob).format('MM/DD/YYYY')
+                    //     : ''
+                    //   : dateformat
+                  }
+                  editable={false}
+                  autoCorrect={false}
+                  style={item.style || {}}
+                />
+                <AntDesign
+                  name="calendar"
+                  size={20}
+                  style={{
+                    position: 'absolute',
+                    right: scale(10),
+                    color: 'grey',
+                  }}
+                />
+              </View>
+              {touched[item?.name] && errors[item?.name] && (
+                <Text
+                  style={{
+                    fontSize: scale(10),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: 'red',
+                    marginLeft: scale(5),
+                    marginBottom: scale(5),
+                  }}>
+                  {errors[item?.name]}
+                </Text>
+              )}
+            </TouchableOpacity>
+            <DatePicker
+              modal
+              mode="date"
+              open={values[item?.isOpenTitle]}
+              date={date}
+              onConfirm={date => {
+                setFieldValue(
+                  `${item?.isOpenTitle}`,
+                  !values[item?.isOpenTitle],
+                );
+                // setOpen(!open);
+                setFieldValue(`${item?.name}`, date);
+                // setDate(date);
+                console.log('date', date);
+                console.log('date2', new Date(date));
+              }}
+              onCancel={() => {
+                setOpen(false);
+              }}
+            />
           </View>
         );
       }
     }
   };
   const multiViewController = item => {
-    console.log('multi item', item);
     return (
       <View
         key={item?.content?.[0]?.id}
@@ -492,6 +745,7 @@ const PersonalDetails = props => {
                 }
                 multiline={item?.content?.[0]?.multiline}
                 secureTextEntry={item?.content?.[0]?.secureTextEntry}
+                keyboardType={item.content?.[0]?.keyboardType || 'default'}
               />
               {touched[item.content?.[0]?.name] &&
                 errors[item.content?.[0]?.name] && (
@@ -538,6 +792,7 @@ const PersonalDetails = props => {
                 style={item.content?.[0]?.style ? item.content?.[0]?.style : {}}
                 multiline={item.content?.[0]?.multiline}
                 secureTextEntry={item.content?.[0]?.secureTextEntry}
+                keyboardType={item.content?.[0]?.keyboardType || 'default'}
               />
               {touched[item.content?.[0]?.name] &&
                 errors[item.content?.[0]?.name] && (
@@ -573,11 +828,16 @@ const PersonalDetails = props => {
               </Text>
               <CustomDropdownPicker
                 listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
-                open={isOpen}
-                value={selectedValue}
+                open={values[item.content?.[0]?.isOpen]}
+                value={values[item.content?.[0]?.name]}
                 items={item.content?.[0]?.data}
-                setOpen={setIsOpen}
-                setValue={setSelectedValue}
+                setOpen={() => {
+                  setFieldValue(
+                    `${item.content?.[0]?.isOpen}`,
+                    !values[item.content?.[0]?.isOpen],
+                  );
+                }}
+                // setValue={setSelectedValue}
                 // setItems={item.data}
                 onChangeValue={handleChange(`${item.content?.[0]?.name}`)}
                 placeholder={item.content?.[0]?.placeholder || 'Select'}
@@ -647,6 +907,7 @@ const PersonalDetails = props => {
                 style={item.content?.[1]?.style ? item.content?.[1]?.style : {}}
                 multiline={item.content?.[1]?.multiline}
                 secureTextEntry={item.content?.[1]?.secureTextEntry}
+                keyboardType={item.content?.[1]?.keyboardType || 'default'}
               />
               {touched[item.content?.[1]?.name] &&
                 errors[item.content?.[1]?.name] && (
@@ -693,6 +954,7 @@ const PersonalDetails = props => {
                 style={item.content?.[1]?.style ? item.content?.[1]?.style : {}}
                 multiline={item.content?.[1]?.multiline}
                 secureTextEntry={item.content?.[1]?.secureTextEntry}
+                keyboardType={item.content?.[1]?.keyboardType || 'default'}
               />
               {touched[item.content?.[1]?.name] &&
                 errors[item.content?.[1]?.name] && (

@@ -1,5 +1,4 @@
-import {scale} from '../utils/screenUtility';
-export const PersonalDetailsJSON = {
+{
   title: 'Personal Details',
   fields: [
     {

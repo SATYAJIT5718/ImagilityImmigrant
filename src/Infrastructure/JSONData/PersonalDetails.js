@@ -19,6 +19,7 @@ export const PersonalDetailsJSON = {
               type: 'dropdown',
               required: true,
               errorTile: 'Title',
+              isOpenTitle: 'isOpenTitle',
               placeholder: 'Select',
               data: [
                 {
@@ -447,7 +448,6 @@ export const PersonalDetailsJSON = {
           required: true,
           multiline: true,
           errorTile: 'Address1',
-
           style: {
             backgroundColor: 'white',
             borderColor: '#C3D0DE',

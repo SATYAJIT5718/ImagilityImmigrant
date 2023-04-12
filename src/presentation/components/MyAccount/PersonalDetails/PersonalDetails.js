@@ -188,11 +188,10 @@ const PersonalDetails = props => {
             }}>
             <Text
               style={{
-                marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                marginTop: scale(5),
+                marginVertical: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
@@ -247,7 +246,7 @@ const PersonalDetails = props => {
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                marginTop: scale(5),
+                marginVertical: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
@@ -296,11 +295,10 @@ const PersonalDetails = props => {
           <View key={item.id} style={{flex: 1, paddingLeft: scale(2)}}>
             <Text
               style={{
-                marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                marginTop: scale(5),
+                marginVertical: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
@@ -348,11 +346,10 @@ const PersonalDetails = props => {
           <View key={item.id} style={{marginBottom: scale(5)}}>
             <Text
               style={{
-                marginBottom: scale(5),
+                marginVertical: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                marginTop: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
@@ -424,7 +421,7 @@ const PersonalDetails = props => {
         return (
           <View
             key={item.id}
-            style={{zIndex: item.zIndex || 90, marginBottom: scale(5)}}>
+            style={{zIndex: item.zIndex || 90, marginVertical: scale(5)}}>
             <Text
               style={{
                 marginBottom: scale(5),
@@ -584,7 +581,7 @@ const PersonalDetails = props => {
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                marginTop: scale(5),
+                marginVertical: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
@@ -855,6 +852,7 @@ const PersonalDetails = props => {
                   fontSize: scale(14),
                   fontFamily: 'SourceSansPro-Regular',
                   color: '#24262F',
+                  marginTop: scale(5),
                 }}>
                 {item.content?.[0]?.label}
                 {item.content?.[0]?.required ? (

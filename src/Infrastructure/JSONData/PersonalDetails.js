@@ -369,51 +369,5 @@ export const PersonalDetailsJSON = {
         },
       ],
     },
-    {
-      name: 'Marital Status',
-      expanded: false,
-      contents: [
-        {
-          id: 1,
-          view: 'multi',
-          type: 'multi',
-          content: [
-            {
-              id: 11,
-              name: 'title',
-              label: 'Title',
-              title: 'title',
-              type: 'dropdown',
-              required: true,
-              placeholder: 'Select',
-              data: [
-                {id: 1, value: 'Mr.', label: 'Mr.'},
-                {id: 2, value: 'Mrs.', label: 'Mrs.'},
-                {id: 3, value: 'Ms', label: 'Ms'},
-                {id: 4, value: 'Others', label: 'Others'},
-              ],
-            },
-            {
-              id: 12,
-              name: 'firstName',
-              label: 'First Name',
-              type: 'text',
-              placeholder: 'Enter First Name',
-              secureTextEntry: false,
-              required: true,
-              style: {
-                backgroundColor: 'white',
-                borderColor: '#C3D0DE',
-                borderWidth: 1,
-                borderRadius: 5,
-                padding: 10,
-                marginBottom: 10,
-                height: scale(40),
-              },
-            },
-          ],
-        },
-      ],
-    },
   ],
 };

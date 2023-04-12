@@ -21,6 +21,7 @@ export const CustomInput = props => {
       style={props.style}
       secureTextEntry={props.secureTextEntry}
       keyboardType={props.keyboardType || 'default'}
+      multiline={props.multiline}
     />
   );
 };
@@ -80,7 +81,8 @@ export const CustomDropdownPicker = props => {
 export const CustomRadioButton = props => {
   return (
     <RadioButton.Group onValueChange={props.onValueChange} value={props.value}>
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View
+        style={{flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
         {props.itemList
           ? props.itemList.map(item => {
               return (

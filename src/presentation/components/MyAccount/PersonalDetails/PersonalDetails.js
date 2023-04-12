@@ -63,6 +63,15 @@ const PersonalDetails = props => {
           initialValue[itemz.name] = '';
           initialValue[itemz.isOpenTitle] = itemz.isOpen;
           break;
+        case 'alias':
+          initialValue[itemz.name] = itemz.isSelected;
+          itemz.content.map(val => {
+            initialValue[val.name] = '';
+            val.type === 'dropdown'
+              ? (initialValue[val.isOpenTitle] = false)
+              : null;
+          });
+          break;
         // Add cases for other data types as needed
         default:
           // initialValue[itemz.name] = '';
@@ -139,6 +148,33 @@ const PersonalDetails = props => {
                   .oneOf([true], `You must accept ${itemz?.errorTile}`)
               : yup.boolean();
             break;
+
+          case 'alias':
+            schema[itemz?.name] = itemz?.required
+              ? yup.boolean().oneOf([true], `${itemz?.errorTile}`)
+              : yup.boolean();
+
+            schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[0]?.errorTile} is required`),
+                })
+              : yup.string();
+            schema[itemz?.content?.[1]?.name] = itemz?.content?.[1]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[1]?.errorTile} is required`),
+                })
+              : yup.string();
+
+            // schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
+            //   ? yup.string().required('TOEFL Score Required')
+            //   : yup.string();
+            break;
           case 'date':
             schema[itemz?.name] = itemz?.required
               ? yup.string().required(`${itemz?.errorTile} is required`)
@@ -151,12 +187,12 @@ const PersonalDetails = props => {
     });
     return yup.object().shape(schema);
   };
-
   const validationSchema = createValidationSchema(FormFields?.fields);
 
   const formHandler = value => {
     console.log('fianl submit handler =>>>>>', value);
   };
+
   const {
     handleChange,
     handleBlur,
@@ -174,6 +210,7 @@ const PersonalDetails = props => {
     onSubmit: value => formHandler(value),
     validationSchema,
   });
+
   console.log('initialValue', initialValue);
   console.log('values', values);
 
@@ -719,6 +756,55 @@ const PersonalDetails = props => {
           </>
         );
       }
+      if (item.type === 'alias') {
+        return (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: scale(5),
+              }}>
+              <CustomCheckBox
+                name={item.name}
+                status={values[item?.name]}
+                color={'#00A0DA'}
+                uncheckedColor={'#00A0DA'}
+                onPressHandler={() => {
+                  setFieldValue(`${item.name}`, !values[item.name]);
+                }}
+              />
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Text
+                  style={{
+                    fontSize: scale(12),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: '#24262F',
+                  }}>
+                  {item.label}
+                </Text>
+              </View>
+            </View>
+            {errors[item?.name] && (
+              <Text
+                style={{
+                  fontSize: scale(10),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: 'red',
+                  marginLeft: scale(5),
+                  marginBottom: scale(5),
+                }}>
+                {errors[item?.name]}
+              </Text>
+            )}
+            {values[item?.name] ? multiViewController(item) : null}
+          </>
+        );
+      }
     }
   };
   const multiViewController = item => {
@@ -933,7 +1019,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item.content?.[1]?.value}
+                value={values[item.content?.[1]?.name]}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}

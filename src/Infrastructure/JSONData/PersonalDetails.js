@@ -73,7 +73,7 @@ export const PersonalDetailsJSON = {
           type: 'multi',
           content: [
             {
-              id: 13,
+              id: 1,
               view: 'single',
               name: 'middleName',
               label: 'Middle Name',
@@ -93,7 +93,7 @@ export const PersonalDetailsJSON = {
               // },
             },
             {
-              id: 14,
+              id: 2,
               view: 'single',
               name: 'lastName',
               label: 'Last Name',
@@ -151,13 +151,68 @@ export const PersonalDetailsJSON = {
         {
           id: 55,
           name: 'isAlias',
-          type: 'checkbox',
+          type: 'alias',
           view: 'single',
           isSelected: false,
           label: 'Do you have others name?',
           required: false,
-          errorTile: 'Alias Name',
+          errorTile: 'Required',
           value: '',
+          content: [
+            {
+              id: 1,
+              name: 'aliasTitle',
+              label: 'Title',
+              type: 'dropdown',
+              isOpenTitle: 'isAliasTitleOpen',
+              required: true,
+              placeholder: 'Select',
+              errorTile: 'Alias Title',
+              value: '',
+              data: [
+                {
+                  id: 1,
+                  value: 'Mr.',
+                  label: 'Mr.',
+                },
+                {
+                  id: 2,
+                  value: 'Mrs.',
+                  label: 'Mrs.',
+                },
+                {
+                  id: 3,
+                  value: 'Ms',
+                  label: 'Ms',
+                },
+                {
+                  id: 4,
+                  value: 'Others',
+                  label: 'Others',
+                },
+              ],
+            },
+            {
+              id: 2,
+              name: 'aliasName',
+              label: 'Alias Name',
+              type: 'text',
+              placeholder: 'Enter Alias Name',
+              secureTextEntry: false,
+              required: true,
+              errorTile: 'Alias Name',
+              // value: 'satya',
+              // style: {
+              //   backgroundColor: 'white',
+              //   borderColor: '#C3D0DE',
+              //   borderWidth: 1,
+              //   borderRadius: 5,
+              //   padding: 10,
+              //   marginBottom: 10,
+              //   height: scale(40),
+              // },
+            },
+          ],
         },
         {
           id: 4,

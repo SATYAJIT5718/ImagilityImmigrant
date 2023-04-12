@@ -46,7 +46,10 @@ const PersonalDetails = props => {
           break;
         case 'multi':
           itemz.content.map(val => {
-            initialValue[val?.name] = '';
+            val.type === 'dropdown'
+              ? ((initialValue[val?.name] = ''),
+                (initialValue[val?.isOpenTitle] = false))
+              : (initialValue[val?.name] = '');
           });
           break;
         case 'password':
@@ -57,11 +60,10 @@ const PersonalDetails = props => {
           break;
         case 'dropdown':
           initialValue[itemz.name] = '';
-          initialValue[itemz.isOpenTitle] = itemz.isOpen;
-
+          initialValue[itemz.isOpenTitle] = false;
           break;
         case 'checkbox':
-          initialValue[itemz.name] = '';
+          initialValue[itemz.name] = itemz.isSelected;
           break;
         case 'phoneInput':
           initialValue[itemz.name] = '';
@@ -162,59 +164,6 @@ const PersonalDetails = props => {
 
   const formHandler = value => {
     console.log('fianl submit handler =>>>>>', value);
-    const payload = {
-      id: benID ? benID : '',
-      fName: formData.firstName,
-      mName: formData.middleName,
-      lName: formData.lastName,
-      greScore: formData.GREscore,
-      toeflScore: formData.TOEFLscore,
-      title: formData.title,
-      // aliasName: otherNameCheck
-      //   ? [
-      //       {
-      //         fName: '',
-      //         title: '',
-      //       },
-      //     ]
-      //   : [],
-      gender: {
-        id:
-          formData.gender === 'FEML'
-            ? 7
-            : formData.gender === 'MALE'
-            ? 6
-            : null,
-        name: formData.gender,
-      },
-      dob: '',
-      ssn: formData.SocialSecurityNumber,
-      emailContacts: [
-        {
-          email: formData.email,
-          id: '',
-          type: {
-            code: 'PRIM',
-            id: 34,
-          },
-        },
-      ],
-      phoneContacts: [
-        {
-          phoneNo: formData.phoneNumber,
-          id: '',
-          type: {
-            code: 'MOBL',
-            id: 31,
-          },
-          countryCode: {
-            countryCode: formData.countryName ? formData.countryName : '',
-            phoneCode: '',
-          },
-        },
-      ],
-    };
-    console.log('payload', payload);
   };
   const {
     handleChange,
@@ -457,7 +406,9 @@ const PersonalDetails = props => {
       }
       if (item.type === 'dropdown') {
         return (
-          <View key={item.id} style={{zIndex: 80, marginBottom: scale(5)}}>
+          <View
+            key={item.id}
+            style={{zIndex: item.zIndex || 90, marginBottom: scale(5)}}>
             <Text
               style={{
                 marginBottom: scale(5),
@@ -471,13 +422,21 @@ const PersonalDetails = props => {
             </Text>
             <CustomDropdownPicker
               listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
-              open={isOpen}
-              value={selectedValue}
+              open={values[item?.isOpenTitle]}
+              value={values[item?.name]}
               items={item.data}
-              setOpen={setIsOpen}
-              setValue={setSelectedValue}
+              setOpen={() => {
+                setFieldValue(
+                  `${item?.isOpenTitle}`,
+                  !values[item?.isOpenTitle],
+                );
+              }}
+              onSelectItem={value => {
+                setFieldValue(`${item.name}`, value.value);
+              }}
+              // setValue={setSelectedValue}
               // setItems={item.data}
-              onChangeValue={handleChange(`${item.name}`)}
+              // onChangeValue={handleChange(`${item.name}`)}
               placeholder={item.placeholder || 'Select'}
               placeholderStyle={
                 item.placeholderStyle || {
@@ -699,6 +658,55 @@ const PersonalDetails = props => {
           </View>
         );
       }
+      if (item.type === 'checkbox') {
+        return (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: scale(5),
+              }}>
+              <CustomCheckBox
+                name={item.name}
+                status={values[item?.name]}
+                color={'#00A0DA'}
+                uncheckedColor={'#00A0DA'}
+                onPressHandler={() => {
+                  setFieldValue(`${item.name}`, !values[item.name]);
+                  //   handleChange('checkbox');
+                }}
+              />
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Text
+                  style={{
+                    fontSize: scale(12),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: '#24262F',
+                  }}>
+                  {item.label}
+                </Text>
+              </View>
+            </View>
+            {errors[item?.name] && (
+              <Text
+                style={{
+                  fontSize: scale(10),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: 'red',
+                  marginLeft: scale(5),
+                  marginBottom: scale(5),
+                }}>
+                {errors[item?.name]}
+              </Text>
+            )}
+          </>
+        );
+      }
     }
   };
   const multiViewController = item => {
@@ -830,18 +838,18 @@ const PersonalDetails = props => {
               </Text>
               <CustomDropdownPicker
                 listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
-                open={values[item.content?.[0]?.isOpen]}
+                open={values[item.content?.[0]?.isOpenTitle]}
                 value={values[item.content?.[0]?.name]}
                 items={item.content?.[0]?.data}
                 setOpen={() => {
                   setFieldValue(
-                    `${item.content?.[0]?.isOpen}`,
-                    !values[item.content?.[0]?.isOpen],
+                    `${item.content?.[0]?.isOpenTitle}`,
+                    !values[item.content?.[0]?.isOpenTitle],
                   );
                 }}
-                // setValue={setSelectedValue}
-                // setItems={item.data}
-                onChangeValue={handleChange(`${item.content?.[0]?.name}`)}
+                onSelectItem={value => {
+                  setFieldValue(`${item.content?.[0]?.name}`, value.value);
+                }}
                 placeholder={item.content?.[0]?.placeholder || 'Select'}
                 placeholderStyle={
                   item.content?.[0]?.placeholderStyle || {

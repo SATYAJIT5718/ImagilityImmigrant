@@ -6,18 +6,12 @@ import {
   CustomCheckBox,
   CustomDropdownPicker,
   CustomRadioButton,
-  CustomDatePicker,
 } from '../../../../Infrastructure/CommonComponents/index';
 import PhoneInput from 'react-native-phone-number-input';
-import {
-  SafeAreaView,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import {SafeAreaView, KeyboardAvoidingView, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useFormik, Form} from 'formik';
+import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
@@ -27,11 +21,7 @@ import moment from 'moment';
 const PersonalDetails = props => {
   const navigation = useNavigation();
   const FormFields = PersonalDetailsJSON;
-  const [selectedValue, setSelectedValue] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
   const phoneInput = useRef(null);
-  const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(new Date());
 
   let initialValue = {};
 
@@ -131,8 +121,8 @@ const PersonalDetails = props => {
                     /^[^!@#$%^&*()\"/?'=+{}; :,<.>]*$/,
                     'Special character is not allowed',
                   )
-                  .min(10)
-                  .max(10)
+                  .min(10, 'Number should not be less than 10 Digit')
+                  .max(10, 'Number should not be more than 10 Digit')
                   .typeError("That doesn't look like a phone number")
                   .required(`${itemz?.errorTile} is required`)
               : yup.number();
@@ -379,17 +369,10 @@ const PersonalDetails = props => {
                   console.log('phone number', text);
                   console.log('values', values);
                 }}
-                // onChangeFormattedText={text => {
-                //   console.log('onChangeFormattedText', text);
-                // }}
                 onChangeCountry={value => {
                   console.log('selected country', value);
                   setFieldValue(`${item?.countryName}`, value.cca2);
                 }}
-                // withDarkTheme
-                // withShadow
-                // autoFocus55
-                // disableArrowIcon
                 containerStyle={{
                   width: '100%',
                   backgroundColor: 'white',
@@ -418,7 +401,6 @@ const PersonalDetails = props => {
                 }}
                 flagButtonStyle={{
                   height: scale(40),
-                  // backgroundColor: 'white',
                 }}
                 countryPickerButtonStyle={{}}
               />
@@ -449,7 +431,6 @@ const PersonalDetails = props => {
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                // marginTop: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
@@ -469,9 +450,6 @@ const PersonalDetails = props => {
               onSelectItem={value => {
                 setFieldValue(`${item.name}`, value.value);
               }}
-              // setValue={setSelectedValue}
-              // setItems={item.data}
-              // onChangeValue={handleChange(`${item.name}`)}
               placeholder={item.placeholder || 'Select'}
               placeholderStyle={
                 item.placeholderStyle || {
@@ -603,7 +581,6 @@ const PersonalDetails = props => {
           <View>
             <Text
               style={{
-                // marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
@@ -625,7 +602,6 @@ const PersonalDetails = props => {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  // marginBottom: scale(5),
                 }}>
                 <CustomInput
                   name={item.name}
@@ -635,11 +611,6 @@ const PersonalDetails = props => {
                     values[item?.name] === ''
                       ? ''
                       : moment(values[item?.name]).format('MM/DD/YYYY')
-                    // emptyDate === ''
-                    //   ? studentInfo?.dob
-                    //     ? moment(studentInfo?.dob).format('MM/DD/YYYY')
-                    //     : ''
-                    //   : dateformat
                   }
                   editable={false}
                   autoCorrect={false}
@@ -691,14 +662,13 @@ const PersonalDetails = props => {
                   `${item?.isOpenTitle}`,
                   !values[item?.isOpenTitle],
                 );
-                // setOpen(!open);
                 setFieldValue(`${item?.name}`, date);
-                // setDate(date);
-                console.log('date', date);
-                console.log('date2', new Date(date));
               }}
               onCancel={() => {
-                setOpen(false);
+                setFieldValue(
+                  `${item?.isOpenTitle}`,
+                  !values[item?.isOpenTitle],
+                );
               }}
             />
           </View>
@@ -720,7 +690,6 @@ const PersonalDetails = props => {
                 uncheckedColor={'#00A0DA'}
                 onPressHandler={() => {
                   setFieldValue(`${item.name}`, !values[item.name]);
-                  //   handleChange('checkbox');
                 }}
               />
               <View
@@ -886,7 +855,6 @@ const PersonalDetails = props => {
                   fontSize: scale(14),
                   fontFamily: 'SourceSansPro-Regular',
                   color: '#24262F',
-                  // marginTop: scale(5),
                 }}>
                 {item.content?.[0]?.label}
                 {item.content?.[0]?.required ? (
@@ -1029,7 +997,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                // value={item.value}
+                value={values[item.content?.[1]?.name]}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
@@ -1072,13 +1040,18 @@ const PersonalDetails = props => {
               </Text>
               <CustomDropdownPicker
                 listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
-                open={isOpen}
-                value={selectedValue}
+                open={values[item.content?.[1]?.isOpenTitle]}
+                value={values[item.content?.[1]?.name]}
                 items={item.content?.[1]?.data}
-                setOpen={setIsOpen}
-                setValue={setSelectedValue}
-                // setItems={item.data}
-                onChangeValue={handleChange(`${item.content?.[1]?.name}`)}
+                setOpen={() => {
+                  setFieldValue(
+                    `${item.content?.[1]?.isOpenTitle}`,
+                    !values[item.content?.[1]?.isOpenTitle],
+                  );
+                }}
+                onSelectItem={value => {
+                  setFieldValue(`${item.content?.[1]?.name}`, value.value);
+                }}
                 placeholder={item.content?.[1]?.placeholder || 'Select'}
                 placeholderStyle={
                   item.content?.[1]?.placeholderStyle || {

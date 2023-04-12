@@ -50,6 +50,7 @@ export const CustomDropdownPicker = props => {
   return (
     <DropDownPicker
       listMode={props.listMode}
+      searchable={props.searchable}
       open={props.open}
       value={props.value}
       items={props.items}

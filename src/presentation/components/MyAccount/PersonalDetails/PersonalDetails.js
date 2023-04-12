@@ -6,18 +6,12 @@ import {
   CustomCheckBox,
   CustomDropdownPicker,
   CustomRadioButton,
-  CustomDatePicker,
 } from '../../../../Infrastructure/CommonComponents/index';
 import PhoneInput from 'react-native-phone-number-input';
-import {
-  SafeAreaView,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import {SafeAreaView, KeyboardAvoidingView, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useFormik, Form} from 'formik';
+import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
@@ -27,11 +21,7 @@ import moment from 'moment';
 const PersonalDetails = props => {
   const navigation = useNavigation();
   const FormFields = PersonalDetailsJSON;
-  const [selectedValue, setSelectedValue] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
   const phoneInput = useRef(null);
-  const [open, setOpen] = useState(false);
-  const [date, setDate] = useState(new Date());
 
   let initialValue = {};
 
@@ -88,7 +78,7 @@ const PersonalDetails = props => {
         switch (itemz.type) {
           case 'text':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           case 'email':
@@ -96,13 +86,13 @@ const PersonalDetails = props => {
               ? yup
                   .string()
                   .email('Please enter valid Email')
-                  .required(`${itemz?.label} is required`)
+                  .required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           case 'multi':
             itemz?.content?.map(val => {
               schema[val?.name] = val?.required
-                ? yup.string().required(`${val?.label} is required`)
+                ? yup.string().required(`${val?.errorTile} is required`)
                 : yup.string();
             });
             break;
@@ -110,16 +100,16 @@ const PersonalDetails = props => {
             itemz.view === 'multi'
               ? itemz.content.map(val => {
                   schema[val?.name] = val?.required
-                    ? yup.string().required(`${val?.label} is required`)
+                    ? yup.string().required(`${val?.errorTile} is required`)
                     : yup.string();
                 })
               : (schema[itemz?.name] = itemz?.required
-                  ? yup.string().required(`${itemz?.label} is required`)
+                  ? yup.string().required(`${itemz?.errorTile} is required`)
                   : yup.string());
             break;
           case 'dropdown':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           case 'phoneInput':
@@ -131,25 +121,27 @@ const PersonalDetails = props => {
                     /^[^!@#$%^&*()\"/?'=+{}; :,<.>]*$/,
                     'Special character is not allowed',
                   )
-                  .min(10)
-                  .max(10)
+                  .min(10, 'Number should not be less than 10 Digit')
+                  .max(10, 'Number should not be more than 10 Digit')
                   .typeError("That doesn't look like a phone number")
-                  .required(`${itemz?.label} is required`)
+                  .required(`${itemz?.errorTile} is required`)
               : yup.number();
             break;
           case 'radio':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string().nullable();
             break;
           case 'checkbox':
             schema[itemz?.name] = itemz?.required
-              ? yup.boolean().oneOf([true], `You must accept ${itemz?.label}`)
+              ? yup
+                  .boolean()
+                  .oneOf([true], `You must accept ${itemz?.errorTile}`)
               : yup.boolean();
             break;
           case 'date':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           default:
@@ -210,10 +202,22 @@ const PersonalDetails = props => {
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
               value={values[item?.name]}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
-              style={item.style ? item.style : {}}
+              style={
+                item.style
+                  ? item.style
+                  : {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      height: item.multiline ? scale(60) : scale(40),
+                    }
+              }
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
               keyboardType={item.keyboardType || 'default'}
@@ -225,7 +229,6 @@ const PersonalDetails = props => {
                   fontFamily: 'SourceSansPro-Regular',
                   color: 'red',
                   marginLeft: scale(5),
-                  marginBottom: scale(5),
                 }}>
                 {errors[item?.name]}
               </Text>
@@ -242,7 +245,6 @@ const PersonalDetails = props => {
             }}>
             <Text
               style={{
-                marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
@@ -252,14 +254,26 @@ const PersonalDetails = props => {
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
             </Text>
             <CustomInput
-              name={item.name}
+              name={item?.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              //   value={values.email}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
-              style={item.style ? item.style : {}}
+              style={
+                item.style
+                  ? item.style
+                  : {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      marginBottom: 10,
+                      height: scale(40),
+                    }
+              }
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
             />
@@ -296,11 +310,22 @@ const PersonalDetails = props => {
               name={item.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              // value={item.value}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
-              style={item.style ? item.style : {}}
+              style={
+                item.style
+                  ? item.style
+                  : {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      height: item.multiline ? scale(60) : scale(40),
+                    }
+              }
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
             />
@@ -345,17 +370,10 @@ const PersonalDetails = props => {
                   console.log('phone number', text);
                   console.log('values', values);
                 }}
-                // onChangeFormattedText={text => {
-                //   console.log('onChangeFormattedText', text);
-                // }}
                 onChangeCountry={value => {
                   console.log('selected country', value);
                   setFieldValue(`${item?.countryName}`, value.cca2);
                 }}
-                // withDarkTheme
-                // withShadow
-                // autoFocus55
-                // disableArrowIcon
                 containerStyle={{
                   width: '100%',
                   backgroundColor: 'white',
@@ -384,7 +402,6 @@ const PersonalDetails = props => {
                 }}
                 flagButtonStyle={{
                   height: scale(40),
-                  // backgroundColor: 'white',
                 }}
                 countryPickerButtonStyle={{}}
               />
@@ -415,13 +432,13 @@ const PersonalDetails = props => {
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                // marginTop: scale(5),
               }}>
               {item.label}
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
             </Text>
             <CustomDropdownPicker
-              listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
+              listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
+              searchable={true}
               open={values[item?.isOpenTitle]}
               value={values[item?.name]}
               items={item.data}
@@ -434,9 +451,6 @@ const PersonalDetails = props => {
               onSelectItem={value => {
                 setFieldValue(`${item.name}`, value.value);
               }}
-              // setValue={setSelectedValue}
-              // setItems={item.data}
-              // onChangeValue={handleChange(`${item.name}`)}
               placeholder={item.placeholder || 'Select'}
               placeholderStyle={
                 item.placeholderStyle || {
@@ -568,7 +582,6 @@ const PersonalDetails = props => {
           <View>
             <Text
               style={{
-                marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
@@ -590,7 +603,6 @@ const PersonalDetails = props => {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: scale(5),
                 }}>
                 <CustomInput
                   name={item.name}
@@ -600,15 +612,20 @@ const PersonalDetails = props => {
                     values[item?.name] === ''
                       ? ''
                       : moment(values[item?.name]).format('MM/DD/YYYY')
-                    // emptyDate === ''
-                    //   ? studentInfo?.dob
-                    //     ? moment(studentInfo?.dob).format('MM/DD/YYYY')
-                    //     : ''
-                    //   : dateformat
                   }
                   editable={false}
                   autoCorrect={false}
-                  style={item.style || {}}
+                  style={
+                    item.style || {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      flex: 1,
+                      height: scale(40),
+                    }
+                  }
                 />
                 <AntDesign
                   name="calendar"
@@ -626,7 +643,6 @@ const PersonalDetails = props => {
                     fontSize: scale(10),
                     fontFamily: 'SourceSansPro-Regular',
                     color: 'red',
-                    marginLeft: scale(5),
                     marginBottom: scale(5),
                   }}>
                   {errors[item?.name]}
@@ -647,12 +663,13 @@ const PersonalDetails = props => {
                   `${item?.isOpenTitle}`,
                   !values[item?.isOpenTitle],
                 );
-                // setOpen(!open);
                 setFieldValue(`${item?.name}`, date);
-                // setDate(date);
               }}
               onCancel={() => {
-                setOpen(false);
+                setFieldValue(
+                  `${item?.isOpenTitle}`,
+                  !values[item?.isOpenTitle],
+                );
               }}
             />
           </View>
@@ -674,7 +691,6 @@ const PersonalDetails = props => {
                 uncheckedColor={'#00A0DA'}
                 onPressHandler={() => {
                   setFieldValue(`${item.name}`, !values[item.name]);
-                  //   handleChange('checkbox');
                 }}
               />
               <View
@@ -746,12 +762,23 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item?.content?.[0]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item?.content?.[0]?.value}
+                value={values[item?.content?.[0]?.name]}
                 onBlur={handleBlur(`${item?.content?.[0]?.name}`)}
                 onChangeText={handleChange(`${item?.content?.[0]?.name}`)}
                 autoCorrect={false}
                 style={
-                  item?.content?.[0]?.style ? item?.content?.[0]?.style : {}
+                  item?.content?.[0]?.style
+                    ? item?.content?.[0]?.style
+                    : {
+                        backgroundColor: 'white',
+                        borderColor: '#C3D0DE',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        height: item?.content?.[0]?.multiline
+                          ? scale(60)
+                          : scale(40),
+                      }
                 }
                 multiline={item?.content?.[0]?.multiline}
                 secureTextEntry={item?.content?.[0]?.secureTextEntry}
@@ -829,7 +856,6 @@ const PersonalDetails = props => {
                   fontSize: scale(14),
                   fontFamily: 'SourceSansPro-Regular',
                   color: '#24262F',
-                  // marginTop: scale(5),
                 }}>
                 {item.content?.[0]?.label}
                 {item.content?.[0]?.required ? (
@@ -914,7 +940,22 @@ const PersonalDetails = props => {
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
-                style={item.content?.[1]?.style ? item.content?.[1]?.style : {}}
+                style={
+                  item.content?.[1]?.style
+                    ? item.content?.[1]?.style
+                    : item?.content?.[0]?.style
+                    ? item?.content?.[0]?.style
+                    : {
+                        backgroundColor: 'white',
+                        borderColor: '#C3D0DE',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        height: item?.content?.[0]?.multiline
+                          ? scale(60)
+                          : scale(40),
+                      }
+                }
                 multiline={item.content?.[1]?.multiline}
                 secureTextEntry={item.content?.[1]?.secureTextEntry}
                 keyboardType={item.content?.[1]?.keyboardType || 'default'}
@@ -957,7 +998,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                // value={item.value}
+                value={values[item.content?.[1]?.name]}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
@@ -1000,13 +1041,18 @@ const PersonalDetails = props => {
               </Text>
               <CustomDropdownPicker
                 listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
-                open={isOpen}
-                value={selectedValue}
+                open={values[item.content?.[1]?.isOpenTitle]}
+                value={values[item.content?.[1]?.name]}
                 items={item.content?.[1]?.data}
-                setOpen={setIsOpen}
-                setValue={setSelectedValue}
-                // setItems={item.data}
-                onChangeValue={handleChange(`${item.content?.[1]?.name}`)}
+                setOpen={() => {
+                  setFieldValue(
+                    `${item.content?.[1]?.isOpenTitle}`,
+                    !values[item.content?.[1]?.isOpenTitle],
+                  );
+                }}
+                onSelectItem={value => {
+                  setFieldValue(`${item.content?.[1]?.name}`, value.value);
+                }}
                 placeholder={item.content?.[1]?.placeholder || 'Select'}
                 placeholderStyle={
                   item.content?.[1]?.placeholderStyle || {

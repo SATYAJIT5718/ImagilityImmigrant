@@ -202,7 +202,6 @@ const PersonalDetails = props => {
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
               value={values[item?.name]}
-              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}

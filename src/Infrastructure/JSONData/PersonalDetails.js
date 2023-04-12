@@ -20,9 +20,7 @@ export const PersonalDetailsJSON = {
               isOpenTitle: 'isTitleOpen',
               required: true,
               errorTile: 'Title',
-              isOpenTitle: 'isOpenTitle',
               placeholder: 'Select',
-              errorTile: 'Title',
               value: '',
               data: [
                 {
@@ -515,7 +513,6 @@ export const PersonalDetailsJSON = {
           label: 'Address1',
           type: 'text',
           placeholder: 'Enter',
-          value: 'fffff',
           secureTextEntry: false,
           required: true,
           multiline: true,

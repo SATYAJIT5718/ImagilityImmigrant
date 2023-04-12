@@ -63,6 +63,15 @@ const PersonalDetails = props => {
           initialValue[itemz.name] = '';
           initialValue[itemz.isOpenTitle] = itemz.isOpen;
           break;
+        case 'alias':
+          initialValue[itemz.name] = itemz.isSelected;
+          itemz.content.map(val => {
+            initialValue[val.name] = '';
+            val.type === 'dropdown'
+              ? (initialValue[val.isOpenTitle] = false)
+              : null;
+          });
+          break;
         // Add cases for other data types as needed
         default:
           // initialValue[itemz.name] = '';
@@ -144,6 +153,26 @@ const PersonalDetails = props => {
               ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
+          case 'alias':
+            schema[itemz?.name] = itemz?.required
+              ? yup.boolean().oneOf([true], `${itemz?.errorTile}`)
+              : yup.boolean();
+            schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[0]?.errorTile} is required`),
+                })
+              : yup.string();
+            schema[itemz?.content?.[1]?.name] = itemz?.content?.[1]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[1]?.errorTile} is required`),
+                })
+              : yup.string(); // schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required // ? yup.string().required('TOEFL Score Required') // : yup.string(); break;
           default:
             break;
         }
@@ -178,414 +207,139 @@ const PersonalDetails = props => {
   console.log('values', values);
 
   const singleViewController = item => {
-    {
-      if (item.type === 'text') {
-        return (
-          <View
-            key={item.id}
+    return (
+      <View
+        key={item.id}
+        style={{
+          flex: 1,
+        }}>
+        {item?.label !== '' && (
+          <Text
             style={{
-              flex: 1,
+              fontSize: scale(14),
+              fontFamily: 'SourceSansPro-Regular',
+              color: '#24262F',
+              marginVertical: scale(5),
             }}>
-            <Text
-              style={{
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-                marginVertical: scale(5),
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
-            <CustomInput
-              name={item.name}
-              placeholder={item.placeholder}
-              placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              value={values[item?.name]}
-              onBlur={handleBlur(`${item?.name}`)}
-              onChangeText={handleChange(`${item?.name}`)}
-              autoCorrect={false}
-              style={
-                item.style
-                  ? item.style
-                  : {
-                      backgroundColor: 'white',
-                      borderColor: '#C3D0DE',
-                      borderWidth: 1,
-                      borderRadius: 5,
-                      padding: 10,
-                      height: item.multiline ? scale(60) : scale(40),
-                    }
-              }
-              multiline={item.multiline}
-              secureTextEntry={item.secureTextEntry}
-              keyboardType={item.keyboardType || 'default'}
-            />
-            {touched[item?.name] && errors[item?.name] && (
-              <Text
-                style={{
-                  fontSize: scale(10),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: 'red',
-                  marginLeft: scale(5),
-                }}>
-                {errors[item?.name]}
-              </Text>
-            )}
-          </View>
-        );
-      }
-      if (item.type === 'email') {
-        return (
-          <View
-            key={item.id}
-            style={{
-              flex: 1,
-            }}>
-            <Text
-              style={{
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-                marginVertical: scale(5),
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
-            <CustomInput
-              name={item?.name}
-              placeholder={item.placeholder}
-              placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              value={values[item?.name]}
-              onBlur={handleBlur(`${item?.name}`)}
-              onChangeText={handleChange(`${item?.name}`)}
-              autoCorrect={false}
-              style={
-                item.style
-                  ? item.style
-                  : {
-                      backgroundColor: 'white',
-                      borderColor: '#C3D0DE',
-                      borderWidth: 1,
-                      borderRadius: 5,
-                      padding: 10,
-                      marginBottom: 10,
-                      height: scale(40),
-                    }
-              }
-              multiline={item.multiline}
-              secureTextEntry={item.secureTextEntry}
-            />
-            {touched[item?.name] && errors[item?.name] && (
-              <Text
-                style={{
-                  fontSize: scale(10),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: 'red',
-                  marginLeft: scale(5),
-                  marginBottom: scale(5),
-                }}>
-                {errors[item?.name]}
-              </Text>
-            )}
-          </View>
-        );
-      }
-      if (item.type === 'password') {
-        return (
-          <View key={item.id} style={{flex: 1, paddingLeft: scale(2)}}>
-            <Text
-              style={{
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-                marginVertical: scale(5),
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
-            <CustomInput
-              name={item.name}
-              placeholder={item.placeholder}
-              placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              value={values[item?.name]}
-              onBlur={handleBlur(`${item?.name}`)}
-              onChangeText={handleChange(`${item?.name}`)}
-              autoCorrect={false}
-              style={
-                item.style
-                  ? item.style
-                  : {
-                      backgroundColor: 'white',
-                      borderColor: '#C3D0DE',
-                      borderWidth: 1,
-                      borderRadius: 5,
-                      padding: 10,
-                      height: item.multiline ? scale(60) : scale(40),
-                    }
-              }
-              multiline={item.multiline}
-              secureTextEntry={item.secureTextEntry}
-            />
-            {touched[item?.name] && errors[item?.name] && (
-              <Text
-                style={{
-                  fontSize: scale(10),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: 'red',
-                  marginLeft: scale(5),
-                  marginBottom: scale(5),
-                }}>
-                {errors[item?.name]}
-              </Text>
-            )}
-          </View>
-        );
-      }
-      if (item.type === 'phoneInput') {
-        return (
-          <View key={item.id} style={{marginBottom: scale(5)}}>
-            <Text
-              style={{
-                marginVertical: scale(5),
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
-            <View>
-              <PhoneInput
-                ref={phoneInput}
-                defaultValue={values[item?.name]}
-                defaultCode={values[item?.countryName]}
-                // layout="second"
-                layout="first"
-                onChangeText={text => {
-                  setFieldValue(`${item?.name}`, text);
-                  console.log('phone number', text);
-                  console.log('values', values);
-                }}
-                onChangeCountry={value => {
-                  console.log('selected country', value);
-                  setFieldValue(`${item?.countryName}`, value.cca2);
-                }}
-                containerStyle={{
-                  width: '100%',
-                  backgroundColor: 'white',
-                  borderColor: '#C3D0DE',
-                  borderWidth: 1,
-                  borderRadius: 3,
-                  height: scale(40),
-                }}
-                textContainerStyle={{
-                  backgroundColor: 'white',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                }}
-                textInputStyle={{
-                  height: scale(40),
-                  fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: '#24262F',
-                }}
-                codeTextStyle={{
-                  paddingVertical: scale(10),
-                  height: scale(35),
-                  fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: '#4D4F5C',
-                }}
-                flagButtonStyle={{
-                  height: scale(40),
-                }}
-                countryPickerButtonStyle={{}}
-              />
-            </View>
-            {errors[item?.name] && (
-              <Text
-                style={{
-                  fontSize: scale(10),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: 'red',
-                  marginLeft: scale(5),
-                  marginBottom: scale(5),
-                }}>
-                {errors[item?.name]}
-              </Text>
-            )}
-          </View>
-        );
-      }
-      if (item.type === 'dropdown') {
-        return (
-          <View
-            key={item.id}
-            style={{zIndex: item.zIndex || 90, marginVertical: scale(5)}}>
-            <Text
-              style={{
-                marginBottom: scale(5),
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
-            <CustomDropdownPicker
-              listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
-              searchable={true}
-              open={values[item?.isOpenTitle]}
-              value={values[item?.name]}
-              items={item.data}
-              setOpen={() => {
-                setFieldValue(
-                  `${item?.isOpenTitle}`,
-                  !values[item?.isOpenTitle],
-                );
-              }}
-              onSelectItem={value => {
-                setFieldValue(`${item.name}`, value.value);
-              }}
-              placeholder={item.placeholder || 'Select'}
-              placeholderStyle={
-                item.placeholderStyle || {
-                  color: '#4D4F5C',
-                }
-              }
-              maxHeight={scale(250)}
-              style={
-                item.style || {
-                  minHeight: scale(40),
-                  borderRadius: scale(5),
-                  borderColor: '#C3D0DE',
-                  paddingVertical: -20,
-                  width: '100%',
-                  height: scale(40),
-                }
-              }
-            />
-            {touched[item.name] && errors[item.name] && (
-              <Text
-                style={{
-                  fontSize: scale(10),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: 'red',
-                  marginLeft: scale(5),
-                  marginBottom: scale(5),
-                }}>
-                {errors[item.name]}
-              </Text>
-            )}
-          </View>
-        );
-      }
-      if (item.type === 'radio') {
-        return (
-          <>
-            <View>
-              <Text
-                style={{
-                  fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: '#24262F',
-                  marginTop: scale(5),
-                }}>
-                {item.label}
-                {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-              </Text>
-              <CustomRadioButton
-                onValueChange={handleChange(`${item?.name}`)}
-                value={values[item?.name]}
-                itemList={item.data || []}
-                color="#0089CF"
-                uncheckedColor="grey"
-                radioTitleStyle={{
-                  fontSize: scale(14),
-                  color: '#4D4F5C',
-                  fontFamily: 'SourceSansPro-Regular',
-                }}
-              />
-              {touched[item?.name] && errors[item?.name] && (
-                <Text
-                  style={{
-                    fontSize: scale(10),
-                    fontFamily: 'SourceSansPro-Regular',
-                    color: 'red',
-                    marginLeft: scale(5),
-                    marginBottom: scale(5),
-                  }}>
-                  {errors[item?.name]}
-                </Text>
-              )}
-            </View>
-          </>
-        );
-      }
-      if (item.type === 'button') {
-        return (
-          <View key={item.id} style={{marginBottom: scale(5)}}>
-            <Text
-              style={{
-                marginBottom: scale(5),
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-                marginTop: scale(5),
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
-            <View style={{flexDirection: 'row'}}>
-              <CustomButton
-                buttonText={'Upload'}
-                buttonTextStyle={{
-                  fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-SemiBold',
-                  color: '#349beb',
-                }}
-                buttonStyle={{
-                  backgroundColor: '#fff',
-                  height: scale(35),
-                  width: scale(80),
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  borderRadius: scale(4),
-                  borderWidth: 1,
-                  borderColor: '#349beb',
-                }}
-                onPressHandler={() => {}}
-              />
-              {errors[item?.name] && (
-                <Text
-                  style={{
-                    fontSize: scale(10),
-                    fontFamily: 'SourceSansPro-Regular',
-                    color: 'red',
-                    marginLeft: scale(5),
-                    marginBottom: scale(5),
-                  }}>
-                  {errors[item?.name]}
-                </Text>
-              )}
-            </View>
-          </View>
-        );
-      }
-      if (item.type === 'date') {
-        return (
+            {item?.label}
+            {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+          </Text>
+        )}
+        {item.type === 'phoneInput' ? (
           <View>
-            <Text
-              style={{
+            <PhoneInput
+              ref={phoneInput}
+              defaultValue={values[item?.name]}
+              defaultCode={values[item?.countryName]}
+              // layout="second"
+              layout="first"
+              onChangeText={text => {
+                setFieldValue(`${item?.name}`, text);
+              }}
+              onChangeCountry={value => {
+                setFieldValue(`${item?.countryName}`, value.cca2);
+              }}
+              containerStyle={{
+                width: '100%',
+                backgroundColor: 'white',
+                borderColor: '#C3D0DE',
+                borderWidth: 1,
+                borderRadius: 3,
+                height: scale(40),
+              }}
+              textContainerStyle={{
+                backgroundColor: 'white',
+                justifyContent: 'center',
+                alignContent: 'center',
+              }}
+              textInputStyle={{
+                height: scale(40),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
-                marginVertical: scale(5),
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
+              }}
+              codeTextStyle={{
+                paddingVertical: scale(10),
+                height: scale(35),
+                fontSize: scale(14),
+                fontFamily: 'SourceSansPro-Regular',
+                color: '#4D4F5C',
+              }}
+              flagButtonStyle={{
+                height: scale(40),
+              }}
+              countryPickerButtonStyle={{}}
+            />
+          </View>
+        ) : item.type === 'dropdown' ? (
+          <CustomDropdownPicker
+            listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
+            searchable={true}
+            open={values[item?.isOpenTitle]}
+            value={values[item?.name]}
+            items={item.data}
+            setOpen={() => {
+              setFieldValue(`${item?.isOpenTitle}`, !values[item?.isOpenTitle]);
+            }}
+            onSelectItem={value => {
+              setFieldValue(`${item.name}`, value.value);
+            }}
+            placeholder={item.placeholder || 'Select'}
+            placeholderStyle={
+              item.placeholderStyle || {
+                color: '#4D4F5C',
+              }
+            }
+            maxHeight={scale(250)}
+            style={
+              item.style || {
+                minHeight: scale(40),
+                borderRadius: scale(5),
+                borderColor: '#C3D0DE',
+                paddingVertical: -20,
+                width: '100%',
+                height: scale(40),
+              }
+            }
+          />
+        ) : item.type === 'radio' ? (
+          <CustomRadioButton
+            onValueChange={handleChange(`${item?.name}`)}
+            value={values[item?.name]}
+            itemList={item.data || []}
+            color="#0089CF"
+            uncheckedColor="grey"
+            radioTitleStyle={{
+              fontSize: scale(14),
+              color: '#4D4F5C',
+              fontFamily: 'SourceSansPro-Regular',
+            }}
+          />
+        ) : item.type === 'button' ? (
+          <View style={{flexDirection: 'row'}}>
+            <CustomButton
+              buttonText={'Upload'}
+              buttonTextStyle={{
+                fontSize: scale(14),
+                fontFamily: 'SourceSansPro-SemiBold',
+                color: '#349beb',
+              }}
+              buttonStyle={{
+                backgroundColor: '#fff',
+                height: scale(35),
+                width: scale(80),
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                borderRadius: scale(4),
+                borderWidth: 1,
+                borderColor: '#349beb',
+              }}
+              onPressHandler={() => {}}
+            />
+          </View>
+        ) : item.type === 'date' ? (
+          <View>
             <TouchableOpacity
               onPress={() => {
                 setFieldValue(
@@ -633,17 +387,6 @@ const PersonalDetails = props => {
                   }}
                 />
               </View>
-              {touched[item?.name] && errors[item?.name] && (
-                <Text
-                  style={{
-                    fontSize: scale(10),
-                    fontFamily: 'SourceSansPro-Regular',
-                    color: 'red',
-                    marginBottom: scale(5),
-                  }}>
-                  {errors[item?.name]}
-                </Text>
-              )}
             </TouchableOpacity>
             <DatePicker
               modal
@@ -669,10 +412,38 @@ const PersonalDetails = props => {
               }}
             />
           </View>
-        );
-      }
-      if (item.type === 'checkbox') {
-        return (
+        ) : item.type === 'checkbox' ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginBottom: scale(5),
+            }}>
+            <CustomCheckBox
+              name={item.name}
+              status={values[item?.name]}
+              color={'#00A0DA'}
+              uncheckedColor={'#00A0DA'}
+              onPressHandler={() => {
+                setFieldValue(`${item.name}`, !values[item.name]);
+              }}
+            />
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}>
+              <Text
+                style={{
+                  fontSize: scale(12),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: '#24262F',
+                }}>
+                {item.label}
+              </Text>
+            </View>
+          </View>
+        ) : item.type === 'alias' ? (
           <>
             <View
               style={{
@@ -689,11 +460,7 @@ const PersonalDetails = props => {
                   setFieldValue(`${item.name}`, !values[item.name]);
                 }}
               />
-              <View
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
+              <View style={{alignItems: 'center', flexDirection: 'row'}}>
                 <Text
                   style={{
                     fontSize: scale(12),
@@ -704,22 +471,50 @@ const PersonalDetails = props => {
                 </Text>
               </View>
             </View>
-            {errors[item?.name] && (
-              <Text
-                style={{
-                  fontSize: scale(10),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: 'red',
-                  marginLeft: scale(5),
-                  marginBottom: scale(5),
-                }}>
-                {errors[item?.name]}
-              </Text>
-            )}
+            {values[item?.name] ? multiViewController(item) : null}
           </>
-        );
-      }
-    }
+        ) : item.type === 'text' ||
+          item.type === 'email' ||
+          item.type === 'password' ? (
+          <CustomInput
+            name={item.name}
+            placeholder={item.placeholder}
+            placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
+            value={values[item?.name]}
+            onBlur={handleBlur(`${item?.name}`)}
+            onChangeText={handleChange(`${item?.name}`)}
+            autoCorrect={false}
+            style={
+              item.style
+                ? item.style
+                : {
+                    backgroundColor: 'white',
+                    borderColor: '#C3D0DE',
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    padding: 10,
+                    height: item.multiline ? scale(60) : scale(40),
+                  }
+            }
+            multiline={item.multiline}
+            secureTextEntry={item.secureTextEntry}
+            keyboardType={item.keyboardType || 'default'}
+          />
+        ) : null}
+        {touched[item?.name] && errors[item?.name] && (
+          <Text
+            style={{
+              fontSize: scale(10),
+              fontFamily: 'SourceSansPro-Regular',
+              color: 'red',
+              marginLeft: scale(5),
+              marginTop: scale(5),
+            }}>
+            {errors[item?.name]}
+          </Text>
+        )}
+      </View>
+    );
   };
   const multiViewController = item => {
     return (
@@ -818,7 +613,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[0]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item.content?.[0]?.value}
+                value={values[item.content?.[0]?.name]}
                 onBlur={handleBlur(`${item.content?.[0]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[0]?.name}`)}
                 autoCorrect={false}
@@ -933,7 +728,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item.content?.[1]?.value}
+                value={values[item?.content?.[1]?.name]}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}

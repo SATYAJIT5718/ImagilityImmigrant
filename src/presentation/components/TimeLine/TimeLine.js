@@ -19,6 +19,7 @@ import {
   TimeLineH1BDate,
 } from '../../../Infrastructure/Data/TimeLineData';
 import NoDataFound from '../../../Infrastructure/component/NoDataFound/NoDataFound';
+import DynamicGrid from '../Grid/DynamicGrid';
 const TimeLineComponent = props => {
   const [status, setStatus] = useState(false);
   const [logInFirst, setLogInFirst] = useState(false);
@@ -142,6 +143,7 @@ const TimeLineComponent = props => {
           </View>
         </View>
         {/* <Advertisement /> */}
+        <DynamicGrid />
       </ScrollView>
       {/* </ImageBackground> */}
     </SafeAreaView>

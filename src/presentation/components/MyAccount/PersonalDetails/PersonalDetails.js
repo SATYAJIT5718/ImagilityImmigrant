@@ -88,7 +88,7 @@ const PersonalDetails = props => {
         switch (itemz.type) {
           case 'text':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           case 'email':
@@ -96,13 +96,13 @@ const PersonalDetails = props => {
               ? yup
                   .string()
                   .email('Please enter valid Email')
-                  .required(`${itemz?.label} is required`)
+                  .required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           case 'multi':
             itemz?.content?.map(val => {
               schema[val?.name] = val?.required
-                ? yup.string().required(`${val?.label} is required`)
+                ? yup.string().required(`${val?.errorTile} is required`)
                 : yup.string();
             });
             break;
@@ -110,16 +110,16 @@ const PersonalDetails = props => {
             itemz.view === 'multi'
               ? itemz.content.map(val => {
                   schema[val?.name] = val?.required
-                    ? yup.string().required(`${val?.label} is required`)
+                    ? yup.string().required(`${val?.errorTile} is required`)
                     : yup.string();
                 })
               : (schema[itemz?.name] = itemz?.required
-                  ? yup.string().required(`${itemz?.label} is required`)
+                  ? yup.string().required(`${itemz?.errorTile} is required`)
                   : yup.string());
             break;
           case 'dropdown':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           case 'phoneInput':
@@ -134,22 +134,24 @@ const PersonalDetails = props => {
                   .min(10)
                   .max(10)
                   .typeError("That doesn't look like a phone number")
-                  .required(`${itemz?.label} is required`)
+                  .required(`${itemz?.errorTile} is required`)
               : yup.number();
             break;
           case 'radio':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string().nullable();
             break;
           case 'checkbox':
             schema[itemz?.name] = itemz?.required
-              ? yup.boolean().oneOf([true], `You must accept ${itemz?.label}`)
+              ? yup
+                  .boolean()
+                  .oneOf([true], `You must accept ${itemz?.errorTile}`)
               : yup.boolean();
             break;
           case 'date':
             schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.label} is required`)
+              ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
           default:
@@ -209,11 +211,22 @@ const PersonalDetails = props => {
               name={item.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              value={item.value}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
-              style={item.style ? item.style : {}}
+              style={
+                item.style
+                  ? item.style
+                  : {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      height: item.multiline ? scale(60) : scale(40),
+                    }
+              }
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
               keyboardType={item.keyboardType || 'default'}
@@ -225,7 +238,6 @@ const PersonalDetails = props => {
                   fontFamily: 'SourceSansPro-Regular',
                   color: 'red',
                   marginLeft: scale(5),
-                  marginBottom: scale(5),
                 }}>
                 {errors[item?.name]}
               </Text>
@@ -242,7 +254,6 @@ const PersonalDetails = props => {
             }}>
             <Text
               style={{
-                marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
@@ -252,14 +263,26 @@ const PersonalDetails = props => {
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
             </Text>
             <CustomInput
-              name={item.name}
+              name={item?.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              //   value={values.email}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
-              style={item.style ? item.style : {}}
+              style={
+                item.style
+                  ? item.style
+                  : {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      marginBottom: 10,
+                      height: scale(40),
+                    }
+              }
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
             />
@@ -296,11 +319,22 @@ const PersonalDetails = props => {
               name={item.name}
               placeholder={item.placeholder}
               placeholderTextColor={item.placeholderTextColor || '#4D4F5C'}
-              // value={item.value}
+              value={values[item?.name]}
               onBlur={handleBlur(`${item?.name}`)}
               onChangeText={handleChange(`${item?.name}`)}
               autoCorrect={false}
-              style={item.style ? item.style : {}}
+              style={
+                item.style
+                  ? item.style
+                  : {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      height: item.multiline ? scale(60) : scale(40),
+                    }
+              }
               multiline={item.multiline}
               secureTextEntry={item.secureTextEntry}
             />
@@ -421,7 +455,8 @@ const PersonalDetails = props => {
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
             </Text>
             <CustomDropdownPicker
-              listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
+              listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
+              searchable={true}
               open={values[item?.isOpenTitle]}
               value={values[item?.name]}
               items={item.data}
@@ -568,7 +603,7 @@ const PersonalDetails = props => {
           <View>
             <Text
               style={{
-                marginBottom: scale(5),
+                // marginBottom: scale(5),
                 fontSize: scale(14),
                 fontFamily: 'SourceSansPro-Regular',
                 color: '#24262F',
@@ -590,7 +625,7 @@ const PersonalDetails = props => {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  marginBottom: scale(5),
+                  // marginBottom: scale(5),
                 }}>
                 <CustomInput
                   name={item.name}
@@ -608,7 +643,17 @@ const PersonalDetails = props => {
                   }
                   editable={false}
                   autoCorrect={false}
-                  style={item.style || {}}
+                  style={
+                    item.style || {
+                      backgroundColor: 'white',
+                      borderColor: '#C3D0DE',
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      flex: 1,
+                      height: scale(40),
+                    }
+                  }
                 />
                 <AntDesign
                   name="calendar"
@@ -626,7 +671,6 @@ const PersonalDetails = props => {
                     fontSize: scale(10),
                     fontFamily: 'SourceSansPro-Regular',
                     color: 'red',
-                    marginLeft: scale(5),
                     marginBottom: scale(5),
                   }}>
                   {errors[item?.name]}
@@ -748,12 +792,23 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item?.content?.[0]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item?.content?.[0]?.value}
+                value={values[item?.content?.[0]?.name]}
                 onBlur={handleBlur(`${item?.content?.[0]?.name}`)}
                 onChangeText={handleChange(`${item?.content?.[0]?.name}`)}
                 autoCorrect={false}
                 style={
-                  item?.content?.[0]?.style ? item?.content?.[0]?.style : {}
+                  item?.content?.[0]?.style
+                    ? item?.content?.[0]?.style
+                    : {
+                        backgroundColor: 'white',
+                        borderColor: '#C3D0DE',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        height: item?.content?.[0]?.multiline
+                          ? scale(60)
+                          : scale(40),
+                      }
                 }
                 multiline={item?.content?.[0]?.multiline}
                 secureTextEntry={item?.content?.[0]?.secureTextEntry}
@@ -916,7 +971,22 @@ const PersonalDetails = props => {
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
-                style={item.content?.[1]?.style ? item.content?.[1]?.style : {}}
+                style={
+                  item.content?.[1]?.style
+                    ? item.content?.[1]?.style
+                    : item?.content?.[0]?.style
+                    ? item?.content?.[0]?.style
+                    : {
+                        backgroundColor: 'white',
+                        borderColor: '#C3D0DE',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        height: item?.content?.[0]?.multiline
+                          ? scale(60)
+                          : scale(40),
+                      }
+                }
                 multiline={item.content?.[1]?.multiline}
                 secureTextEntry={item.content?.[1]?.secureTextEntry}
                 keyboardType={item.content?.[1]?.keyboardType || 'default'}

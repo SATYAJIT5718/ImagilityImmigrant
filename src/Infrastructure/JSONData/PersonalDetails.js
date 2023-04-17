@@ -17,7 +17,6 @@ export const PersonalDetailsJSON = {
               type: 'dropdown',
               isOpenTitle: 'isTitleOpen',
               required: true,
-              placeholder: 'Select',
               errorTile: 'Title',
               value: 'Mr.',
               data: [
@@ -448,7 +447,6 @@ export const PersonalDetailsJSON = {
           label: 'Address1',
           type: 'text',
           placeholder: 'Enter',
-          value: 'fffff',
           secureTextEntry: false,
           required: true,
           multiline: true,

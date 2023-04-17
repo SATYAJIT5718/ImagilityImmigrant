@@ -8,6 +8,7 @@ import {useNavigation} from '@react-navigation/native';
 import LOGOSVG from '../../Infrastructure/assets/images/splashScreenLogo.svg';
 import ComingSoon from '../component/ComingSoon/ComingSoon';
 import TimeLineComponent from '../../presentation/components/TimeLine/TimeLine';
+import {scale} from '../utils/screenUtility';
 const HomeStack = createStackNavigator();
 const HeaderLeft = props => {
   return (
@@ -58,6 +59,65 @@ const HomeNavigator = props => {
                 </TouchableOpacity>
               ),
               // headerTitle: props => <HearderTitle {...props} />,
+            }}
+          />
+          <HomeStack.Screen
+            name="VisaOverView"
+            component={ComingSoon}
+            options={({route}) => ({
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(16),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+              title: route.params.title,
+            })}
+          />
+          <HomeStack.Screen
+            name="NextStepsInYourJourney"
+            component={ComingSoon}
+            options={{
+              title: 'Next Steps in your Journey',
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(16),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="FindUniversity"
+            component={ComingSoon}
+            options={{
+              title: 'Universities',
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(16),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="Resources"
+            component={ComingSoon}
+            options={{
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(16),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
             }}
           />
         </>

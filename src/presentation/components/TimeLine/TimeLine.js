@@ -4,7 +4,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  ImageBackground,
+  Alert,
 } from 'react-native';
 import {scale} from '../../../Infrastructure/utils/screenUtility';
 import {useNavigation} from '@react-navigation/native';
@@ -16,7 +16,8 @@ import {connect} from 'react-redux';
 import {
   TimeLineStudentDate,
   TimeLineH1BDate,
-} from '../../../Infrastructure/Data/TimeLineData';
+} from '../../../Infrastructure/JSONData/TimeLineData';
+import NoDataFound from '../../../Infrastructure/component/NoDataFound/NoDataFound';
 const TimeLineComponent = props => {
   const [status, setStatus] = useState(false);
   const [logInFirst, setLogInFirst] = useState(false);
@@ -34,8 +35,7 @@ const TimeLineComponent = props => {
     // navigation.navigate('ComingSoon');
     navigation.navigate('My Account');
   };
-  // const renderaData = TimeLineStudentDate;
-  const renderaData = TimeLineH1BDate;
+  const [renderaData, setRenderData] = useState(TimeLineStudentDate);
 
   const renderItem = item => {
     return (
@@ -66,6 +66,41 @@ const TimeLineComponent = props => {
       </>
     );
   };
+  const Timeline = () => {
+    setStatus(true);
+    setTimeout(() => {
+      setStatus(false);
+      setRenderData(TimeLineH1BDate);
+    }, 1000);
+  };
+  const showAlert = () => {
+    Alert.alert(
+      'Imagility',
+      'Congratulation! you are aligible for H1B visa, Are you want to go with H1B visa?',
+      [
+        {
+          text: 'No',
+          onPress: () => console.log('close'),
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => {
+            Timeline();
+          },
+        },
+      ],
+      {cancelable: false},
+    );
+  };
+  // useEffect(() => {
+  //   setStatus(true);
+  //   setTimeout(() => {
+  //     setStatus(false);
+  //     showAlert();
+  //   }, 1000);
+  // }, []);
+
   return (
     <SafeAreaView style={{backgroundColor: '#F3F3F3', flex: 1}}>
       <Loader status={status} />
@@ -95,16 +130,18 @@ const TimeLineComponent = props => {
               }
             />
           </View>
-          <View>
-            {renderaData?.length > 0 &&
+          <View style={{flex: 1}}>
+            {renderaData?.length > 0 ? (
               renderaData.map(item => {
                 return renderItem(item);
-              })}
+              })
+            ) : (
+              <NoDataFound Text="No Data Found" />
+            )}
           </View>
         </View>
         {/* <Advertisement /> */}
       </ScrollView>
-      {/* </ImageBackground> */}
     </SafeAreaView>
   );
 };

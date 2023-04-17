@@ -239,6 +239,26 @@ const PersonalDetails = props => {
               ? yup.string().required(`${itemz?.errorTile} is required`)
               : yup.string();
             break;
+          case 'alias':
+            schema[itemz?.name] = itemz?.required
+              ? yup.boolean().oneOf([true], `${itemz?.errorTile}`)
+              : yup.boolean();
+            schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[0]?.errorTile} is required`),
+                })
+              : yup.string();
+            schema[itemz?.content?.[1]?.name] = itemz?.content?.[1]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[1]?.errorTile} is required`),
+                })
+              : yup.string(); // schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required // ? yup.string().required('TOEFL Score Required') // : yup.string(); break;
           default:
             break;
         }
@@ -675,16 +695,6 @@ const PersonalDetails = props => {
       if (item.type === 'date') {
         return (
           <View>
-            <Text
-              style={{
-                fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-                color: '#24262F',
-                marginVertical: scale(5),
-              }}>
-              {item.label}
-              {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-            </Text>
             <TouchableOpacity
               onPress={() => {
                 setFieldValue(
@@ -732,17 +742,6 @@ const PersonalDetails = props => {
                   }}
                 />
               </View>
-              {touched[item?.name] && errors[item?.name] && (
-                <Text
-                  style={{
-                    fontSize: scale(10),
-                    fontFamily: 'SourceSansPro-Regular',
-                    color: 'red',
-                    marginBottom: scale(5),
-                  }}>
-                  {errors[item?.name]}
-                </Text>
-              )}
             </TouchableOpacity>
             <DatePicker
               modal
@@ -1318,7 +1317,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[0]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item.content?.[0]?.value}
+                value={values[item.content?.[0]?.name]}
                 onBlur={handleBlur(`${item.content?.[0]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[0]?.name}`)}
                 autoCorrect={false}
@@ -1433,7 +1432,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={values[item.content?.[1]?.name]}
+                value={values[item?.content?.[1]?.name]}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}

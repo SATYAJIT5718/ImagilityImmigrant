@@ -1,34 +1,38 @@
-import {View, KeyboardAvoidingView, ScrollView, Platform} from 'react-native';
-import React from 'react';
-import styles from '../styles';
-import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useState} from 'react';
-import {Formik} from 'formik';
-import * as yup from 'yup';
-import LicensesorCertificationsDetails from './LicensesorCertificationsDetails';
-import TopicsCovered from './TopicsCovered';
-import RelatedDocument from './RelatedDocument/RelatedDocument';
+import { View, KeyboardAvoidingView, ScrollView } from "react-native";
+import React from "react";
+import styles from "../styles";
+import { scale } from "../../../../Infrastructure/utils/screenUtility";
+import { useState } from "react";
+import { Formik } from "formik";
+import * as yup from "yup";
+import LicensesorCertificationsDetails from "./LicensesorCertificationsDetails";
+import TopicsCovered from "./TopicsCovered";
+import RelatedDocument from "./RelatedDocument/RelatedDocument";
+import LifeCycleAccordion from "../../../../Infrastructure/component/lifeCycleAccordion/LifeCycleAccordion";
 import {
   sendCertificationsInfo,
   getCertificationsInfo,
-} from '../../../../application/store/actions/sponsorDetails';
-import {connect} from 'react-redux';
-import {getAuthToken} from '../../../../Infrastructure/utils/storageUtility';
-import Toast from 'react-native-simple-toast';
-import Loader from '../../../../Infrastructure/component/Loader/Loader';
-import EducationAccordion from '../../../../Infrastructure/component/EducatonAccordion/EducationAccordion';
+} from "../../../../application/store/actions/student";
+import { connect } from "react-redux";
+import {
+  getAuthToken,
+  getBeneficiaryUserID,
+} from "../../../../Infrastructure/utils/storageUtility";
+import Toast from "react-native-simple-toast";
+import Loader from "../../../../Infrastructure/component/Loader/Loader";
+import EducationAccordion from "../../../../Infrastructure/component/EducatonAccordion/EducationAccordion";
 const ValidationSchema = yup.object().shape({
-  name: yup.string().required('Name Required'),
+  name: yup.string().required("Name Required"),
   subjects: yup.string(),
-  institution: yup.string().required('Institution Required'),
-  startDate: yup.string().required('Start Date Required'),
-  endDate: yup.string().when('credential', {
-    is: credential => credential === true,
-    then: yup.string().required('End Date Required'),
+  institution: yup.string().required("Institution Required"),
+  startDate: yup.string().required("Start Date Required"),
+  endDate: yup.string().when("credential", {
+    is: (credential) => credential === true,
+    then: yup.string().required("End Date Required"),
   }),
 });
-const CertificationsDetails = props => {
-  const [apidDataToShow, setApidDataToShow] = useState('');
+const CertificationsDetails = (props) => {
+  const [apidDataToShow, setApidDataToShow] = useState("");
   const [certificationsId, setCertificationsId] = useState();
   const [courseList, setCourseList] = useState(null);
   const [trainingDetailsToggle, setTrainingDetailsToggle] = useState(true);
@@ -43,14 +47,10 @@ const CertificationsDetails = props => {
   const [relatedDcoDisabled, setRelatedDcoDisabled] = useState(
     props.route?.params?.item ? false : true,
   );
-  const beneficiaryInfo = props?.userInformation?.data;
-  const familyId = props?.indivisualFamilyInfo?.data?.id
-    ? props.indivisualFamilyInfo.data.id
-    : null;
-  const formSubmitHandler = async formData => {
+  const formSubmitHandler = async (formData) => {
     setStatus(true);
     const token = await getAuthToken();
-    const beneficiaryId = beneficiaryInfo.id;
+    const beneficiaryId = await getBeneficiaryUserID();
     const payload = {
       id: props.route?.params?.item?.id
         ? props.route.params.item.id
@@ -64,18 +64,15 @@ const CertificationsDetails = props => {
       endDate: formData.endDate,
     };
     await props
-      .sendCertificationsData(token, payload, beneficiaryId, familyId)
-      .then(res => {
-        console.log('sendCertificationsData--', res);
-
+      .sendCertificationsData(token, payload, beneficiaryId)
+      .then((res) => {
         setApidDataToShow(res.data.profEducation);
         props
-          .getCertificationsData(token, beneficiaryId, familyId)
-          .then(res => {
-            console.log('getCertificationsData--', res);
+          .getCertificationsData(token, beneficiaryId)
+          .then((res) => {
             setStatus(false);
           })
-          .catch(e => {
+          .catch((e) => {
             setStatus(false);
           });
         setCourseList(res.data.profEducation[0]);
@@ -87,17 +84,17 @@ const CertificationsDetails = props => {
         }
         Toast.show(res.message);
       })
-      .catch(error => {
+      .catch((error) => {
         setStatus(false);
-        Toast.show(error?.message ? error.message : 'Something went wrong');
+        Toast.show(error?.message ? error.message : "Something went wrong");
       });
   };
-  const toggleExpand = title => {
-    if (title == 'Licenses or Certifications Details') {
+  const toggleExpand = (title) => {
+    if (title == "Licenses or Certifications Details") {
       setLicensesExpanded(!licensesExpanded);
-    } else if (title == 'Topics Covered') {
+    } else if (title == "Topics Covered") {
       setRelatedCoveredExpanded(!relatedCoveredExpanded);
-    } else if (title == 'Related Documents') {
+    } else if (title == "Related Documents") {
       setRelatedDocExpanded(!relatedDocExpanded);
     }
   };
@@ -112,39 +109,41 @@ const CertificationsDetails = props => {
     <>
       <Loader status={status} />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        behavior={Platform.OS === "ios" ? "padding" : null}
         style={{
           flex: 1,
           paddingHorizontal: scale(10),
           paddingVertical: scale(10),
-          backgroundColor: '#FFFFFF',
-        }}>
+          backgroundColor: "#FFFFFF",
+        }}
+      >
         <ScrollView>
           <Formik
             initialValues={{
               name: props.route?.params?.item?.name
                 ? props.route.params.item.name
-                : '',
+                : "",
               subjects: props.route?.params?.item?.subjects
                 ? props.route.params.item.subjects
-                : '',
+                : "",
               institution: props.route?.params?.item?.institution
                 ? props.route.params.item.institution
-                : '',
+                : "",
               startDate: props.route?.params?.item?.startDate
                 ? props.route.params.item.startDate
-                : '',
+                : "",
               endDate: props.route?.params?.item?.endDate
                 ? props.route.params.item.endDate
-                : '',
+                : "",
               credential:
                 props.route?.params?.item?.endDate === null ? false : true,
             }}
             enableReinitialize={true}
             validateOnBlur={true}
             validateOnChange={true}
-            onSubmit={values => formSubmitHandler(values)}
-            validationSchema={ValidationSchema}>
+            onSubmit={(values) => formSubmitHandler(values)}
+            validationSchema={ValidationSchema}
+          >
             {({
               handleChange,
               handleBlur,
@@ -160,7 +159,7 @@ const CertificationsDetails = props => {
                   <View style={styles.dashedLine} />
 
                   <EducationAccordion
-                    title={'Licenses or Certifications Details'}
+                    title={"Licenses or Certifications Details"}
                     data={
                       <LicensesorCertificationsDetails
                         values={values}
@@ -175,13 +174,13 @@ const CertificationsDetails = props => {
                         editData={
                           props.route?.params?.item
                             ? props.route.params.item
-                            : ''
+                            : ""
                         }
                         trainingtoggleExpand={trainingtoggleExpand}
                       />
                     }
                     style={{
-                      body: {marginHorizontal: scale(10)},
+                      body: { marginHorizontal: scale(10) },
                     }}
                     expanded={licensesExpanded}
                     removeEdit={true}
@@ -191,7 +190,7 @@ const CertificationsDetails = props => {
                   <View style={styles.dashedLine} />
 
                   <EducationAccordion
-                    title={'Topics Covered'}
+                    title={"Topics Covered"}
                     data={
                       <TopicsCovered
                         setFieldValue={setFieldValue}
@@ -207,7 +206,7 @@ const CertificationsDetails = props => {
                       />
                     }
                     style={{
-                      body: {marginHorizontal: scale(10)},
+                      body: { marginHorizontal: scale(10) },
                     }}
                     removeEdit={true}
                     expanded={relatedCoveredExpanded}
@@ -217,7 +216,7 @@ const CertificationsDetails = props => {
                   <View style={styles.dashedLine} />
 
                   <EducationAccordion
-                    title={'Related Documents'}
+                    title={"Related Documents"}
                     data={
                       <RelatedDocument
                         values={values}
@@ -232,12 +231,12 @@ const CertificationsDetails = props => {
                             ? props.route.params.item.id
                             : certificationsId
                             ? certificationsId
-                            : ''
+                            : ""
                         }
                       />
                     }
                     style={{
-                      body: {marginHorizontal: scale(10)},
+                      body: { marginHorizontal: scale(10) },
                     }}
                     expanded={relatedDocExpanded}
                     removeEdit={true}
@@ -255,19 +254,13 @@ const CertificationsDetails = props => {
   );
 };
 
-const mapStateToProps = ({
-  beneficiaryFamilyReducer: {indivisualFamilyInfo},
-  timeLine: {userInformation},
-}) => ({
-  indivisualFamilyInfo,
-  userInformation,
-});
+const mapStateToProps = null;
 
 const mapDispatchToProps = {
-  sendCertificationsData: (authToken, payload, beneficiaryId, familyId) =>
-    sendCertificationsInfo(authToken, payload, beneficiaryId, familyId),
-  getCertificationsData: (authToken, beneficiaryId, familyId) =>
-    getCertificationsInfo(authToken, beneficiaryId, familyId),
+  sendCertificationsData: (authToken, payload, beneficiaryId) =>
+    sendCertificationsInfo(authToken, payload, beneficiaryId),
+  getCertificationsData: (authToken, beneficiaryId) =>
+    getCertificationsInfo(authToken, beneficiaryId),
 };
 
 export default connect(

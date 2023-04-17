@@ -1,12 +1,13 @@
-import {View, Text, TouchableOpacity, Modal, Pressable} from 'react-native';
-import React, {useState} from 'react';
-import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import styles from '../styles';
-import TagInput from 'react-native-tags-input';
-import {sendEducationInfo} from '../../../../application/store/actions/sponsorDetails';
-import {connect} from 'react-redux';
-import Toast from 'react-native-simple-toast';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import { View, Text, TouchableOpacity, Modal, Pressable } from "react-native";
+import React, { useState } from "react";
+import { scale } from "../../../../Infrastructure/utils/screenUtility";
+import styles from "../styles";
+import { CustomButton } from "../../../../Infrastructure/component/Custom";
+import TagInput from "react-native-tags-input";
+import { sendEducationInfo } from "../../../../application/store/actions/student";
+import { connect } from "react-redux";
+import Toast from "react-native-simple-toast";
+import AntDesign from "react-native-vector-icons/AntDesign";
 
 const TopicsCovered = ({
   handleSubmit,
@@ -15,34 +16,34 @@ const TopicsCovered = ({
   courseToggle,
 }) => {
   const [tags, setTags] = useState({
-    tag: '',
+    tag: "",
     tagsArray: [],
   });
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItem, setSelectedItem] = useState("");
   const data = editData?.subjects
-    ? editData.subjects.split(',').map((item, index) => {
-        return {id: index, subjects: item};
+    ? editData.subjects.split(",").map((item, index) => {
+        return { id: index, subjects: item };
       })
     : [];
-  const [errorMessage, setErrorMessage] = useState('');
-  const updateTagState = state => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const updateTagState = (state) => {
     if (
-      state.tagsArray.includes(' ') ||
-      state.tagsArray.includes('  ') ||
-      state.tagsArray.includes('   ') ||
-      state.tagsArray.includes('    ') ||
-      state.tagsArray.includes('     ') ||
-      state.tagsArray.includes('      ') ||
-      state.tagsArray.includes('       ') ||
-      state.tagsArray.includes('        ') ||
-      state.tagsArray.includes('         ') ||
-      state.tagsArray.includes('          ') ||
-      state.tagsArray.includes('           ')
+      state.tagsArray.includes(" ") ||
+      state.tagsArray.includes("  ") ||
+      state.tagsArray.includes("   ") ||
+      state.tagsArray.includes("    ") ||
+      state.tagsArray.includes("     ") ||
+      state.tagsArray.includes("      ") ||
+      state.tagsArray.includes("       ") ||
+      state.tagsArray.includes("        ") ||
+      state.tagsArray.includes("         ") ||
+      state.tagsArray.includes("          ") ||
+      state.tagsArray.includes("           ")
     ) {
-      setErrorMessage('Please enter Valid Curses Name');
+      setErrorMessage("Please enter Valid Curses Name");
     } else {
-      setTags(state), setErrorMessage('');
+      setTags(state), setErrorMessage("");
     }
   };
   const renderItem = (item, index) => {
@@ -55,30 +56,34 @@ const TopicsCovered = ({
             marginTop: index === 0 ? scale(20) : 0,
             marginHorizontal: scale(10),
             borderWidth: scale(1),
-            borderColor: '#D6D6D6',
+            borderColor: "#D6D6D6",
             height: scale(42),
-            flexDirection: 'row',
-          }}>
+            flexDirection: "row",
+          }}
+        >
           <View
             style={{
               flex: 0.3,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <View
               style={{
-                backgroundColor: '#EDF4FB',
+                backgroundColor: "#EDF4FB",
                 height: scale(21),
                 width: scale(22),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Text
                 style={{
-                  color: '#4A4A4A',
+                  color: "#4A4A4A",
                   fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-SemiBold',
-                }}>
+                  fontFamily: "SourceSansPro-SemiBold",
+                }}
+              >
                 {index + 1}
               </Text>
             </View>
@@ -86,15 +91,17 @@ const TopicsCovered = ({
           <View
             style={{
               flex: 2,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+              justifyContent: "center",
+              alignItems: "flex-start",
+            }}
+          >
             <Text
               style={{
-                color: '#505050',
+                color: "#505050",
                 fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-              }}>
+                fontFamily: "SourceSansPro-Regular",
+              }}
+            >
               {item.subjects}
             </Text>
           </View>
@@ -105,14 +112,15 @@ const TopicsCovered = ({
             }}
             style={{
               flex: 0.3,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <AntDesign
               name="delete"
               size={17}
               style={{
-                color: '#00A8DB',
+                color: "#00A8DB",
               }}
             />
           </TouchableOpacity>
@@ -122,41 +130,47 @@ const TopicsCovered = ({
             visible={modalVisible}
             onRequestClose={() => {
               setModalVisible(!modalVisible);
-            }}>
+            }}
+          >
             <View
               style={{
                 flex: 1,
-                alignItems: 'center',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                backgroundColor: '#0000000D',
-              }}>
+                alignItems: "center",
+                flexDirection: "column",
+                justifyContent: "center",
+                backgroundColor: "#0000000D",
+              }}
+            >
               <View
                 style={{
                   margin: scale(20),
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: "#FFFFFF",
                   padding: scale(20),
                   shadowOpacity: 0.25,
                   elevation: 5,
                   height: scale(213),
                   width: scale(328),
-                }}>
+                }}
+              >
                 <View
                   style={{
-                    flexDirection: 'column',
-                  }}>
+                    flexDirection: "column",
+                  }}
+                >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <Text
                       style={{
                         fontSize: scale(18),
-                        color: '#4D4F5C',
-                        fontFamily: 'SourceSansPro-Semibold',
-                      }}>
+                        color: "#4D4F5C",
+                        fontFamily: "SourceSansPro-Semibold",
+                      }}
+                    >
                       Confirm Delete
                     </Text>
 
@@ -165,7 +179,7 @@ const TopicsCovered = ({
                         name="close"
                         size={23}
                         style={{
-                          color: 'grey',
+                          color: "grey",
                           marginBottom: scale(10),
                         }}
                       />
@@ -175,35 +189,38 @@ const TopicsCovered = ({
                     style={{
                       marginVertical: scale(10),
                       borderBottomWidth: scale(1),
-                      borderBottomColor: '#00000029',
+                      borderBottomColor: "#00000029",
                     }}
                   />
                   <Text
                     style={{
                       fontSize: scale(16),
-                      color: '#4D4F5C',
-                      fontFamily: 'SourceSansPro-Regular',
-                    }}>
+                      color: "#4D4F5C",
+                      fontFamily: "SourceSansPro-Regular",
+                    }}
+                  >
                     Do you wish to delete the Item?
                   </Text>
-                  <View style={{flexDirection: 'row', marginTop: scale(30)}}>
+                  <View style={{ flexDirection: "row", marginTop: scale(30) }}>
                     <TouchableOpacity
                       onPress={() => deleteHandler(selectedItem)}
                       style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        justifyContent: "center",
+                        alignItems: "center",
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: '#00A0DA',
-                        width: '30%',
+                        backgroundColor: "#00A0DA",
+                        width: "30%",
                       }}
-                      disabled={false}>
+                      disabled={false}
+                    >
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: 'SourceSansPro-SemiBold',
-                          color: '#FFFFFF',
-                        }}>
+                          fontFamily: "SourceSansPro-SemiBold",
+                          color: "#FFFFFF",
+                        }}
+                      >
                         Confirm
                       </Text>
                     </TouchableOpacity>
@@ -211,20 +228,22 @@ const TopicsCovered = ({
                       onPress={() => setModalVisible(!modalVisible)}
                       style={{
                         marginLeft: scale(30),
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        justifyContent: "center",
+                        alignItems: "center",
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: '#EFEFEF',
-                        width: '30%',
+                        backgroundColor: "#EFEFEF",
+                        width: "30%",
                       }}
-                      disabled={false}>
+                      disabled={false}
+                    >
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: 'SourceSansPro-SemiBold',
-                          color: '#656565',
-                        }}>
+                          fontFamily: "SourceSansPro-SemiBold",
+                          color: "#656565",
+                        }}
+                      >
                         Cancel
                       </Text>
                     </TouchableOpacity>
@@ -238,28 +257,28 @@ const TopicsCovered = ({
     );
   };
   const addHanderler = () => {
-    let previousData = editData?.subjects ? editData.subjects.split(',') : [];
+    let previousData = editData?.subjects ? editData.subjects.split(",") : [];
     let data = [...previousData, ...tags.tagsArray].toString();
-    setFieldValue('subjects', data),
+    setFieldValue("subjects", data),
       tags.tagsArray.length > 0
-        ? (setTags({tagsArray: []}), handleSubmit())
-        : Toast.show('Please Enter Courses Name to ADD', Toast.SHORT);
+        ? (setTags({ tagsArray: [] }), handleSubmit())
+        : Toast.show("Please Enter Courses Name to ADD", Toast.SHORT);
   };
-  const deleteHandler = id => {
+  const deleteHandler = (id) => {
     const filterData = data
-      .filter(item => {
+      .filter((item) => {
         return item.id !== id;
       })
-      .map(value => {
+      .map((value) => {
         return value.subjects;
       })
-      .join(',');
-    setFieldValue('subjects', filterData);
+      .join(",");
+    setFieldValue("subjects", filterData);
     handleSubmit();
     setModalVisible(!modalVisible);
   };
   return (
-    <View style={{marginTop: scale(10), marginBottom: scale(10)}}>
+    <View style={{ marginTop: scale(10), marginBottom: scale(10) }}>
       <Text style={styles.formInputData}>
         Add Topics or Subjects Covered in the Training
       </Text>
@@ -267,54 +286,59 @@ const TopicsCovered = ({
         Enter all relevant Topics or Subjects Covered as a part of your
         Certification using a comma to separate.
       </Text>
-      <View style={{flexDirection: 'column'}}>
+      <View style={{ flexDirection: "column" }}>
         <Text style={styles.formInputTitle}>Topics or Subjects Covered</Text>
-        <View style={{flexDirection: 'row', marginHorizontal: scale(-10)}}>
+        <View style={{ flexDirection: "row", marginHorizontal: scale(-10) }}>
           <TagInput
             updateState={updateTagState}
             tags={tags}
             placeholder="Enter"
-            tagStyle={{backgroundColor: '#E5E5E5', borderColor: '#E5E5E5'}}
-            tagTextStyle={{color: '#4A4A4A'}}
+            tagStyle={{
+              backgroundColor: "#E5E5E5",
+              borderColor: "#E5E5E5",
+              height: scale(30),
+              justifyContent: "center",
+            }}
+            tagTextStyle={{ color: "#4A4A4A" }}
             autoCorrect={false}
-            keysForTag={','}
-            inputStyle={{color: '#4A4A4A'}}
+            keysForTag={","}
+            inputStyle={{ color: "#4A4A4A" }}
             inputContainerStyle={{
               height: scale(50),
-              borderColor: '#C3D0DE',
+              borderColor: "#C3D0DE",
               borderWidth: scale(1),
               marginTop: scale(8),
               borderRadius: scale(5),
             }}
           />
         </View>
-        {errorMessage !== '' ? (
-          <Text style={{color: 'red', marginLeft: scale(10)}}>
+        {errorMessage !== "" ? (
+          <Text style={{ color: "red", marginLeft: scale(10) }}>
             {errorMessage}
           </Text>
         ) : null}
-        <TouchableOpacity
+        <CustomButton
           onPress={addHanderler}
+          borderradius={scale(5)}
           style={{
-            width: '25%',
+            width: "20%",
             marginTop: scale(20),
             height: scale(40),
-            backgroundColor: '#FFFFFF',
-            borderWidth: 1,
-            borderColor: '#349beb',
-            borderRadius: 4,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
+          }}
+          bgcolor={"#FFFFFF"}
+          borderradiuscolor={"#349beb"}
+          borderwidth={1}
+        >
           <Text
             style={{
               fontSize: scale(16),
-              fontFamily: 'SourceSansPro-SemiBold',
-              color: '#10A0DA',
-            }}>
+              fontFamily: "SourceSansPro-SemiBold",
+              color: "#10A0DA",
+            }}
+          >
             ADD
           </Text>
-        </TouchableOpacity>
+        </CustomButton>
         {data.map((item, index) => {
           return renderItem(item, index);
         })}
@@ -322,23 +346,26 @@ const TopicsCovered = ({
       <TouchableOpacity
         style={{
           flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
+          justifyContent: "center",
+          alignItems: "center",
           marginTop: scale(20),
+
           padding: scale(10),
           borderRadius: scale(5),
-          backgroundColor: '#FFFFFF',
-          borderColor: '#349beb',
+          backgroundColor: "#FFFFFF",
+          borderColor: "#349beb",
           borderWidth: 1,
         }}
         disabled={false}
-        onPress={courseToggle}>
+        onPress={courseToggle}
+      >
         <Text
           style={{
             fontSize: scale(16),
-            fontFamily: 'SourceSansPro-SemiBold',
-            color: '#10A0DA',
-          }}>
+            fontFamily: "SourceSansPro-SemiBold",
+            color: "#10A0DA",
+          }}
+        >
           SAVE & NEXT
         </Text>
       </TouchableOpacity>

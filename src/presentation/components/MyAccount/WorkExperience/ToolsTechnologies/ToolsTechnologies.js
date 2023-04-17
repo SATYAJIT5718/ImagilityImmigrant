@@ -1,50 +1,51 @@
-import {View, Text, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {connect} from 'react-redux';
-import Toast from 'react-native-simple-toast';
-import {scale} from '../../../../../Infrastructure/utils/screenUtility';
-import styles from './styles';
-import Loader from '../../../../../Infrastructure/component/Loader/Loader';
-import TagInput from 'react-native-tags-input';
-import {getAuthToken} from '../../../../../Infrastructure/utils/storageUtility';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import { View, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { connect } from "react-redux";
+import Toast from "react-native-simple-toast";
+import { scale } from "../../../../../Infrastructure/utils/screenUtility";
+import styles from "./styles";
+import { CustomButton } from "../../../../../Infrastructure/component/Custom";
+import Loader from "../../../../../Infrastructure/component/Loader/Loader";
+import TagInput from "react-native-tags-input";
 import {
-  updateWorkDetails,
-  ExperienceDetails,
-} from '../../../../../application/store/actions/sponsorDetails';
-const ToolsTechnologies = props => {
+  getBeneficiaryUserID,
+  getAuthToken,
+} from "../../../../../Infrastructure/utils/storageUtility";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { updateWorkDetails } from "../../../../../application/store/actions/student";
+import { ExperienceDetails } from "../../../../../application/store/actions/student";
+const ToolsTechnologies = (props) => {
+  console.log(props.routeData, "props");
   const reducer = props?.ExperienceList?.data
     ? props.ExperienceList.data
     : null;
-  const filterData = reducer.filter(item => item.id === props.routeData);
+  const filterData = reducer.filter((item) => item.id === props.routeData);
+  console.log(filterData[0], "filtered_____________");
   const routeData = filterData[0];
-  const beneficiaryInfo = props?.userInformation?.data;
+  console.log(routeData, "routeData");
   const [tags, setTags] = useState({
-    tag: '',
+    tag: "",
     tagsArray: [],
   });
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const familyId = props?.indivisualFamilyInfo?.data?.id
-    ? props.indivisualFamilyInfo.data.id
-    : null;
-  const updateTagState = state => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const updateTagState = (state) => {
     if (
-      state.tagsArray.includes(' ') ||
-      state.tagsArray.includes('  ') ||
-      state.tagsArray.includes('   ') ||
-      state.tagsArray.includes('    ') ||
-      state.tagsArray.includes('     ') ||
-      state.tagsArray.includes('      ') ||
-      state.tagsArray.includes('       ') ||
-      state.tagsArray.includes('        ') ||
-      state.tagsArray.includes('         ') ||
-      state.tagsArray.includes('          ') ||
-      state.tagsArray.includes('           ')
+      state.tagsArray.includes(" ") ||
+      state.tagsArray.includes("  ") ||
+      state.tagsArray.includes("   ") ||
+      state.tagsArray.includes("    ") ||
+      state.tagsArray.includes("     ") ||
+      state.tagsArray.includes("      ") ||
+      state.tagsArray.includes("       ") ||
+      state.tagsArray.includes("        ") ||
+      state.tagsArray.includes("         ") ||
+      state.tagsArray.includes("          ") ||
+      state.tagsArray.includes("           ")
     ) {
-      setErrorMessage('Please enter Valid Curses Name');
+      setErrorMessage("Please enter Valid Curses Name");
     } else {
-      setTags(state), setErrorMessage('');
+      setTags(state), setErrorMessage("");
     }
   };
   const addHanderler = () => {
@@ -58,13 +59,14 @@ const ToolsTechnologies = props => {
       };
     });
     const tools = [...prePayload, ...routeData.tools];
+    console.log(tools, "tools updated");
     tags.tagsArray.length > 0
       ? addHanderler1(tools)
-      : setErrorMessage('Please enter Valid Curses Name');
+      : setErrorMessage("Please enter Valid Curses Name");
   };
-  const addHanderler1 = async tools => {
+  const addHanderler1 = async (tools) => {
     let token = await getAuthToken();
-    let beneficiaryID = beneficiaryInfo.id;
+    let beneficiaryID = await getBeneficiaryUserID();
     const payload = {
       workExpDetailsReq: [
         {
@@ -102,35 +104,35 @@ const ToolsTechnologies = props => {
         },
       ],
     };
-    console.log(payload, 'payload');
+    console.log(payload, "payload");
     setLoading(true);
     props
-      .saveWorkDetails(token, beneficiaryID, payload, familyId)
-      .then(async res => {
+      .saveWorkDetails(token, beneficiaryID, payload)
+      .then(async (res) => {
         Toast.show(res.message, Toast.LONG);
         setLoading(true);
         setTags({
-          tag: '',
+          tag: "",
           tagsArray: [],
         });
         props
-          .getExperience(token, beneficiaryID, familyId)
-          .then(async res => {
+          .getExperience(token, beneficiaryID)
+          .then(async (res) => {
             setLoading(false);
           })
-          .catch(e => {
-            console.log('error', e);
+          .catch((e) => {
+            console.log("error", e);
             setLoading(false);
           });
       })
-      .catch(e => {
-        console.log('error', e);
+      .catch((e) => {
+        console.log("error", e);
         setLoading(false);
       });
   };
-  const deleteHandler = id => {
+  const deleteHandler = (id) => {
     const tempArra = routeData.tools;
-    const filtered = tempArra.filter(item => item.id !== id);
+    const filtered = tempArra.filter((item) => item.id !== id);
     addHanderler1(filtered);
   };
   const renderItem = (item, index) => {
@@ -143,30 +145,34 @@ const ToolsTechnologies = props => {
             marginTop: index === 0 ? scale(20) : 0,
             marginHorizontal: scale(10),
             borderWidth: scale(1),
-            borderColor: '#D6D6D6',
+            borderColor: "#D6D6D6",
             height: scale(42),
-            flexDirection: 'row',
-          }}>
+            flexDirection: "row",
+          }}
+        >
           <View
             style={{
               flex: 0.3,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <View
               style={{
-                backgroundColor: '#EDF4FB',
+                backgroundColor: "#EDF4FB",
                 height: scale(21),
                 width: scale(22),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Text
                 style={{
-                  color: '#4A4A4A',
+                  color: "#4A4A4A",
                   fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-SemiBold',
-                }}>
+                  fontFamily: "SourceSansPro-SemiBold",
+                }}
+              >
                 {index + 1}
               </Text>
             </View>
@@ -174,15 +180,17 @@ const ToolsTechnologies = props => {
           <View
             style={{
               flex: 2,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+              justifyContent: "center",
+              alignItems: "flex-start",
+            }}
+          >
             <Text
               style={{
-                color: '#505050',
+                color: "#505050",
                 fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-              }}>
+                fontFamily: "SourceSansPro-Regular",
+              }}
+            >
               {item.skillName}
             </Text>
           </View>
@@ -190,14 +198,15 @@ const ToolsTechnologies = props => {
             onPress={() => deleteHandler(item.id)}
             style={{
               flex: 0.3,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <AntDesign
               name="delete"
               size={17}
               style={{
-                color: '#00A8DB',
+                color: "#00A8DB",
               }}
             />
           </TouchableOpacity>
@@ -212,56 +221,50 @@ const ToolsTechnologies = props => {
         style={{
           marginTop: scale(10),
           marginBottom: scale(10),
-        }}>
+        }}
+      >
         <Text style={styles.textHead}>Enter Tools & Technologies</Text>
         <Text style={styles.bodyText}>Please enter comma separated values</Text>
-        <View style={{flexDirection: 'column'}}>
-          <View style={{flexDirection: 'row', marginHorizontal: scale(-10)}}>
+        <View style={{ flexDirection: "column" }}>
+          <View style={{ flexDirection: "row", marginHorizontal: scale(-10) }}>
             <TagInput
               updateState={updateTagState}
               tags={tags}
               placeholder="Ex: Javascript"
-              tagStyle={{backgroundColor: '#E5E5E5', borderColor: '#E5E5E5'}}
-              tagTextStyle={{color: '#4A4A4A'}}
+              tagStyle={{
+                backgroundColor: "#E5E5E5",
+                borderColor: "#E5E5E5",
+                justifyContent: "center",
+                height: scale(30),
+              }}
+              tagTextStyle={{ color: "#4A4A4A" }}
               autoCorrect={false}
-              keysForTag={','}
-              inputStyle={{color: '#4A4A4A'}}
+              keysForTag={","}
+              inputStyle={{ color: "#4A4A4A" }}
               inputContainerStyle={{
                 height: scale(80),
-                borderColor: '#C3D0DE',
+                borderColor: "#C3D0DE",
                 borderWidth: scale(1),
                 marginTop: scale(8),
                 borderRadius: scale(4.8),
               }}
             />
           </View>
-          {errorMessage !== '' ? (
-            <Text style={{color: 'red', marginLeft: scale(10)}}>
+          {errorMessage !== "" ? (
+            <Text style={{ color: "red", marginLeft: scale(10) }}>
               {errorMessage}
             </Text>
           ) : null}
-          <TouchableOpacity
+          <CustomButton
             onPress={addHanderler}
-            style={{
-              borderRadius: 4,
-              backgroundColor: '#fff',
-              borderColor: '#10A0DA',
-              borderWidth: 1,
-              height: scale(40),
-              width: '25%',
-              marginTop: scale(20),
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                fontSize: scale(16),
-                fontFamily: 'SourceSansPro-SemiBold',
-                color: '#349beb',
-              }}>
-              ADD
-            </Text>
-          </TouchableOpacity>
+            borderradius={scale(5)}
+            style={{ width: "20%", marginTop: scale(20) }}
+            bgcolor={"#FFFFFF"}
+            borderradiuscolor={"#10A0DA"}
+            borderwidth={1}
+          >
+            <Text style={{ color: "#349beb" }}>ADD</Text>
+          </CustomButton>
         </View>
         {routeData.tools.map((item, index) => {
           return renderItem(item, index);
@@ -269,23 +272,25 @@ const ToolsTechnologies = props => {
         <TouchableOpacity
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: scale(20),
             padding: scale(10),
             borderRadius: scale(5),
-            backgroundColor: '#FFFFFF',
-            borderColor: '#10A0DA',
+            backgroundColor: "#FFFFFF",
+            borderColor: "#10A0DA",
             borderWidth: 1,
           }}
           disabled={false}
-          onPress={props.toggleAccordion}>
+          onPress={props.toggleAccordion}
+        >
           <Text
             style={{
               fontSize: scale(16),
-              fontFamily: 'SourceSansPro-SemiBold',
-              color: '#10A0DA',
-            }}>
+              fontFamily: "SourceSansPro-SemiBold",
+              color: "#10A0DA",
+            }}
+          >
             SAVE & NEXT
           </Text>
         </TouchableOpacity>
@@ -293,19 +298,13 @@ const ToolsTechnologies = props => {
     </View>
   );
 };
-const mapStateToProps = ({
-  sponsorDetailsReducer: {ExperienceList},
-  beneficiaryFamilyReducer: {indivisualFamilyInfo},
-  timeLine: {userInformation},
-}) => ({
+const mapStateToProps = ({ studentReducer: { ExperienceList } }) => ({
   ExperienceList,
-  indivisualFamilyInfo,
-  userInformation,
 });
 const mapDispatchToProps = {
-  saveWorkDetails: (token, beneficiaryId, payload, familyId) =>
-    updateWorkDetails(token, beneficiaryId, payload, familyId),
-  getExperience: (token, beneficiaryId, familyId) =>
-    ExperienceDetails(token, beneficiaryId, familyId),
+  saveWorkDetails: (token, beneficiaryId, payload) =>
+    updateWorkDetails(token, beneficiaryId, payload),
+  getExperience: (token, beneficiaryId) =>
+    ExperienceDetails(token, beneficiaryId),
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ToolsTechnologies);

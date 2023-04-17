@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
   inputdropdown: {
     borderRadius: scale(5),
     borderColor: "#C3D0DE",
-    minHeight: scale(40),
+    height: scale(40),
     marginTop: scale(5),
     marginBottom: scale(10),
   },

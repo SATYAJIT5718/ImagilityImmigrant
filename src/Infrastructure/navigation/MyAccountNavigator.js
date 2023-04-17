@@ -9,6 +9,7 @@ import MyAccount from '../../presentation/components/MyAccount/MyAcoount';
 import PersonalDetails from '../../presentation/components/MyAccount/PersonalDetails/PersonalDetails';
 import YourLifeStoryComponent from '../../presentation/components/MyAccount/YourLifeStoryComponent/YourLifeStoryComponent';
 import Education from '../../presentation/components/MyAccount/Education/Education';
+import EducationalDetailsListView from '../../presentation/components/MyAccount/EducationalDetails/EducationalDetailsListView';
 const HomeStack = createStackNavigator();
 
 const MyAccountNavigator = props => {
@@ -161,7 +162,7 @@ const MyAccountNavigator = props => {
           />
           <HomeStack.Screen
             name="EducationalDetailsListView"
-            component={ComingSoon}
+            component={EducationalDetailsListView}
             options={{
               title: 'Educational Details',
               headerShown: true,

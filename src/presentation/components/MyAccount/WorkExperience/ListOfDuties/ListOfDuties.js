@@ -1,48 +1,50 @@
-import {View, Text, TouchableOpacity, TextInput} from 'react-native';
-import React from 'react';
-import styles from './styles';
-import Loader from '../../../../../Infrastructure/component/Loader/Loader';
-import {scale} from '../../../../../Infrastructure/utils/screenUtility';
-import {useState} from 'react';
-import {useFormik} from 'formik';
-import {connect} from 'react-redux';
-import {getAuthToken} from '../../../../../Infrastructure/utils/storageUtility';
-import Toast from 'react-native-simple-toast';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import * as yup from 'yup';
+import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
+import styles from "./styles";
+import Loader from "../../../../../Infrastructure/component/Loader/Loader";
+import { scale } from "../../../../../Infrastructure/utils/screenUtility";
+import { useState, useRef } from "react";
+import { useFormik } from "formik";
+import { connect } from "react-redux";
 import {
-  updateWorkDetails,
-  ExperienceDetails,
-} from '../../../../../application/store/actions/sponsorDetails';
+  CustomInput,
+  CustomButton,
+} from "../../../../../Infrastructure/component/Custom";
+import {
+  getBeneficiaryUserID,
+  getAuthToken,
+} from "../../../../../Infrastructure/utils/storageUtility";
+import Toast from "react-native-simple-toast";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import * as yup from "yup";
+import { updateWorkDetails } from "../../../../../application/store/actions/student";
+import { ExperienceDetails } from "../../../../../application/store/actions/student";
 const validationSchema = yup.object().shape({
-  duty: yup.string().nullable().required('duty Required'),
+  duty: yup.string().nullable().required("duty Required"),
 });
-const ListOfDuties = props => {
+const ListOfDuties = (props) => {
   const reducer = props?.ExperienceList?.data
     ? props.ExperienceList.data
     : null;
-  const filterData = reducer.filter(item => item.id === props.routeData);
+  const filterData = reducer.filter((item) => item.id === props.routeData);
   const routeData = filterData[0];
   const [loading, setLoading] = useState(false);
   const [inputs, setInputs] = useState([
-    {subDutyDescription: '', subDutyId: null, sequenceNo: null},
+    { subDutyDescription: "", subDutyId: null, sequenceNo: null },
   ]);
-  const beneficiaryInfo = props?.userInformation?.data;
-  const familyId = props?.indivisualFamilyInfo?.data?.id
-    ? props.indivisualFamilyInfo.data.id
-    : null;
+  console.log(inputs, "inputs");
   const inputHandler = (text, key) => {
     const _inputs = [...inputs];
     _inputs[key].subDutyDescription = text;
     setInputs(_inputs);
   };
-  const deleteHandler = key => {
+  const deleteHandler = (key) => {
     const _inputs = inputs.filter((input, index) => index != key);
     setInputs(_inputs);
   };
   const addHandler = () => {
     const _inputs = [...inputs];
-    _inputs.push({subDutyDescription: '', subDutyId: null, sequenceNo: null});
+    _inputs.push({ subDutyDescription: "", subDutyId: null, sequenceNo: null });
     setInputs(_inputs);
   };
 
@@ -56,31 +58,34 @@ const ListOfDuties = props => {
             marginTop: index === 0 ? scale(20) : 0,
             marginHorizontal: scale(10),
             borderWidth: scale(1),
-            borderColor: '#D6D6D6',
+            borderColor: "#D6D6D6",
             // height: scale(42),
-            flexDirection: 'row',
-          }}>
+            flexDirection: "row",
+          }}
+        >
           <View
             style={{
               flex: 0.3,
-              marginVertical: scale(5),
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+              marginTop: scale(5),
+              alignItems: "center",
+            }}
+          >
             <View
               style={{
-                backgroundColor: '#EDF4FB',
+                backgroundColor: "#EDF4FB",
                 height: scale(21),
                 width: scale(22),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Text
                 style={{
-                  color: '#4A4A4A',
+                  color: "#4A4A4A",
                   fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-SemiBold',
-                }}>
+                  fontFamily: "SourceSansPro-SemiBold",
+                }}
+              >
                 {index + 1}
               </Text>
             </View>
@@ -89,26 +94,29 @@ const ListOfDuties = props => {
             style={{
               flex: 2,
               marginTop: scale(5),
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+              justifyContent: "center",
+              alignItems: "flex-start",
+            }}
+          >
             <Text
               style={{
-                color: '#505050',
+                color: "#505050",
                 fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-              }}>
+                fontFamily: "SourceSansPro-Regular",
+              }}
+            >
               {item.duty}
             </Text>
             {item.subDuties.map((item, index) => (
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: "row" }}>
                 <Text
                   style={{
                     marginTop: scale(5),
-                    color: '#898989',
+                    color: "#898989",
                     fontSize: scale(12),
-                    fontFamily: 'SourceSansPro-Regular',
-                  }}>
+                    fontFamily: "SourceSansPro-Regular",
+                  }}
+                >
                   {item.subDutyDescription}
                 </Text>
               </View>
@@ -119,14 +127,14 @@ const ListOfDuties = props => {
             style={{
               flex: 0.3,
               marginTop: scale(5),
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+              alignItems: "center",
+            }}
+          >
             <AntDesign
               name="delete"
               size={17}
               style={{
-                color: '#00A8DB',
+                color: "#00A8DB",
               }}
             />
           </TouchableOpacity>
@@ -135,9 +143,9 @@ const ListOfDuties = props => {
     );
   };
 
-  const deleteJobItem = id => {
+  const deleteJobItem = (id) => {
     const tempArra = routeData.jobDuties;
-    const filtered = tempArra.filter(item => item.dutyId !== id);
+    const filtered = tempArra.filter((item) => item.dutyId !== id);
     submit(filtered);
   };
   const {
@@ -150,7 +158,7 @@ const ListOfDuties = props => {
     setFieldValue,
   } = useFormik({
     initialValues: {
-      duty: '',
+      duty: "",
     },
     enableReinitialize: true,
     validateOnBlur: true,
@@ -158,7 +166,7 @@ const ListOfDuties = props => {
     onSubmit: () => formSubmitHandler(values, routeData),
     validationSchema,
   });
-  const formSubmitHandler = values => {
+  const formSubmitHandler = (values) => {
     const prepayload = {
       duty: values.duty,
       dutyId: 0,
@@ -169,9 +177,9 @@ const ListOfDuties = props => {
     addjob.push(prepayload);
     submit(addjob);
   };
-  const submit = async jobDuties => {
+  const submit = async (jobDuties) => {
     let token = await getAuthToken();
-    let beneficiaryID = beneficiaryInfo.id;
+    let beneficiaryID = await getBeneficiaryUserID();
     const payload = {
       workExpDetailsReq: [
         {
@@ -208,25 +216,25 @@ const ListOfDuties = props => {
     };
     setLoading(true);
     props
-      .saveWorkDetails(token, beneficiaryID, payload, familyId)
-      .then(async res => {
+      .saveWorkDetails(token, beneficiaryID, payload)
+      .then(async (res) => {
         Toast.show(res.message, Toast.LONG);
-        values.duty = '';
+        values.duty = "";
         setInputs([
-          {subDutyDescription: '', subDutyId: null, sequenceNo: null},
+          { subDutyDescription: "", subDutyId: null, sequenceNo: null },
         ]);
         props
-          .getExperience(token, beneficiaryID, familyId)
-          .then(async res => {
+          .getExperience(token, beneficiaryID)
+          .then(async (res) => {
             setLoading(false);
           })
-          .catch(e => {
-            console.log('error', e);
+          .catch((e) => {
+            console.log("error", e);
             setLoading(false);
           });
       })
-      .catch(e => {
-        console.log('error', e);
+      .catch((e) => {
+        console.log("error", e);
         setLoading(false);
       });
   };
@@ -235,12 +243,12 @@ const ListOfDuties = props => {
     <View style={styles.container}>
       <Loader status={loading} />
       <>
-        <View style={{flexDirection: 'row', marginTop: scale(10)}}>
+        <View style={{ flexDirection: "row", marginTop: scale(10) }}>
           <Text style={styles.textHead}>
-            Duty<Text style={{color: 'red'}}>*</Text>
+            Duty<Text style={{ color: "red" }}>*</Text>
           </Text>
         </View>
-        <TextInput
+        <CustomInput
           multiline
           // numberOfLines={4}
           name="duty"
@@ -248,61 +256,65 @@ const ListOfDuties = props => {
           placeholderTextColor="#4D4F5C"
           value={values.duty}
           autoCorrect={false}
-          onBlur={handleBlur('duty')}
-          onChangeText={handleChange('duty')}
-          style={{...styles.TextInput, height: 80, marginTop: scale(6)}}
+          onBlur={handleBlur("duty")}
+          onChangeText={handleChange("duty")}
+          style={{ height: 80, marginTop: scale(6) }}
         />
         {touched.duty && errors.duty && (
           <Text style={styles.errorMessage}>{errors.duty}</Text>
         )}
-        <View style={{flexDirection: 'row', marginTop: scale(10)}}>
+        <View style={{ flexDirection: "row", marginTop: scale(10) }}>
           <Text style={styles.textHead}>
-            Sub Duty<Text style={{color: 'red'}}></Text>
+            Sub Duty<Text style={{ color: "red" }}></Text>
           </Text>
         </View>
         {inputs.map((input, key) => (
           <>
-            <TextInput
+            <CustomInput
               multiline
               // numberOfLines={4}
               name="subduty"
               placeholder="Ex: Associate Human Factor Professional (AEP)"
               placeholderTextColor="#4D4F5C"
               value={input.subDutyDescription}
-              onChangeText={text => inputHandler(text, key)}
+              onChangeText={(text) => inputHandler(text, key)}
               autoCorrect={false}
-              style={{...styles.TextInput, height: 80, marginTop: scale(6)}}
+              style={{ height: 80, marginTop: scale(6) }}
             />
             {key > 0 ? (
               <TouchableOpacity onPress={() => deleteHandler(key)}>
                 <View
                   style={{
-                    alignItems: 'flex-end',
-                  }}>
+                    alignItems: "flex-end",
+                  }}
+                >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      alignItems: "flex-end",
+                      flexDirection: "row",
+                      alignItems: "center",
                       borderBottomEndRadius: scale(5),
                       borderBottomStartRadius: scale(5),
-                      backgroundColor: '#FFFFFF',
-                      borderColor: '#00A0DA',
+                      backgroundColor: "#FFFFFF",
+                      borderColor: "#00A0DA",
                       borderWidth: 1,
                       padding: scale(2),
-                    }}>
+                    }}
+                  >
                     <AntDesign
                       name="close"
                       size={14}
                       style={{
-                        color: '#00A8DB',
+                        color: "#00A8DB",
                       }}
                     />
                     <Text
                       style={{
-                        color: '#00A8DB',
+                        color: "#00A8DB",
                         fontSize: scale(14),
-                        fontFamily: 'SourceSansPro-Regular',
-                      }}>
+                        fontFamily: "SourceSansPro-Regular",
+                      }}
+                    >
                       Remove
                     </Text>
                   </View>
@@ -311,51 +323,51 @@ const ListOfDuties = props => {
             ) : null}
           </>
         ))}
-        <View style={{marginTop: scale(10)}}>
+        <View style={{ marginTop: scale(10) }}>
           <TouchableOpacity onPress={addHandler}>
-            <Text style={{...styles.text, color: '#00A0DA'}}>
+            <Text style={{ ...styles.text, color: "#00A0DA" }}>
               +Add more sub-duty
             </Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={handleSubmit}
-          style={{
-            borderRadius: 4,
-            backgroundColor: '#fff',
-            borderColor: '#00A0DA',
-            borderWidth: 1,
-            height: scale(40),
-            width: scale(70),
-            marginTop: scale(10),
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <Text style={{...styles.text, color: '#00A0DA'}}>ADD</Text>
-        </TouchableOpacity>
+        <View style={{ marginTop: scale(10) }}>
+          <CustomButton
+            borderradius="4px"
+            bgcolor="#fff"
+            borderradiuscolor="#00A0DA"
+            borderwidth="1px"
+            height="28px"
+            width="70px"
+            onPress={handleSubmit}
+          >
+            <Text style={{ ...styles.text, color: "#00A0DA" }}>ADD</Text>
+          </CustomButton>
+        </View>
         {routeData.jobDuties.map((item, index) => {
           return renderItem(item, index);
         })}
         <TouchableOpacity
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: scale(20),
             padding: scale(10),
             borderRadius: scale(5),
-            backgroundColor: '#FFFFFF',
-            borderColor: '#00A0DA',
+            backgroundColor: "#FFFFFF",
+            borderColor: "#00A0DA",
             borderWidth: 1,
           }}
           disabled={false}
-          onPress={props.toggleAccordion}>
+          onPress={props.toggleAccordion}
+        >
           <Text
             style={{
               fontSize: scale(16),
-              fontFamily: 'SourceSansPro-SemiBold',
-              color: '#10A0DA',
-            }}>
+              fontFamily: "SourceSansPro-SemiBold",
+              color: "#10A0DA",
+            }}
+          >
             SAVE & NEXT
           </Text>
         </TouchableOpacity>
@@ -365,20 +377,14 @@ const ListOfDuties = props => {
     </View>
   );
 };
-const mapStateToProps = ({
-  sponsorDetailsReducer: {ExperienceList},
-  beneficiaryFamilyReducer: {indivisualFamilyInfo},
-  timeLine: {userInformation},
-}) => ({
+const mapStateToProps = ({ studentReducer: { ExperienceList } }) => ({
   ExperienceList,
-  indivisualFamilyInfo,
-  userInformation,
 });
 
 const mapDispatchToProps = {
-  saveWorkDetails: (token, beneficiaryId, payload, familyId) =>
-    updateWorkDetails(token, beneficiaryId, payload, familyId),
-  getExperience: (token, beneficiaryId, familyId) =>
-    ExperienceDetails(token, beneficiaryId, familyId),
+  saveWorkDetails: (token, beneficiaryId, payload) =>
+    updateWorkDetails(token, beneficiaryId, payload),
+  getExperience: (token, beneficiaryId) =>
+    ExperienceDetails(token, beneficiaryId),
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ListOfDuties);

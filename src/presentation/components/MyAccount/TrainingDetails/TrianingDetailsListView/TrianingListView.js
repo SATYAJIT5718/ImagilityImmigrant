@@ -5,64 +5,58 @@ import {
   FlatList,
   Modal,
   Pressable,
-} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import styles from './styles';
-import {scale} from '../../../../../Infrastructure/utils/screenUtility';
-import LifeCycleAccordion from '../../../../../Infrastructure/component/lifeCycleAccordion/LifeCycleAccordion';
-import {useNavigation} from '@react-navigation/native';
-import {connect} from 'react-redux';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import moment from 'moment';
+} from "react-native";
+import React, { useState } from "react";
+import styles from "./styles";
+import { scale } from "../../../../../Infrastructure/utils/screenUtility";
+import LifeCycleAccordion from "../../../../../Infrastructure/component/lifeCycleAccordion/LifeCycleAccordion";
+import { useNavigation } from "@react-navigation/native";
+import { connect } from "react-redux";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import moment from "moment";
 import {
   getAuthToken,
   getBeneficiaryUserID,
-  getBeneficiaryType,
-} from '../../../../../Infrastructure/utils/storageUtility';
-import Loader from '../../../../../Infrastructure/component/Loader/Loader';
+} from "../../../../../Infrastructure/utils/storageUtility";
+import Loader from "../../../../../Infrastructure/component/Loader/Loader";
 import {
   getTrainingInfo,
   deleteTrainingInfo,
-} from '../../../../../application/store/actions/sponsorDetails';
-import Toast from 'react-native-simple-toast';
-const TrianingListView = props => {
+} from "../../../../../application/store/actions/student";
+import Toast from "react-native-simple-toast";
+const TrianingListView = (props) => {
   const navigation = useNavigation();
   const [status, setStatus] = useState(false);
-  const [selectedItem, setSelectedItem] = useState('');
+  const [selectedItem, setSelectedItem] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const beneficiaryInfo = props?.userInformation?.data;
   const trainingData = props.trainingInfo?.data?.profEducation
     ? props.trainingInfo.data.profEducation
     : [];
-  const [beneficiaryMOC, setbeneficiaryMOC] = useState(true);
-  const familyId = props?.indivisualFamilyInfo?.data?.id
-    ? props.indivisualFamilyInfo.data.id
-    : null;
-  const deleteHandler = async id => {
+  const deleteHandler = async (id) => {
     const authToken = await getAuthToken();
-    const beneficiaryId = beneficiaryInfo.id;
+    const beneficiaryId = await getBeneficiaryUserID();
     const professionalId = id;
     const type = `Training`;
     setStatus(true);
     await props
       .deleteTrainingData(authToken, beneficiaryId, professionalId, type)
-      .then(res => {
+      .then((res) => {
         props
-          .getTrainindData(authToken, beneficiaryId, familyId)
-          .then(res => {
+          .getTrainindData(authToken, beneficiaryId)
+          .then((res) => {
             setStatus(false);
             setModalVisible(!modalVisible);
-            console.log('getTrainindData---res', res.data);
+            console.log("getTrainindData---res", res.data);
           })
-          .catch(e => {
+          .catch((e) => {
             setStatus(false);
-            console.log('getTrainindData-erro', e);
+            console.log("getTrainindData-erro", e);
           });
         Toast.show(res.message, Toast.SHORT);
       })
-      .catch(e => {
+      .catch((e) => {
         setStatus(false);
-        console.log('Delete Error--', e);
+        console.log("Delete Error--", e);
       });
   };
   const renderSubjectItem = (item, index) => {
@@ -75,30 +69,34 @@ const TrianingListView = props => {
             marginTop: index === 0 ? scale(10) : 0,
             marginHorizontal: scale(10),
             borderWidth: scale(1),
-            borderColor: '#D6D6D6',
+            borderColor: "#D6D6D6",
             height: scale(42),
-            flexDirection: 'row',
-          }}>
+            flexDirection: "row",
+          }}
+        >
           <View
             style={{
               flex: 0.3,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <View
               style={{
-                backgroundColor: '#EDF4FB',
+                backgroundColor: "#EDF4FB",
                 height: scale(21),
                 width: scale(22),
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               <Text
                 style={{
-                  color: '#4A4A4A',
+                  color: "#4A4A4A",
                   fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-SemiBold',
-                }}>
+                  fontFamily: "SourceSansPro-SemiBold",
+                }}
+              >
                 {index + 1}
               </Text>
             </View>
@@ -106,75 +104,81 @@ const TrianingListView = props => {
           <View
             style={{
               flex: 2,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+              justifyContent: "center",
+              alignItems: "flex-start",
+            }}
+          >
             <Text
               style={{
-                color: '#505050',
+                color: "#505050",
                 fontSize: scale(14),
-                fontFamily: 'SourceSansPro-Regular',
-              }}>
-              {item.courseName ? item.courseName : 'bjbbkk'}
+                fontFamily: "SourceSansPro-Regular",
+              }}
+            >
+              {item.courseName ? item.courseName : "bjbbkk"}
             </Text>
           </View>
         </View>
       </>
     );
   };
-  const renderEducationItem = item => {
+  const renderEducationItem = (item) => {
     const data = item?.subjects
-      ? item.subjects.split(',').map((item, index) => {
-          return {id: index, courseName: item};
+      ? item.subjects.split(",").map((item, index) => {
+          return { id: index, courseName: item };
         })
       : [];
 
     const formateStartDate =
       item.startDate && item.startDate !== null
-        ? moment(item.startDate).format('ll')
-        : '--';
+        ? moment(item.startDate).format("ll")
+        : "--";
     const formateEndDate =
       item.endDate && item.endDate !== null
-        ? moment(item.endDate).format('ll')
-        : '--';
+        ? moment(item.endDate).format("ll")
+        : "--";
     return (
       <>
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             height: scale(56),
-          }}>
+          }}
+        >
           <View
             style={{
               flex: 1,
-              flexDirection: 'column',
-              justifyContent: 'center',
+              flexDirection: "column",
+              justifyContent: "center",
               paddingLeft: scale(15),
-            }}>
+            }}
+          >
             <Text style={styles.accordianBodyText}>Start Date</Text>
             <Text style={styles.yearText}>
-              {formateStartDate ? formateStartDate : '--'}
+              {formateStartDate ? formateStartDate : "--"}
             </Text>
           </View>
-          <View style={{flex: 1, justifyContent: 'center'}}>
+          <View style={{ flex: 1, justifyContent: "center" }}>
             <Text style={styles.accordianBodyText}>End Date</Text>
             <Text style={styles.yearText}>
-              {formateEndDate ? formateEndDate : '--'}
+              {formateEndDate ? formateEndDate : "--"}
             </Text>
           </View>
         </View>
         <View
           style={{
-            flexDirection: 'row',
+            flexDirection: "row",
             marginLeft: scale(10),
             marginTop: scale(20),
-          }}>
+          }}
+        >
           <Text
             style={{
               fontSize: scale(16),
-              color: '#505050',
-              fontFamily: 'SourceSansPro-Semibold',
-            }}>
+              color: "#505050",
+              fontFamily: "SourceSansPro-Semibold",
+            }}
+          >
             Topics Covered
           </Text>
         </View>
@@ -188,24 +192,27 @@ const TrianingListView = props => {
               marginHorizontal: scale(10),
               marginVertical: scale(10),
               borderWidth: scale(1),
-              borderColor: '#D6D6D6',
+              borderColor: "#D6D6D6",
               height: scale(42),
-              flexDirection: 'row',
-            }}>
+              flexDirection: "row",
+            }}
+          >
             <View
               style={{
                 flex: 2,
-                justifyContent: 'center',
-                alignItems: 'flex-start',
+                justifyContent: "center",
+                alignItems: "flex-start",
                 marginHorizontal: scale(10),
-              }}>
+              }}
+            >
               <Text
                 style={{
-                  color: '#505050',
+                  color: "#505050",
                   fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-Regular',
-                }}>
-                {'No Topics Added by you.'}
+                  fontFamily: "SourceSansPro-Regular",
+                }}
+              >
+                {"No Topics Added by you."}
               </Text>
             </View>
           </View>
@@ -213,78 +220,75 @@ const TrianingListView = props => {
       </>
     );
   };
-  const renderItem = ({item, index}) => {
+  const renderItem = ({ item, index }) => {
     return (
       <>
         {index === 0 ? (
-          <View style={{...styles.body, paddingLeft: scale(15)}}>
+          <View style={{ ...styles.body, paddingLeft: scale(15) }}>
             <View
               style={{
                 flex: 1,
-                justifyContent: 'center',
-                // alignItems: 'center',
-                // marginLeft: scale(20),
-                alignItems: beneficiaryMOC ? 'center' : 'flex-start',
-                marginLeft: beneficiaryMOC ? scale(10) : scale(35),
-              }}>
+                justifyContent: "center",
+                alignItems: "center",
+                marginLeft: scale(20),
+              }}
+            >
               <Text style={styles.formInputTitle}>Training Name</Text>
             </View>
             <View
               style={{
                 flex: 1,
-                justifyContent: 'center',
-                // alignItems: 'flex-end',
-                alignItems: beneficiaryMOC ? 'flex-end' : 'flex-start',
-                marginLeft: beneficiaryMOC ? 0 : scale(-50),
-              }}>
+                justifyContent: "center",
+                alignItems: "flex-end",
+              }}
+            >
               <Text style={styles.formInputTitle}>Institute Name</Text>
             </View>
-            {beneficiaryMOC ? (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'flex-end',
-                  paddingRight: beneficiaryMOC ? scale(15) : 0,
-                }}>
-                <Text style={styles.formInputTitle}>Action</Text>
-              </View>
-            ) : null}
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "flex-end",
+                paddingRight: scale(15),
+              }}
+            >
+              <Text style={styles.formInputTitle}>Action</Text>
+            </View>
           </View>
         ) : null}
         <View
           style={{
             paddingVertical: scale(5),
-          }}>
+          }}
+        >
           <LifeCycleAccordion
-            title={item.name ? item.name : '--'}
-            Studytitle={item.institution ? item.institution : '--'}
+            title={item.name ? item.name : "--"}
+            Studytitle={item.institution ? item.institution : "--"}
             data={renderEducationItem(item)}
             style={{
-              body: {marginHorizontal: scale(10)},
+              body: { marginHorizontal: scale(10) },
               titleContent: {
-                fontFamily: 'SourceSansPro-Regular',
+                fontFamily: "SourceSansPro-Regular",
                 fontSize: scale(13),
-                color: '#505050',
-                overflow: 'hidden',
+                color: "#505050",
+                overflow: "hidden",
               },
               Studytitle: {
                 marginLeft: scale(10),
-                fontFamily: 'SourceSansPro-Regular',
+                fontFamily: "SourceSansPro-Regular",
                 fontSize: scale(13),
-                color: '#505050',
-                overflow: 'hidden',
+                color: "#505050",
+                overflow: "hidden",
               },
             }}
-            backgroundColor={index % 2 !== 0 ? '#F2F2F2' : null}
+            backgroundColor={index % 2 !== 0 ? "#F2F2F2" : null}
             edit={() =>
-              navigation.navigate('TrainingDetails', {
+              navigation.navigate("TrainingDetails", {
                 item: item,
                 edit: true,
               })
             }
-            deleteIcon={beneficiaryMOC ? true : false}
-            removeEdit={beneficiaryMOC ? false : true}
+            deleteIcon={true}
             delete={() => {
               setSelectedItem(item.id);
               setModalVisible(true);
@@ -296,41 +300,47 @@ const TrianingListView = props => {
             visible={modalVisible}
             onRequestClose={() => {
               setModalVisible(!modalVisible);
-            }}>
+            }}
+          >
             <View
               style={{
                 flex: 1,
-                alignItems: 'center',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                backgroundColor: '#0000000D',
-              }}>
+                alignItems: "center",
+                flexDirection: "column",
+                justifyContent: "center",
+                backgroundColor: "#0000000D",
+              }}
+            >
               <View
                 style={{
                   margin: scale(20),
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: "#FFFFFF",
                   padding: scale(20),
                   shadowOpacity: 0.25,
                   elevation: 5,
                   height: scale(213),
                   width: scale(328),
-                }}>
+                }}
+              >
                 <View
                   style={{
-                    flexDirection: 'column',
-                  }}>
+                    flexDirection: "column",
+                  }}
+                >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <Text
                       style={{
                         fontSize: scale(18),
-                        color: '#4D4F5C',
-                        fontFamily: 'SourceSansPro-Semibold',
-                      }}>
+                        color: "#4D4F5C",
+                        fontFamily: "SourceSansPro-Semibold",
+                      }}
+                    >
                       Confirm Delete
                     </Text>
 
@@ -339,7 +349,7 @@ const TrianingListView = props => {
                         name="close"
                         size={23}
                         style={{
-                          color: 'grey',
+                          color: "grey",
                           marginBottom: scale(10),
                         }}
                       />
@@ -349,35 +359,38 @@ const TrianingListView = props => {
                     style={{
                       marginVertical: scale(10),
                       borderBottomWidth: scale(1),
-                      borderBottomColor: '#00000029',
+                      borderBottomColor: "#00000029",
                     }}
                   />
                   <Text
                     style={{
                       fontSize: scale(16),
-                      color: '#4D4F5C',
-                      fontFamily: 'SourceSansPro-Regular',
-                    }}>
+                      color: "#4D4F5C",
+                      fontFamily: "SourceSansPro-Regular",
+                    }}
+                  >
                     Do you wish to Delete the File?
                   </Text>
-                  <View style={{flexDirection: 'row', marginTop: scale(30)}}>
+                  <View style={{ flexDirection: "row", marginTop: scale(30) }}>
                     <TouchableOpacity
                       onPress={() => deleteHandler(selectedItem)}
                       style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        justifyContent: "center",
+                        alignItems: "center",
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: '#00A0DA',
-                        width: '30%',
+                        backgroundColor: "#00A0DA",
+                        width: "30%",
                       }}
-                      disabled={false}>
+                      disabled={false}
+                    >
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: 'SourceSansPro-SemiBold',
-                          color: '#FFFFFF',
-                        }}>
+                          fontFamily: "SourceSansPro-SemiBold",
+                          color: "#FFFFFF",
+                        }}
+                      >
                         Confirm
                       </Text>
                     </TouchableOpacity>
@@ -385,20 +398,22 @@ const TrianingListView = props => {
                       onPress={() => setModalVisible(!modalVisible)}
                       style={{
                         marginLeft: scale(30),
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        justifyContent: "center",
+                        alignItems: "center",
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: '#EFEFEF',
-                        width: '30%',
+                        backgroundColor: "#EFEFEF",
+                        width: "30%",
                       }}
-                      disabled={false}>
+                      disabled={false}
+                    >
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: 'SourceSansPro-SemiBold',
-                          color: '#656565',
-                        }}>
+                          fontFamily: "SourceSansPro-SemiBold",
+                          color: "#656565",
+                        }}
+                      >
                         Cancel
                       </Text>
                     </TouchableOpacity>
@@ -411,29 +426,17 @@ const TrianingListView = props => {
       </>
     );
   };
-  // useEffect(() => {
-  //   getBeneficiaryType()
-  //     .then(res =>
-  //       res !== 'Created'
-  //         ? (setbeneficiaryMOC(false), setStatus(false))
-  //         : props.getBeneficiaryStatus.status === 'TERMINATED'
-  //         ? (setbeneficiaryMOC(false), setStatus(false))
-  //         : (setbeneficiaryMOC(true), setStatus(false)),
-  //     )
-  //     .catch(error => {
-  //       setStatus(false);
-  //     });
-  // });
   return (
     <>
       <Loader status={status} />
+
       <View style={styles.container}>
         <View style={styles.bodycontainer}>
           {trainingData.length > 0 ? (
             <FlatList
               data={trainingData}
               renderItem={renderItem}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
             />
           ) : (
             <View style={styles.noDataTextContainer}>
@@ -441,7 +444,7 @@ const TrianingListView = props => {
                 name="warning"
                 size={60}
                 style={{
-                  color: 'grey',
+                  color: "grey",
                   marginBottom: scale(10),
                 }}
               />
@@ -452,41 +455,28 @@ const TrianingListView = props => {
             </View>
           )}
         </View>
-        {beneficiaryMOC ? (
-          <TouchableOpacity
-            onPress={() => navigation.navigate('TrainingDetails')}
-            style={{
-              ...styles.button,
-              backgroundColor: '#00A0DA',
-            }}
-            disabled={false}>
-            <Text style={styles.buttontext}>ADD TRAINING</Text>
-          </TouchableOpacity>
-        ) : null}
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TrainingDetails")}
+          style={{
+            ...styles.button,
+            backgroundColor: "#00A0DA",
+          }}
+          disabled={false}
+        >
+          <Text style={styles.buttontext}>ADD TRAINING</Text>
+        </TouchableOpacity>
       </View>
     </>
   );
 };
-const mapStateToProps = ({
-  sponsorDetailsReducer: {
-    trainingInfo,
-    indivisualBenInfo,
-    getBeneficiaryStatus,
-  },
-  beneficiaryFamilyReducer: {indivisualFamilyInfo},
-  timeLine: {userInformation},
-}) => ({
+const mapStateToProps = ({ studentReducer: { trainingInfo } }) => ({
   trainingInfo,
-  indivisualBenInfo,
-  indivisualFamilyInfo,
-  getBeneficiaryStatus,
-  userInformation,
 });
 const mapDispatchToProps = {
   deleteTrainingData: (authToken, beneficiaryId, professionalId, type) =>
     deleteTrainingInfo(authToken, beneficiaryId, professionalId, type),
-  getTrainindData: (authToken, beneficiaryId, familyId) =>
-    getTrainingInfo(authToken, beneficiaryId, familyId),
+  getTrainindData: (authToken, beneficiaryId) =>
+    getTrainingInfo(authToken, beneficiaryId),
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(TrianingListView);

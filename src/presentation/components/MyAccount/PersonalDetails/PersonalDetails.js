@@ -1,5 +1,5 @@
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
-import React, {useState, useRef, memo} from 'react';
+import React, {useRef, memo} from 'react';
 import {
   CustomInput,
   CustomButton,
@@ -11,7 +11,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import {SafeAreaView, KeyboardAvoidingView, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useFormik, ErrorMessage} from 'formik';
+import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
@@ -289,7 +289,6 @@ const PersonalDetails = props => {
     onSubmit: value => formHandler(value),
     validationSchema,
     validateOnMount: true,
-    validateOnChange: true,
   });
 
   console.log('initialValue', initialValue);

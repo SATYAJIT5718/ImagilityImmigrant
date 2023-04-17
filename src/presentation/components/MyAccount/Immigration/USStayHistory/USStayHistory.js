@@ -5,92 +5,97 @@ import {
   Platform,
   Modal,
   Pressable,
-  TextInput,
-} from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
-import styles from './styles';
-import {scale} from '../../../../../Infrastructure/utils/screenUtility';
-import Loader from '../../../../../Infrastructure/component/Loader/Loader';
-import {connect} from 'react-redux';
-import * as yup from 'yup';
-import Toast from 'react-native-simple-toast';
-import {useFormikContext, useFormik} from 'formik';
-import moment from 'moment';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Info from 'react-native-vector-icons/Feather';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import {RadioButton, Button} from 'react-native-paper';
+  TouchableHighlight,
+} from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import styles from "./styles";
+import { scale } from "../../../../../Infrastructure/utils/screenUtility";
+import Loader from "../../../../../Infrastructure/component/Loader/Loader";
+import { connect } from "react-redux";
+import * as yup from "yup";
+import Toast from "react-native-simple-toast";
+import {
+  CustomInput,
+  CustomButton,
+} from "../../../../../Infrastructure/component/Custom";
+import { Formik, useFormikContext, useFormik } from "formik";
+import moment from "moment";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Info from "react-native-vector-icons/Feather";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { RadioButton, Checkbox } from "react-native-paper";
 import {
   immigrationTravelHistory,
   getImmigrationTravelHistory,
   deleteUsTravelHistory,
   fetchImmigratationSelf,
-} from '../../../../../application/store/actions/sponsorDetails';
-import {getAuthToken} from '../../../../../Infrastructure/utils/storageUtility';
-import Tooltip from 'react-native-walkthrough-tooltip';
+} from "../../../../../application/store/actions/student";
+import {
+  getAuthToken,
+  getBeneficiaryUserID,
+} from "../../../../../Infrastructure/utils/storageUtility";
+import Tooltip from "react-native-walkthrough-tooltip";
 
 const validationSchema = yup.object().shape({
-  i94Number: yup.string().required('I94 Number Required'),
-  i94ExpiryDate: yup.string().required('I94 Expiry Date Required'),
+  i94Number: yup.string().required("I94 Number Required"),
+  i94ExpiryDate: yup.string().required("I94 Expiry Date Required"),
 });
 
-const USStayHistory = props => {
+const USStayHistory = (props) => {
   const reducer = props?.immigratationList?.data
     ? props?.immigratationList?.data
     : null;
-  const familyId = props?.indivisualFamilyInfo?.data?.id
-    ? props.indivisualFamilyInfo.data.id
-    : null;
-  const filterData = reducer.filter(item => item.id === props.routeData);
+  const filterData = reducer.filter((item) => item.id === props.routeData);
   const routeData = filterData[0].travelInfo;
+  console.log(routeData.travelInfo, "routeData.travelInfo");
   const [loading, setLoading] = useState(false);
   const [travelHistory, setTravelHistory] = useState([]);
   const [eraseData, setEraseData] = useState(false);
-  const beneficiaryInfo = props?.userInformation?.data;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [infoIsVisible, setInfoIsVisible] = useState(false);
   const formikProps = useFormikContext();
   const [show, setShow] = useState(false);
-  const [emptyDate, setEmptyDate] = useState('');
+  const [emptyDate, setEmptyDate] = useState("");
   const [date, setDate] = useState(new Date());
-  let dateformat = moment(date).format('MM/DD/YYYY');
+  let dateformat = moment(date).format("MM/DD/YYYY");
   const onChange = (event, selectedDate) => {
-    Platform.OS === 'ios' ? null : setShow(false);
+    Platform.OS === "ios" ? null : setShow(false);
     const currentDate = selectedDate;
-    const expiryDate = moment(selectedDate).format('YYYY-MM-DD');
+    const expiryDate = moment(selectedDate).format("YYYY-MM-DD");
     setDate(currentDate);
-    setFieldValue('i94ExpiryDate', expiryDate);
+    setFieldValue("i94ExpiryDate", expiryDate);
     setEmptyDate(currentDate);
   };
   const showDatepicker = () => {
     setShow(!show);
   };
   const [startShow, setStartShow] = useState(false);
-  const [emptyarrivalDate, setEmptyarrivalDate] = useState('');
+  const [emptyarrivalDate, setEmptyarrivalDate] = useState("");
   const [arrivalDate, setarrivalDate] = useState(new Date());
-  let arrivalDateformat = moment(arrivalDate).format('MM/DD/YYYY');
+  let arrivalDateformat = moment(arrivalDate).format("MM/DD/YYYY");
   const onChangeStart = (event, selectedDate) => {
-    console.log('value', selectedDate);
-    Platform.OS === 'ios' ? null : setStartShow(false);
+    console.log("value", selectedDate);
+    Platform.OS === "ios" ? null : setStartShow(false);
     const currentDate = selectedDate;
-    const arrivalDate = moment(selectedDate).format('YYYY-MM-DD');
+    const arrivalDate = moment(selectedDate).format("YYYY-MM-DD");
     setarrivalDate(currentDate);
-    setFieldValue('arrivalDate', arrivalDate);
+    setFieldValue("arrivalDate", arrivalDate);
     setEmptyarrivalDate(currentDate);
   };
   const showarrivalDatepicker = () => {
     setStartShow(!startShow);
   };
   const [endShow, setEndShow] = useState(false);
-  const [emptyexitDate, setEmptyexitDate] = useState('');
+  const [emptyexitDate, setEmptyexitDate] = useState("");
   const [exitDate, setexitDate] = useState(new Date());
-  let exitDateformat = moment(exitDate).format('MM/DD/YYYY');
+  let exitDateformat = moment(exitDate).format("MM/DD/YYYY");
   const onChangeEnd = (event, selectedDate) => {
-    Platform.OS === 'ios' ? null : setEndShow(false);
+    Platform.OS === "ios" ? null : setEndShow(false);
     const currentDate = selectedDate;
-    const exitDate = moment(selectedDate).format('YYYY-MM-DD');
+    const exitDate = moment(selectedDate).format("YYYY-MM-DD");
     setexitDate(currentDate);
-    setFieldValue('exitDate', exitDate);
+    setFieldValue("exitDate", exitDate);
     setEmptyexitDate(currentDate);
   };
   const showexitDatepicker = () => {
@@ -107,14 +112,14 @@ const USStayHistory = props => {
     handleReset,
   } = useFormik({
     initialValues: {
-      i94Number: '',
-      i94ExpiryDate: '',
-      arrivalDate: '',
-      exitDate: '',
-      meansOfTravel: '',
-      portOfEntry: '',
-      exitDateCheck: '',
-      arrivalDateCheck: '',
+      i94Number: "",
+      i94ExpiryDate: "",
+      arrivalDate: "",
+      exitDate: "",
+      meansOfTravel: "",
+      portOfEntry: "",
+      exitDateCheck: "",
+      arrivalDateCheck: "",
     },
 
     enableReinitialize: true,
@@ -123,109 +128,108 @@ const USStayHistory = props => {
     onSubmit: () => formSubmitHandler(values),
     validationSchema,
   });
-  console.log('arrivalDateformat', arrivalDateformat);
-  console.log('props.validityStartDate', props.validityStartDate);
+  console.log("arrivalDateformat", arrivalDateformat);
+  console.log("props.validityStartDate", props.validityStartDate);
   const getUsTravelHistory = async () => {
     const immigrationId = props.routeData;
     const token = await getAuthToken();
-    const beneficiaryId = beneficiaryInfo.id;
-    console.log('immigrationId', props.routeData);
+    const beneficiaryId = await getBeneficiaryUserID();
+    console.log("immigrationId", props.routeData);
     setLoading(true);
     props
       .getTravelHistory(token, beneficiaryId, immigrationId)
-      .then(async res => {
-        console.log('res get travel history', res);
+      .then(async (res) => {
+        console.log("res get travel history", res);
         setTravelHistory(res.data);
         props
-          .fetchImmigratation(token, beneficiaryId, familyId)
-          .then(async res => {
+          .fetchImmigratation(token, beneficiaryId)
+          .then(async (res) => {
             setLoading(false);
             console.log(
-              'get Data---------------------------------------',
-              res.data,
+              "get Data---------------------------------------",
+              res.data
             );
           })
-          .catch(e => {
+          .catch((e) => {
             setLoading(false);
-            console.log('error', e);
+            console.log("error", e);
           });
       })
-      .catch(e => {
+      .catch((e) => {
         setLoading(false);
-        console.log('error', e);
+        console.log("error", e);
       });
   };
 
-  const deleteHandler = async value => {
-    console.log('value', value);
+  const deleteHandler = async (value) => {
+    console.log("value", value);
     const immigrationId = props.routeData;
     const token = await getAuthToken();
-    const beneficiaryId = beneficiaryInfo.id;
+    const beneficiaryId = await getBeneficiaryUserID();
     const travelInfoId = value;
     setLoading(true);
     props
       .deleteTravelHistory(token, beneficiaryId, immigrationId, travelInfoId)
-      .then(async res => {
-        console.log('res', res);
-        setTimeout(() => {
-          Toast.show(res.message, Toast.LONG);
-        }, 1000);
+      .then(async (res) => {
+        console.log("res", res);
+        const resMessage = res.message;
         props
           .getTravelHistory(token, beneficiaryId, immigrationId)
-          .then(async res => {
-            console.log('res get travel history', res);
+          .then(async (res) => {
+            console.log("res get travel history", res);
             setTravelHistory(res.data);
             props
-              .fetchImmigratation(token, beneficiaryId, familyId)
-              .then(async res => {
+              .fetchImmigratation(token, beneficiaryId)
+              .then(async (res) => {
                 setLoading(false);
                 console.log(
-                  'get Data---------------------------------------',
-                  res.data,
+                  "get Data---------------------------------------",
+                  res.data
                 );
               })
-              .catch(e => {
+              .catch((e) => {
                 setLoading(false);
-                console.log('error', e);
+                console.log("error", e);
               });
           })
-          .catch(e => {
+          .catch((e) => {
             setLoading(false);
-            console.log('error', e);
+            console.log("error", e);
           });
+        Toast.show(resMessage, Toast.LONG);
       })
-      .catch(error => {
+      .catch((error) => {
         setLoading(false);
-        console.log('error', error);
+        console.log("error", error);
       });
   };
 
-  const formSubmitHandler = async formData => {
-    console.log('handler value', formData);
-    console.log('immigrationId', props.routeData);
+  const formSubmitHandler = async (formData) => {
+    console.log("handler value", formData);
+    console.log("immigrationId", props.routeData);
     const payload = {
       arrivalDate:
-        formData.arrivalDateCheck === 'Arrival Date'
+        formData.arrivalDateCheck === "Arrival Date"
           ? formData.arrivalDate
-          : formData.exitDateCheck === 'End of stay on this Visa'
+          : formData.exitDateCheck === "End of stay on this Visa"
           ? null
           : null,
       effectiveexitDate:
-        formData.exitDateCheck === 'End of stay on this Visa'
+        formData.exitDateCheck === "End of stay on this Visa"
           ? formData.exitDate
-          : formData.arrivalDateCheck === 'Arrival Date'
+          : formData.arrivalDateCheck === "Arrival Date"
           ? null
           : null,
       effectivearrivalDate:
-        formData.arrivalDateCheck === 'Start of stay on this Visa'
+        formData.arrivalDateCheck === "Start of stay on this Visa"
           ? formData.arrivalDate
-          : formData.exitDateCheck === 'Departure Date'
+          : formData.exitDateCheck === "Departure Date"
           ? null
           : null,
       exitDate:
-        formData.exitDateCheck === 'Departure Date'
+        formData.exitDateCheck === "Departure Date"
           ? formData.exitDate
-          : formData.arrivalDateCheck === 'Start of stay on this Visa'
+          : formData.arrivalDateCheck === "Start of stay on this Visa"
           ? null
           : null,
       i94ExpiryDate: formData.i94ExpiryDate,
@@ -238,33 +242,32 @@ const USStayHistory = props => {
     };
     const immigrationId = props.routeData;
     const token = await getAuthToken();
-    const beneficiaryId = beneficiaryInfo.id;
-    console.log('payLoad', payload);
-    console.log('token', token);
-    console.log('beneficiaryId', beneficiaryId);
+    const beneficiaryId = await getBeneficiaryUserID();
+    console.log("payLoad", payload);
+    console.log("token", token);
+    console.log("beneficiaryId", beneficiaryId);
     setLoading(true);
     // deleteHandlerssss();
     setEraseData(true);
 
     props
       .sendTravelHistory(token, beneficiaryId, immigrationId, payload)
-      .then(res => {
+      .then((res) => {
+        console.log("res", res);
         const message = res.message;
         setLoading(false);
         getUsTravelHistory();
-        setEmptyDate('');
-        setEmptyarrivalDate('');
-        setEmptyexitDate('');
+        setEmptyDate("");
+        setEmptyarrivalDate("");
+        setEmptyexitDate("");
         setexitDate(new Date());
         setarrivalDate(new Date());
         setDate(new Date());
         handleReset();
-        setTimeout(() => {
-          Toast.show(message, Toast.LONG);
-        }, 10);
+        Toast.show(message, Toast.LONG);
       })
-      .catch(e => {
-        console.log('error', e);
+      .catch((e) => {
+        console.log("error", e);
         setLoading(false);
       });
   };
@@ -275,16 +278,15 @@ const USStayHistory = props => {
       <>
         <View>
           <Text style={styles.textHead}>
-            I94 Number<Text style={{color: 'red'}}>*</Text>
+            I94 Number<Text style={{ color: "red" }}>*</Text>
           </Text>
-          <TextInput
+          <CustomInput
             name="i94Number"
             placeholder="Enter"
             placeholderTextColor="#4D4F5C"
             value={values.i94Number}
-            onBlur={handleBlur('i94Number')}
-            onChangeText={handleChange('i94Number')}
-            style={styles.TextInput}
+            onBlur={handleBlur("i94Number")}
+            onChangeText={handleChange("i94Number")}
           />
           {touched.i94Number && errors.i94Number && (
             <Text style={styles.errorMessage}>{errors.i94Number}</Text>
@@ -292,35 +294,37 @@ const USStayHistory = props => {
         </View>
         <View>
           <Text style={styles.textHead}>
-            I94 Expiry Date<Text style={{color: 'red'}}>*</Text>
+            I94 Expiry Date<Text style={{ color: "red" }}>*</Text>
           </Text>
           <TouchableOpacity
             onPress={() => {
               showDatepicker();
-            }}>
+            }}
+          >
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TextInput
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CustomInput
                 name="i94ExpiryDate"
                 placeholder="MM/DD/YYYY"
                 placeholderTextColor="#4D4F5C"
-                value={emptyDate === '' ? '' : dateformat}
+                value={emptyDate === "" ? "" : dateformat}
                 editable={false}
                 autoCorrect={false}
-                style={{...styles.TextInput, marginTop: scale(6), flex: 1}}
+                style={{ marginTop: scale(6), flex: 1 }}
               />
               <AntDesign
                 name="calendar"
                 size={20}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   right: scale(10),
-                  color: 'grey',
+                  color: "grey",
                 }}
               />
             </View>
@@ -335,22 +339,23 @@ const USStayHistory = props => {
               mode="date"
               onChange={onChange}
               style={{
-                accentColor: 'red',
-                textColor: 'red',
+                accentColor: "red",
+                textColor: "red",
               }}
               themeVariant="dark"
               textColor="blue"
             />
           )}
         </View>
-        <View style={{...styles.dashedLine, marginTop: scale(15)}} />
+        <View style={{ ...styles.dashedLine, marginTop: scale(15) }} />
         <View
           style={{
             flex: 1,
-            flexDirection: 'row',
-            justifyContent: 'space-between',
+            flexDirection: "row",
+            justifyContent: "space-between",
             marginTop: scale(5),
-          }}>
+          }}
+        >
           <Text style={styles.textHeadBold}>
             Let us know your Stay (Arrival and Exit)
           </Text>
@@ -358,12 +363,13 @@ const USStayHistory = props => {
             isVisible={infoIsVisible}
             content={
               <>
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                   <Text
                     style={{
                       ...styles.infotext,
-                      fontFamily: 'SourceSansPro-Bold',
-                    }}>
+                      fontFamily: "SourceSansPro-Bold",
+                    }}
+                  >
                     Select the following
                   </Text>
                   <Text style={styles.infotext}>
@@ -382,25 +388,29 @@ const USStayHistory = props => {
               </>
             }
             placement="bottom"
-            onClose={() => setInfoIsVisible(!infoIsVisible)}>
+            onClose={() => setInfoIsVisible(!infoIsVisible)}
+          >
             <TouchableOpacity
               style={styles.touchable}
-              onPress={() => setInfoIsVisible(!infoIsVisible)}>
+              onPress={() => setInfoIsVisible(!infoIsVisible)}
+            >
               <Info name="info" size={25} color="#687C93" />
             </TouchableOpacity>
           </Tooltip>
         </View>
         <View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <RadioButton.Group
-              onValueChange={handleChange('arrivalDateCheck')}
-              value={values.arrivalDateCheck}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              onValueChange={handleChange("arrivalDateCheck")}
+              value={values.arrivalDateCheck}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
                   <RadioButton.Android
                     value="Start of stay on this Visa"
                     uncheckedColor="grey"
@@ -413,9 +423,10 @@ const USStayHistory = props => {
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
                   <RadioButton.Android
                     value="Arrival Date"
                     uncheckedColor="grey"
@@ -428,7 +439,7 @@ const USStayHistory = props => {
             </RadioButton.Group>
           </View>
           {touched.arrivalDateCheck && errors.arrivalDateCheck && (
-            <Text style={{...styles.errorMessage, marginLeft: scale(5)}}>
+            <Text style={{ ...styles.errorMessage, marginLeft: scale(5) }}>
               {errors.arrivalDateCheck}
             </Text>
           )}
@@ -437,30 +448,32 @@ const USStayHistory = props => {
           <TouchableOpacity
             onPress={() => {
               showarrivalDatepicker();
-            }}>
+            }}
+          >
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TextInput
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CustomInput
                 name="arrivalDate"
                 placeholder="MM/DD/YYYY"
                 placeholderTextColor="#4D4F5C"
-                value={emptyarrivalDate === '' ? '' : arrivalDateformat}
+                value={emptyarrivalDate === "" ? "" : arrivalDateformat}
                 editable={false}
                 autoCorrect={false}
-                style={{...styles.TextInput, marginTop: scale(6), flex: 1}}
+                style={{ marginTop: scale(6), flex: 1 }}
               />
               <AntDesign
                 name="calendar"
                 size={20}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   right: scale(10),
-                  color: 'grey',
+                  color: "grey",
                 }}
               />
             </View>
@@ -476,33 +489,32 @@ const USStayHistory = props => {
               onChange={onChangeStart}
               minimumDate={
                 new Date(
-                  props.validityStartDate ? props.validityStartDate : null,
+                  props.validityStartDate ? props.validityStartDate : null
                 )
               }
               maximumDate={
                 new Date(props.validityEndDate ? props.validityEndDate : null)
               }
               style={{
-                accentColor: 'red',
-                textColor: 'red',
+                accentColor: "red",
+                textColor: "red",
               }}
               themeVariant="dark"
               textColor="blue"
             />
           )}
         </View>
-        {values.arrivalDateCheck === 'Arrival Date' ? (
+        {values.arrivalDateCheck === "Arrival Date" ? (
           <>
             <View>
               <Text style={styles.textHead}>Mode of travel</Text>
-              <TextInput
+              <CustomInput
                 name="meansOfTravel"
                 placeholder="Enter"
                 placeholderTextColor="#4D4F5C"
                 value={values.meansOfTravel}
-                onBlur={handleBlur('meansOfTravel')}
-                onChangeText={handleChange('meansOfTravel')}
-                style={styles.TextInput}
+                onBlur={handleBlur("meansOfTravel")}
+                onChangeText={handleChange("meansOfTravel")}
               />
               {touched.meansOfTravel && errors.meansOfTravel && (
                 <Text style={styles.errorMessage}>{errors.meansOfTravel}</Text>
@@ -510,14 +522,13 @@ const USStayHistory = props => {
             </View>
             <View>
               <Text style={styles.textHead}>Port of Entry into the US</Text>
-              <TextInput
+              <CustomInput
                 name="portOfEntry"
                 placeholder="Enter"
                 placeholderTextColor="#4D4F5C"
                 value={values.portOfEntry}
-                onBlur={handleBlur('portOfEntry')}
-                onChangeText={handleChange('portOfEntry')}
-                style={styles.TextInput}
+                onBlur={handleBlur("portOfEntry")}
+                onChangeText={handleChange("portOfEntry")}
               />
               {touched.portOfEntry && errors.portOfEntry && (
                 <Text style={styles.errorMessage}>{errors.portOfEntry}</Text>
@@ -527,16 +538,18 @@ const USStayHistory = props => {
         ) : null}
 
         <View>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <RadioButton.Group
-              onValueChange={handleChange('exitDateCheck')}
-              value={values.exitDateCheck}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              onValueChange={handleChange("exitDateCheck")}
+              value={values.exitDateCheck}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
                   <RadioButton.Android
                     value="End of stay on this Visa"
                     uncheckedColor="grey"
@@ -549,9 +562,10 @@ const USStayHistory = props => {
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
                   <RadioButton.Android
                     value="Departure Date"
                     uncheckedColor="grey"
@@ -564,7 +578,7 @@ const USStayHistory = props => {
             </RadioButton.Group>
           </View>
           {touched.exitDateCheck && errors.exitDateCheck && (
-            <Text style={{...styles.errorMessage, marginLeft: scale(5)}}>
+            <Text style={{ ...styles.errorMessage, marginLeft: scale(5) }}>
               {errors.exitDateCheck}
             </Text>
           )}
@@ -573,30 +587,32 @@ const USStayHistory = props => {
           <TouchableOpacity
             onPress={() => {
               showexitDatepicker();
-            }}>
+            }}
+          >
             <View
               style={{
                 flex: 1,
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <TextInput
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <CustomInput
                 name="exitDate"
                 placeholder="MM/DD/YYYY"
                 placeholderTextColor="#4D4F5C"
-                value={emptyexitDate === '' ? '' : exitDateformat}
+                value={emptyexitDate === "" ? "" : exitDateformat}
                 editable={false}
                 autoCorrect={false}
-                style={{...styles.TextInput, marginTop: scale(6), flex: 1}}
+                style={{ marginTop: scale(6), flex: 1 }}
               />
               <AntDesign
                 name="calendar"
                 size={20}
                 style={{
-                  position: 'absolute',
+                  position: "absolute",
                   right: scale(10),
-                  color: 'grey',
+                  color: "grey",
                 }}
               />
             </View>
@@ -612,117 +628,122 @@ const USStayHistory = props => {
               onChange={onChangeEnd}
               minimumDate={
                 arrivalDateformat
-                  ? new Date(moment(arrivalDateformat).format('YYYY-MM-DD'))
+                  ? new Date(moment(arrivalDateformat).format("YYYY-MM-DD"))
                   : null
               }
               style={{
-                accentColor: 'red',
-                textColor: 'red',
+                accentColor: "red",
+                textColor: "red",
               }}
               themeVariant="dark"
               textColor="blue"
             />
           )}
         </View>
-        <View style={{marginTop: scale(10)}}>
-          <TouchableOpacity
-            style={{
-              borderRadius: 4,
-              backgroundColor: '#fff',
-              borderColor: '#00A0DA',
-              borderWidth: 1,
-              height: scale(34),
-              width: scale(88),
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+        <View style={{ marginTop: scale(10) }}>
+          <CustomButton
+            borderradius="4px"
+            bgcolor="#fff"
+            borderradiuscolor="#00A0DA"
+            borderwidth="1px"
+            height="34px"
+            width="88px"
             onPress={() => {
               handleSubmit();
-            }}>
-            <Text style={{...styles.text, color: '#00A0DA'}}>ADD</Text>
-          </TouchableOpacity>
+            }}
+          >
+            <Text style={{ ...styles.text, color: "#00A0DA" }}>ADD</Text>
+          </CustomButton>
         </View>
 
         <View
           style={{
             flex: 1,
-            flexDirection: 'row',
-            backgroundColor: '#EDF4FB',
+            flexDirection: "row",
+            backgroundColor: "#EDF4FB",
             height: scale(56),
             marginTop: scale(20),
-          }}>
+          }}
+        >
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
+              justifyContent: "center",
               paddingLeft: scale(15),
-              flexWrap: 'wrap',
+              flexWrap: "wrap",
               // marginLeft: scale(20),
-            }}>
+            }}
+          >
             <Text style={styles.formInputTitle}>I-94 Number</Text>
           </View>
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'flex-start',
-            }}>
+              justifyContent: "center",
+              alignItems: "flex-start",
+            }}
+          >
             <Text style={styles.formInputTitle}>I-94 Expiry Date</Text>
           </View>
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Text style={styles.formInputTitle}>Actions</Text>
           </View>
         </View>
         {routeData?.length > 0 ? (
-          routeData.map(item => {
+          routeData.map((item) => {
             return (
               <>
                 <View
                   // key={item.id}
                   style={{
                     flex: 1,
-                    flexDirection: 'row',
+                    flexDirection: "row",
                     height: scale(56),
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       flex: 1,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                       paddingLeft: scale(15),
-                    }}>
+                    }}
+                  >
                     <Text style={styles.formInputTitle}>
-                      {item?.i94Number ? item?.i94Number : '--'}
+                      {item?.i94Number ? item?.i94Number : "--"}
                     </Text>
                   </View>
                   <View
                     style={{
                       flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'flex-start',
-                    }}>
+                      justifyContent: "center",
+                      alignItems: "flex-start",
+                    }}
+                  >
                     <Text style={styles.formInputTitle}>
                       {item?.i94ExpiryDate
-                        ? moment(item?.i94ExpiryDate).format('MM/DD/YYYY')
-                        : '--'}
+                        ? moment(item?.i94ExpiryDate).format("MM/DD/YYYY")
+                        : "--"}
                     </Text>
                   </View>
                   <TouchableOpacity
                     onPress={() => deleteHandler(item.id)}
                     style={{
                       flex: 1,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
                     <AntDesign
                       name="delete"
                       size={20}
                       style={{
-                        color: '#00A8DB',
+                        color: "#00A8DB",
                       }}
                     />
                   </TouchableOpacity>
@@ -733,19 +754,21 @@ const USStayHistory = props => {
                   visible={modalVisible}
                   onRequestClose={() => {
                     setModalVisible(!modalVisible);
-                  }}>
+                  }}
+                >
                   <View
                     style={{
                       flex: 1,
-                      alignItems: 'center',
-                      flexDirection: 'column',
-                      justifyContent: 'center',
-                      backgroundColor: '#00000040',
-                    }}>
+                      alignItems: "center",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      backgroundColor: "#00000040",
+                    }}
+                  >
                     <View
                       style={{
                         margin: scale(20),
-                        backgroundColor: '#FFFFFF',
+                        backgroundColor: "#FFFFFF",
                         padding: scale(20),
                         // alignItems: "center",
                         // shadowColor: "#000",
@@ -758,36 +781,41 @@ const USStayHistory = props => {
                         elevation: 5,
                         height: scale(213),
                         width: scale(328),
-                      }}>
+                      }}
+                    >
                       <View
                         style={{
-                          flexDirection: 'column',
+                          flexDirection: "column",
                           // justifyContent: "space-between",
                           // alignItems: "center",
                           // backgroundColor: "red",
-                        }}>
+                        }}
+                      >
                         <View
                           style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                          }}>
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                          }}
+                        >
                           <Text
                             style={{
                               fontSize: scale(18),
-                              color: '#4D4F5C',
-                              fontFamily: 'SourceSansPro-Semibold',
-                            }}>
+                              color: "#4D4F5C",
+                              fontFamily: "SourceSansPro-Semibold",
+                            }}
+                          >
                             Confirm
                           </Text>
 
                           <Pressable
-                            onPress={() => setModalVisible(!modalVisible)}>
+                            onPress={() => setModalVisible(!modalVisible)}
+                          >
                             <AntDesign
                               name="close"
                               size={23}
                               style={{
-                                color: 'grey',
+                                color: "grey",
                                 marginBottom: scale(10),
                               }}
                             />
@@ -797,32 +825,35 @@ const USStayHistory = props => {
                           style={{
                             marginVertical: scale(10),
                             borderBottomWidth: scale(1),
-                            borderBottomColor: '#00000029',
+                            borderBottomColor: "#00000029",
                           }}
                         />
                         <Text>Do you wish to Delete the File?</Text>
                         <View
                           style={{
-                            flexDirection: 'row',
+                            flexDirection: "row",
                             marginTop: scale(30),
-                          }}>
+                          }}
+                        >
                           <TouchableOpacity
                             onPress={() => deleteHandler()}
                             style={{
-                              justifyContent: 'center',
-                              alignItems: 'center',
+                              justifyContent: "center",
+                              alignItems: "center",
                               padding: scale(12),
                               borderRadius: scale(5),
-                              backgroundColor: '#00A0DA',
-                              width: '30%',
+                              backgroundColor: "#00A0DA",
+                              width: "30%",
                             }}
-                            disabled={false}>
+                            disabled={false}
+                          >
                             <Text
                               style={{
                                 fontSize: scale(14),
-                                fontFamily: 'SourceSansPro-SemiBold',
-                                color: '#FFFFFF',
-                              }}>
+                                fontFamily: "SourceSansPro-SemiBold",
+                                color: "#FFFFFF",
+                              }}
+                            >
                               Delete
                             </Text>
                           </TouchableOpacity>
@@ -830,20 +861,22 @@ const USStayHistory = props => {
                             onPress={() => setModalVisible(!modalVisible)}
                             style={{
                               marginLeft: scale(30),
-                              justifyContent: 'center',
-                              alignItems: 'center',
+                              justifyContent: "center",
+                              alignItems: "center",
                               padding: scale(12),
                               borderRadius: scale(5),
-                              backgroundColor: '#EFEFEF',
-                              width: '30%',
+                              backgroundColor: "#EFEFEF",
+                              width: "30%",
                             }}
-                            disabled={false}>
+                            disabled={false}
+                          >
                             <Text
                               style={{
                                 fontSize: scale(14),
-                                fontFamily: 'SourceSansPro-SemiBold',
-                                color: '#656565',
-                              }}>
+                                fontFamily: "SourceSansPro-SemiBold",
+                                color: "#656565",
+                              }}
+                            >
                               Cancel
                             </Text>
                           </TouchableOpacity>
@@ -859,9 +892,10 @@ const USStayHistory = props => {
           <View
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Text style={styles.infotext}>No Data found</Text>
           </View>
         )}
@@ -870,23 +904,25 @@ const USStayHistory = props => {
           <TouchableOpacity
             style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
+              justifyContent: "center",
+              alignItems: "center",
               marginTop: scale(20),
               padding: scale(10),
               borderRadius: scale(5),
-              backgroundColor: '#FFFFFF',
-              borderColor: '#00A0DA',
+              backgroundColor: "#FFFFFF",
+              borderColor: "#00A0DA",
               borderWidth: 1,
             }}
             disabled={false}
-            onPress={() => props.toggle()}>
+            onPress={() => props.toggle()}
+          >
             <Text
               style={{
                 fontSize: scale(16),
-                fontFamily: 'SourceSansPro-SemiBold',
-                color: '#10A0DA',
-              }}>
+                fontFamily: "SourceSansPro-SemiBold",
+                color: "#10A0DA",
+              }}
+            >
               SAVE & NEXT
             </Text>
           </TouchableOpacity>
@@ -896,19 +932,15 @@ const USStayHistory = props => {
   );
 };
 const mapStateToProps = ({
-  sponsorDetailsReducer: {getImmigrationTravelHistory, immigratationList},
-  beneficiaryFamilyReducer: {indivisualFamilyInfo},
-  timeLine: {userInformation},
+  studentReducer: { getImmigrationTravelHistory, immigratationList },
 }) => ({
   getImmigrationTravelHistory,
   immigratationList,
-  indivisualFamilyInfo,
-  userInformation,
 });
 
 const mapDispatchToProps = {
-  fetchImmigratation: (token, beneficiaryId, familyId) =>
-    fetchImmigratationSelf(token, beneficiaryId, familyId),
+  fetchImmigratation: (token, beneficiaryId) =>
+    fetchImmigratationSelf(token, beneficiaryId),
   sendTravelHistory: (token, beneficiaryId, immigrationId, payload) =>
     immigrationTravelHistory(token, beneficiaryId, immigrationId, payload),
   getTravelHistory: (token, beneficiaryId, immigrationId) =>
@@ -917,13 +949,13 @@ const mapDispatchToProps = {
     authToken,
     beneficiaryId,
     immigrationId,
-    travelInfoId,
+    travelInfoId
   ) =>
     deleteUsTravelHistory(
       authToken,
       beneficiaryId,
       immigrationId,
-      travelInfoId,
+      travelInfoId
     ),
 };
 export default connect(mapStateToProps, mapDispatchToProps)(USStayHistory);

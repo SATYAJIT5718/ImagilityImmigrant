@@ -1,5 +1,4 @@
-import {scale} from '../utils/screenUtility';
-export const PersonalDetailsJSON = {
+let PersonalDetailsJSON = {
   title: 'Personal Details',
   fields: [
     {
@@ -71,6 +70,14 @@ export const PersonalDetailsJSON = {
               required: false,
               errorTile: 'Middle Name',
               value: 'jit',
+              // style: {
+              //   backgroundColor: 'white',
+              //   borderColor: '#C3D0DE',
+              //   borderWidth: 1,
+              //   borderRadius: 5,
+              //   padding: 10,
+              //   marginBottom: 10,
+              // },
             },
             {
               id: 2,
@@ -83,6 +90,14 @@ export const PersonalDetailsJSON = {
               required: true,
               errorTile: 'Last Name',
               value: 'Mahakud',
+              // style: {
+              //   backgroundColor: 'white',
+              //   borderColor: '#C3D0DE',
+              //   borderWidth: 1,
+              //   borderRadius: 5,
+              //   padding: 10,
+              //   marginBottom: 10,
+              // },
             },
           ],
         },

@@ -11,7 +11,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import {SafeAreaView, KeyboardAvoidingView, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useFormik} from 'formik';
+import {useFormik, ErrorMessage} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
@@ -29,39 +29,58 @@ const PersonalDetails = props => {
     property.contents.map(itemz => {
       switch (itemz.type) {
         case 'text':
-          initialValue[itemz.name] = '';
+          initialValue[itemz.name] = itemz?.value || '';
           break;
         case 'email':
-          initialValue[itemz.name] = '';
+          initialValue[itemz.name] = itemz?.value || '';
           break;
         case 'multi':
           itemz.content.map(val => {
             val.type === 'dropdown'
-              ? ((initialValue[val?.name] = ''),
+              ? ((initialValue[val?.name] = val?.value || ''),
                 (initialValue[val?.isOpenTitle] = false))
-              : (initialValue[val?.name] = '');
+              : (initialValue[val?.name] = val?.value || '');
           });
           break;
         case 'password':
-          initialValue[itemz.name] = '';
+          initialValue[itemz.name] = itemz?.value || '';
           break;
         case 'radio':
-          initialValue[itemz.name] = '';
+          itemz.name === 'maritalStatus'
+            ? ((initialValue[itemz.name] = itemz?.value || ''),
+              itemz.content.map(val => {
+                initialValue[val.name] = val?.value || '';
+                val.type === 'dropdown'
+                  ? (initialValue[val.isOpenTitle] = false)
+                  : null;
+              }))
+            : (initialValue[itemz.name] = itemz?.value || '');
           break;
         case 'dropdown':
-          initialValue[itemz.name] = '';
+          initialValue[itemz.name] = itemz?.value || '';
           initialValue[itemz.isOpenTitle] = false;
           break;
         case 'checkbox':
           initialValue[itemz.name] = itemz.isSelected;
           break;
         case 'phoneInput':
-          initialValue[itemz.name] = '';
-          initialValue[itemz.countryName] = 'IN';
+          initialValue[itemz.name] = itemz?.value || '';
+          initialValue[itemz.countryName] = itemz.selectedCountry || 'IN';
           break;
         case 'date':
-          initialValue[itemz.name] = '';
+          initialValue[itemz.name] = itemz.value
+            ? moment(itemz.value).format('MM/DD/YYYY')
+            : '';
           initialValue[itemz.isOpenTitle] = itemz.isOpen;
+          break;
+        case 'alias':
+          initialValue[itemz.name] = itemz.value || false;
+          itemz.content.map(val => {
+            initialValue[val.name] = val?.value || '';
+            val.type === 'dropdown'
+              ? (initialValue[val.isOpenTitle] = false)
+              : null;
+          });
           break;
         // Add cases for other data types as needed
         default:
@@ -128,9 +147,58 @@ const PersonalDetails = props => {
               : yup.number();
             break;
           case 'radio':
-            schema[itemz?.name] = itemz?.required
-              ? yup.string().required(`${itemz?.errorTile} is required`)
-              : yup.string().nullable();
+            itemz.name === 'maritalStatus'
+              ? ((schema[itemz?.name] = itemz?.required
+                  ? yup.string().required(`${itemz?.errorTile} is required`)
+                  : yup.string().nullable()),
+                (schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]
+                  ?.required
+                  ? yup.string().when(`${itemz.name}`, {
+                      is: selected => selected !== 'SINGLE',
+                      then: yup
+                        .string()
+                        .required(
+                          `${itemz?.content?.[0]?.errorTile} is required`,
+                        ),
+                    })
+                  : yup.string()),
+                (schema[itemz?.content?.[1]?.name] = itemz?.content?.[1]
+                  ?.required
+                  ? yup.string().when(`${itemz.name}`, {
+                      is: selected => selected !== 'SINGLE',
+                      then: yup
+                        .string()
+                        .required(
+                          `${itemz?.content?.[1]?.errorTile} is required`,
+                        ),
+                    })
+                  : yup.string()),
+                (schema[itemz?.content?.[2]?.name] = itemz?.content?.[2]
+                  ?.required
+                  ? yup.string().when(`${itemz.name}`, {
+                      is: selected => selected !== 'SINGLE',
+                      then: yup
+                        .string()
+                        .required(
+                          `${itemz?.content?.[2]?.errorTile} is required`,
+                        ),
+                    })
+                  : yup.string()),
+                (schema[itemz?.content?.[3]?.name] = itemz?.content?.[3]
+                  ?.required
+                  ? yup.string().when(`${itemz.name}`, {
+                      is: selected => selected !== 'SINGLE',
+                      then: yup
+                        .string()
+                        .required(
+                          `${itemz?.content?.[3]?.errorTile} is required`,
+                        ),
+                    })
+                  : yup.string()))
+              : (schema[itemz?.name] = itemz?.required
+                  ? yup.string().required(`${itemz?.errorTile} is required`)
+                  : yup.string().nullable());
+
             break;
           case 'checkbox':
             schema[itemz?.name] = itemz?.required
@@ -138,6 +206,33 @@ const PersonalDetails = props => {
                   .boolean()
                   .oneOf([true], `You must accept ${itemz?.errorTile}`)
               : yup.boolean();
+            break;
+
+          case 'alias':
+            schema[itemz?.name] = itemz?.required
+              ? yup.boolean().oneOf([true], `${itemz?.errorTile}`)
+              : yup.boolean();
+
+            schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[0]?.errorTile} is required`),
+                })
+              : yup.string();
+            schema[itemz?.content?.[1]?.name] = itemz?.content?.[1]?.required
+              ? yup.string().when(`${itemz.name}`, {
+                  is: selected => selected === true,
+                  then: yup
+                    .string()
+                    .required(`${itemz?.content?.[1]?.errorTile} is required`),
+                })
+              : yup.string();
+
+            // schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
+            //   ? yup.string().required('TOEFL Score Required')
+            //   : yup.string();
             break;
           case 'date':
             schema[itemz?.name] = itemz?.required
@@ -151,12 +246,12 @@ const PersonalDetails = props => {
     });
     return yup.object().shape(schema);
   };
-
   const validationSchema = createValidationSchema(FormFields?.fields);
 
   const formHandler = value => {
     console.log('fianl submit handler =>>>>>', value);
   };
+
   const {
     handleChange,
     handleBlur,
@@ -173,7 +268,10 @@ const PersonalDetails = props => {
     validateOnChange: true,
     onSubmit: value => formHandler(value),
     validationSchema,
+    validateOnMount: true,
+    validateOnChange: true,
   });
+
   console.log('initialValue', initialValue);
   console.log('values', values);
 
@@ -433,7 +531,7 @@ const PersonalDetails = props => {
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
             </Text>
             <CustomDropdownPicker
-              listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
+              listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'SCROLLVIEW'}
               searchable={true}
               open={values[item?.isOpenTitle]}
               value={values[item?.name]}
@@ -447,6 +545,7 @@ const PersonalDetails = props => {
               onSelectItem={value => {
                 setFieldValue(`${item.name}`, value.value);
               }}
+              // onChangeValue={handleChange(`${item.name}`)}
               placeholder={item.placeholder || 'Select'}
               placeholderStyle={
                 item.placeholderStyle || {
@@ -480,7 +579,7 @@ const PersonalDetails = props => {
           </View>
         );
       }
-      if (item.type === 'radio') {
+      if (item.type === 'radio' && item.name !== 'maritalStatus') {
         return (
           <>
             <View>
@@ -719,6 +818,407 @@ const PersonalDetails = props => {
           </>
         );
       }
+      if (item.type === 'alias') {
+        return (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: scale(5),
+              }}>
+              <CustomCheckBox
+                name={item.name}
+                status={values[item?.name]}
+                color={'#00A0DA'}
+                uncheckedColor={'#00A0DA'}
+                onPressHandler={() => {
+                  setFieldValue(`${item.name}`, !values[item.name]);
+                }}
+              />
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Text
+                  style={{
+                    fontSize: scale(12),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: '#24262F',
+                  }}>
+                  {item.label}
+                </Text>
+              </View>
+            </View>
+            {errors[item?.name] && (
+              <Text
+                style={{
+                  fontSize: scale(10),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: 'red',
+                  marginLeft: scale(5),
+                  marginBottom: scale(5),
+                }}>
+                {errors[item?.name]}
+              </Text>
+            )}
+            {values[item?.name] ? multiViewController(item) : null}
+          </>
+        );
+      }
+      if (item.type === 'radio' && item.name === 'maritalStatus') {
+        return (
+          <>
+            <View>
+              <Text
+                style={{
+                  fontSize: scale(14),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: '#24262F',
+                  marginTop: scale(5),
+                }}>
+                {item.label}
+                {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+              </Text>
+              <CustomRadioButton
+                onValueChange={handleChange(`${item?.name}`)}
+                value={values[item?.name]}
+                itemList={item.data || []}
+                color="#0089CF"
+                uncheckedColor="grey"
+                radioTitleStyle={{
+                  fontSize: scale(14),
+                  color: '#4D4F5C',
+                  fontFamily: 'SourceSansPro-Regular',
+                }}
+              />
+              {touched[item?.name] && errors[item?.name] && (
+                <Text
+                  style={{
+                    fontSize: scale(10),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: 'red',
+                    marginLeft: scale(5),
+                    marginBottom: scale(5),
+                  }}>
+                  {errors[item?.name]}
+                </Text>
+              )}
+              {values[item?.name] !== 'SINGLE' ? (
+                <View>
+                  {/* date of marraige */}
+                  <View>
+                    <Text
+                      style={{
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
+                        color: '#24262F',
+                        marginVertical: scale(5),
+                      }}>
+                      {item?.content?.[0]?.label}
+                      {item?.content?.[0]?.required ? (
+                        <Text style={{color: 'red'}}>*</Text>
+                      ) : null}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setFieldValue(
+                          `${item?.content?.[0]?.isOpenTitle}`,
+                          !values[item?.content?.[0]?.isOpenTitle],
+                        );
+                      }}>
+                      <View
+                        style={{
+                          flex: 1,
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <CustomInput
+                          name={item?.content?.[0]?.name}
+                          placeholder={item?.content?.[0]?.placeholder}
+                          placeholderTextColor="#4D4F5C"
+                          value={
+                            values[item?.content?.[0]?.name] === ''
+                              ? ''
+                              : moment(values[item?.content?.[0]?.name]).format(
+                                  'MM/DD/YYYY',
+                                )
+                          }
+                          editable={false}
+                          autoCorrect={false}
+                          style={
+                            item.style || {
+                              backgroundColor: 'white',
+                              borderColor: '#C3D0DE',
+                              borderWidth: 1,
+                              borderRadius: 5,
+                              padding: 10,
+                              flex: 1,
+                              height: scale(40),
+                            }
+                          }
+                        />
+                        <AntDesign
+                          name="calendar"
+                          size={20}
+                          style={{
+                            position: 'absolute',
+                            right: scale(10),
+                            color: 'grey',
+                          }}
+                        />
+                      </View>
+                      {touched[item?.content?.[0]?.name] &&
+                        errors[item?.content?.[0]?.name] && (
+                          <Text
+                            style={{
+                              fontSize: scale(10),
+                              fontFamily: 'SourceSansPro-Regular',
+                              color: 'red',
+                              marginBottom: scale(5),
+                            }}>
+                            {errors[item?.content?.[0]?.name]}
+                          </Text>
+                        )}
+                    </TouchableOpacity>
+                    <DatePicker
+                      modal
+                      mode="date"
+                      open={values[item?.content?.[0]?.isOpenTitle]}
+                      date={
+                        values[item?.content?.[0]?.name] === ''
+                          ? new Date()
+                          : new Date(values[item?.content?.[0]?.name])
+                      }
+                      onConfirm={date => {
+                        setFieldValue(
+                          `${item?.content?.[0]?.isOpenTitle}`,
+                          !values[item?.content?.[0]?.isOpenTitle],
+                        );
+                        setFieldValue(`${item?.content?.[0]?.name}`, date);
+                      }}
+                      onCancel={() => {
+                        setFieldValue(
+                          `${item?.content?.[0]?.isOpenTitle}`,
+                          !values[item?.content?.[0]?.isOpenTitle],
+                        );
+                      }}
+                    />
+                  </View>
+                  {/* date of marraige */}
+
+                  {/* country of marraige */}
+                  <View
+                    key={item?.content?.[1]?.id}
+                    style={{
+                      zIndex: item?.content?.[1]?.zIndex || 90,
+                      marginVertical: scale(5),
+                    }}>
+                    <Text
+                      style={{
+                        marginBottom: scale(5),
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
+                        color: '#24262F',
+                      }}>
+                      {item?.content?.[1]?.label}
+                      {item?.content?.[1]?.required ? (
+                        <Text style={{color: 'red'}}>*</Text>
+                      ) : null}
+                    </Text>
+                    <CustomDropdownPicker
+                      listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'MODAL'}
+                      searchable={true}
+                      open={values[item?.content?.[1]?.isOpenTitle]}
+                      value={values[item?.content?.[1]?.name]}
+                      items={item?.content?.[1]?.data}
+                      setOpen={() => {
+                        setFieldValue(
+                          `${item?.content?.[1]?.isOpenTitle}`,
+                          !values[item?.content?.[1]?.isOpenTitle],
+                        );
+                      }}
+                      onSelectItem={value => {
+                        setFieldValue(
+                          `${item?.content?.[1]?.name}`,
+                          value.value,
+                        );
+                      }}
+                      placeholder={item?.content?.[1]?.placeholder || 'Select'}
+                      placeholderStyle={
+                        item?.content?.[1]?.placeholderStyle || {
+                          color: '#4D4F5C',
+                        }
+                      }
+                      maxHeight={scale(250)}
+                      style={
+                        item?.content?.[2].style || {
+                          minHeight: scale(40),
+                          borderRadius: scale(5),
+                          borderColor: '#C3D0DE',
+                          paddingVertical: -20,
+                          width: '100%',
+                          height: scale(40),
+                        }
+                      }
+                    />
+                    {touched[item?.content?.[1]?.name] &&
+                      errors[item?.content?.[1]?.name] && (
+                        <Text
+                          style={{
+                            fontSize: scale(10),
+                            fontFamily: 'SourceSansPro-Regular',
+                            color: 'red',
+                            marginLeft: scale(5),
+                            marginBottom: scale(5),
+                          }}>
+                          {errors[item?.content?.[1]?.name]}
+                        </Text>
+                      )}
+                  </View>
+                  {/* country of marraige */}
+
+                  {/* state of marraige */}
+                  <View
+                    key={item?.content?.[2]?.id}
+                    style={{
+                      zIndex: item?.content?.[2]?.zIndex || 90,
+                      marginVertical: scale(5),
+                    }}>
+                    <Text
+                      style={{
+                        marginBottom: scale(5),
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
+                        color: '#24262F',
+                      }}>
+                      {item?.content?.[2]?.label}
+                      {item?.content?.[2]?.required ? (
+                        <Text style={{color: 'red'}}>*</Text>
+                      ) : null}
+                    </Text>
+                    <CustomDropdownPicker
+                      listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
+                      searchable={true}
+                      open={values[item?.content?.[2]?.isOpenTitle]}
+                      value={values[item?.content?.[2]?.name]}
+                      items={item?.content?.[2]?.data}
+                      setOpen={() => {
+                        setFieldValue(
+                          `${item?.content?.[2]?.isOpenTitle}`,
+                          !values[item?.content?.[2]?.isOpenTitle],
+                        );
+                      }}
+                      onSelectItem={value => {
+                        setFieldValue(
+                          `${item?.content?.[2]?.name}`,
+                          value.value,
+                        );
+                      }}
+                      placeholder={item?.content?.[2]?.placeholder || 'Select'}
+                      placeholderStyle={
+                        item?.content?.[2]?.placeholderStyle || {
+                          color: '#4D4F5C',
+                        }
+                      }
+                      maxHeight={scale(250)}
+                      style={
+                        item?.content?.[2].style || {
+                          minHeight: scale(40),
+                          borderRadius: scale(5),
+                          borderColor: '#C3D0DE',
+                          paddingVertical: -20,
+                          width: '100%',
+                          height: scale(40),
+                        }
+                      }
+                    />
+                    {touched[item?.content?.[2]?.name] &&
+                      errors[item?.content?.[2]?.name] && (
+                        <Text
+                          style={{
+                            fontSize: scale(10),
+                            fontFamily: 'SourceSansPro-Regular',
+                            color: 'red',
+                            marginLeft: scale(5),
+                            marginBottom: scale(5),
+                          }}>
+                          {errors[item?.content?.[2]?.name]}
+                        </Text>
+                      )}
+                  </View>
+                  {/* country of marraige */}
+
+                  {/* city of marraige */}
+                  <View
+                    key={item?.content?.[3]?.id}
+                    style={{
+                      flex: 1,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
+                        color: '#24262F',
+                        marginVertical: scale(5),
+                      }}>
+                      {item?.content?.[3]?.label}
+                      {item?.content?.[3]?.required ? (
+                        <Text style={{color: 'red'}}>*</Text>
+                      ) : null}
+                    </Text>
+                    <CustomInput
+                      name={item?.content?.[3]?.name}
+                      placeholder={item?.content?.[3]?.placeholder}
+                      placeholderTextColor={
+                        item?.content?.[3]?.placeholderTextColor || '#4D4F5C'
+                      }
+                      value={values[item?.content?.[3]?.name]}
+                      onBlur={handleBlur(`${item?.content?.[3]?.name}`)}
+                      onChangeText={handleChange(`${item?.content?.[3]?.name}`)}
+                      autoCorrect={false}
+                      style={
+                        item.style
+                          ? item.style
+                          : {
+                              backgroundColor: 'white',
+                              borderColor: '#C3D0DE',
+                              borderWidth: 1,
+                              borderRadius: 5,
+                              padding: 10,
+                              height: item?.content?.[3]?.multiline
+                                ? scale(60)
+                                : scale(40),
+                            }
+                      }
+                      multiline={item?.content?.[3]?.multiline}
+                      secureTextEntry={item?.content?.[3]?.secureTextEntry}
+                      keyboardType={
+                        item?.content?.[3]?.keyboardType || 'default'
+                      }
+                    />
+                    {touched[item?.content?.[3]?.name] &&
+                      errors[item?.content?.[3]?.name] && (
+                        <Text
+                          style={{
+                            fontSize: scale(10),
+                            fontFamily: 'SourceSansPro-Regular',
+                            color: 'red',
+                            marginLeft: scale(5),
+                          }}>
+                          {errors[item?.content?.[3]?.name]}
+                        </Text>
+                      )}
+                  </View>
+                  {/* city of marraige */}
+                </View>
+              ) : null}
+            </View>
+          </>
+        );
+      }
     }
   };
   const multiViewController = item => {
@@ -933,7 +1433,7 @@ const PersonalDetails = props => {
                 placeholderTextColor={
                   item.content?.[1]?.placeholderTextColor || '#4D4F5C'
                 }
-                value={item.content?.[1]?.value}
+                value={values[item.content?.[1]?.name]}
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
@@ -1134,7 +1634,7 @@ const PersonalDetails = props => {
             backgroundColor: 'red',
           }}>
           <CustomButton
-            buttonText={'PROCEED'}
+            buttonText={'SAVE'}
             buttonTextStyle={{
               fontSize: scale(18),
               fontFamily: 'SourceSansPro-SemiBold',
@@ -1142,7 +1642,7 @@ const PersonalDetails = props => {
             }}
             buttonStyle={{
               backgroundColor: '#349beb',
-              height: scale(54),
+              height: scale(40),
               alignItems: 'center',
               flexDirection: 'row',
               justifyContent: 'center',

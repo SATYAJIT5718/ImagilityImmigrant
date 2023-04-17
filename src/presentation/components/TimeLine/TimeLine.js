@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
-  ImageBackground,
   Alert,
 } from 'react-native';
 import {scale} from '../../../Infrastructure/utils/screenUtility';
@@ -17,9 +16,8 @@ import {connect} from 'react-redux';
 import {
   TimeLineStudentDate,
   TimeLineH1BDate,
-} from '../../../Infrastructure/Data/TimeLineData';
+} from '../../../Infrastructure/JSONData/TimeLineData';
 import NoDataFound from '../../../Infrastructure/component/NoDataFound/NoDataFound';
-import DynamicGrid from '../Grid/DynamicGrid';
 const TimeLineComponent = props => {
   const [status, setStatus] = useState(false);
   const [logInFirst, setLogInFirst] = useState(false);
@@ -95,13 +93,13 @@ const TimeLineComponent = props => {
       {cancelable: false},
     );
   };
-  useEffect(() => {
-    setStatus(true);
-    setTimeout(() => {
-      setStatus(false);
-      showAlert();
-    }, 1000);
-  }, []);
+  // useEffect(() => {
+  //   setStatus(true);
+  //   setTimeout(() => {
+  //     setStatus(false);
+  //     showAlert();
+  //   }, 1000);
+  // }, []);
 
   return (
     <SafeAreaView style={{backgroundColor: '#F3F3F3', flex: 1}}>
@@ -143,9 +141,7 @@ const TimeLineComponent = props => {
           </View>
         </View>
         {/* <Advertisement /> */}
-        <DynamicGrid />
       </ScrollView>
-      {/* </ImageBackground> */}
     </SafeAreaView>
   );
 };

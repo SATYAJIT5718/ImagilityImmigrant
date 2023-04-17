@@ -12,7 +12,7 @@ import {useNavigation} from '@react-navigation/native';
 import Loader from '../../../Infrastructure/component/Loader/Loader';
 import TimelineCard from '../../../Infrastructure/component/TimelineCards/TimelineCard';
 import ProfileHeader from '../../../Infrastructure/component/ProfileHeader/ProfileHeader';
-import {MyAccountData} from '../../../Infrastructure/Data/MyAccountData';
+import {MyAccountData} from '../../../Infrastructure/JSONData/MyAccountData';
 const MyAccount = props => {
   const [status, setStatus] = useState(false);
   const navigation = useNavigation();

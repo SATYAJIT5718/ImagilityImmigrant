@@ -1,7 +1,5 @@
 import React from 'react';
-import {TouchableOpacity, View, Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import {connect} from 'react-redux';
 import Back from '../component/back/Back';
 import {useNavigation} from '@react-navigation/native';
@@ -9,6 +7,8 @@ import ComingSoon from '../component/ComingSoon/ComingSoon';
 import {scale} from '../utils/screenUtility';
 import MyAccount from '../../presentation/components/MyAccount/MyAcoount';
 import PersonalDetails from '../../presentation/components/MyAccount/PersonalDetails/PersonalDetails';
+import YourLifeStoryComponent from '../../presentation/components/MyAccount/YourLifeStoryComponent/YourLifeStoryComponent';
+import Education from '../../presentation/components/MyAccount/Education/Education';
 const HomeStack = createStackNavigator();
 
 const MyAccountNavigator = props => {
@@ -84,6 +84,118 @@ const MyAccountNavigator = props => {
             component={ComingSoon}
             options={{
               title: 'Documents',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="YourLifeStoryTimelines"
+            component={YourLifeStoryComponent}
+            options={{
+              title: 'Your life story in 3 timelines',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="Education"
+            component={Education}
+            options={{
+              title: 'Education',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="WorkExperience"
+            component={ComingSoon}
+            options={{
+              title: 'Work Experiance',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="ImmigratationDetailsListView"
+            component={ComingSoon}
+            options={{
+              title: 'Immigration',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="EducationalDetailsListView"
+            component={ComingSoon}
+            options={{
+              title: 'Educational Details',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="TrianingDetailsListView"
+            component={ComingSoon}
+            options={{
+              title: 'Training Details',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="CertificationsDetailsListView"
+            component={ComingSoon}
+            options={{
+              title: 'License Or Certifications Details',
               headerShown: true,
               headerLeft: () => <Back />,
               headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},

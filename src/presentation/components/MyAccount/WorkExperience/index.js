@@ -1,58 +1,56 @@
-import { View, Text, KeyboardAvoidingView, ScrollView } from "react-native";
-import React from "react";
-import styles from "../styles";
-import { scale } from "../../../../Infrastructure/utils/screenUtility";
-import { useRef, useState } from "react";
-import { Formik } from "formik";
-import * as yup from "yup";
-import Toast from "react-native-simple-toast";
-import moment from "moment";
-import { connect } from "react-redux";
-import Employment from "./Employment/Employment";
-import Clients from "./Clients/Clients";
-import ListOfDuties from "./ListOfDuties/ListOfDuties";
-import ToolsTechnologies from "./ToolsTechnologies/ToolsTechnologies";
-import RelatedDocument from "./RelatedDocument/RelatedDocument";
-import LifeCycleAccordion from "../../../../Infrastructure/component/lifeCycleAccordion/LifeCycleAccordion";
-import EducationAccordion from "../../../../Infrastructure/component/EducatonAccordion/EducationAccordion";
+import {View, Text, KeyboardAvoidingView, ScrollView} from 'react-native';
+import React from 'react';
+import styles from '../styles';
+import {scale} from '../../../../Infrastructure/utils/screenUtility';
+import {useRef, useState} from 'react';
+import {Formik} from 'formik';
+import * as yup from 'yup';
+import Toast from 'react-native-simple-toast';
+import {connect} from 'react-redux';
+import Employment from './Employment/Employment';
+import Clients from './Clients/Clients';
+import ListOfDuties from './ListOfDuties/ListOfDuties';
+import ToolsTechnologies from './ToolsTechnologies/ToolsTechnologies';
+import RelatedDocument from './RelatedDocument/RelatedDocument';
+import EducationAccordion from '../../../../Infrastructure/component/EducatonAccordion/EducationAccordion';
 
 import {
   getBeneficiaryUserID,
   getAuthToken,
-} from "../../../../Infrastructure/utils/storageUtility";
-import { updateWorkDetails } from "../../../../application/store/actions/student";
-import { ExperienceDetails } from "../../../../application/store/actions/student";
+} from '../../../../Infrastructure/utils/storageUtility';
+import {updateWorkDetails} from '../../../../application/store/actions/student';
+import {ExperienceDetails} from '../../../../application/store/actions/student';
 
 const SpaceRegex = /^\S*$/;
 const ValidationSchema = yup.object().shape({
-  title: yup.string().nullable().required("Title Required"),
-  type: yup.string().nullable().required("Employment Type Required"),
+  title: yup.string().nullable().required('Title Required'),
+  type: yup.string().nullable().required('Employment Type Required'),
 
-  enddate: yup.string().when("togglebox", {
-    is: (togglebox) => togglebox !== true,
-    then: yup.string().nullable().required("Employed To Required"),
+  enddate: yup.string().when('togglebox', {
+    is: togglebox => togglebox !== true,
+    then: yup.string().nullable().required('Employed To Required'),
   }),
-  fromdate: yup.string().nullable().required("EmployedFrom Required"),
-  curr: yup.string().nullable().required("Currancy"),
-  salary: yup.string().nullable().required("Salary Required"),
-  company: yup.string().nullable().required("Company Required"),
-  AddressLine1: yup.string().nullable().required("AddressLine1 Required"),
-  countrycode: yup.string().nullable().required("CountryName Required"),
+  fromdate: yup.string().nullable().required('EmployedFrom Required'),
+  curr: yup.string().nullable().required('Currancy'),
+  salary: yup.string().nullable().required('Salary Required'),
+  company: yup.string().nullable().required('Company Required'),
+  AddressLine1: yup.string().nullable().required('AddressLine1 Required'),
+  countrycode: yup.string().nullable().required('CountryName Required'),
   // countryName: yup.string().nullable().required("CountryName Required"),
-  city: yup.string().nullable().required("City Required"),
-  stateName: yup.string().nullable().required("stateName Required"),
-  postalcode: yup.string().nullable().required("ZIP/postalcode Required"),
+  city: yup.string().nullable().required('City Required'),
+  stateName: yup.string().nullable().required('stateName Required'),
+  postalcode: yup.string().nullable().required('ZIP/postalcode Required'),
 });
-const WorkExperience = (props) => {
+const WorkExperience = props => {
   const [loading, setLoading] = useState(false);
   const [initialId, setInitialId] = useState(
-    props.route?.params?.item?.id ? props.route.params.item.id : null
+    props.route?.params?.item?.id ? props.route.params.item.id : null,
   );
   const reducer = props?.ExperienceList?.data
     ? props?.ExperienceList?.data
     : null;
   const filterData = reducer
-    ? reducer.filter((item) => item.id === initialId)
+    ? reducer.filter(item => item.id === initialId)
     : null;
   const routeData = filterData ? filterData[0] : null;
   const [employmentToggle, setEmploymentToggle] = useState(true);
@@ -62,35 +60,35 @@ const WorkExperience = (props) => {
   const [relatedDocumentToggle, setRelatedDocumentToggle] = useState(false);
   const [employmentDisabled, setEmploymentDisabled] = useState(false);
   const [clientsDisabled, setClientsDisabled] = useState(
-    initialId === null ? true : false
+    initialId === null ? true : false,
   );
   const [listOfDutiesToggleDisabled, setListOfDutiesToggleDisabled] = useState(
-    initialId === null ? true : false
+    initialId === null ? true : false,
   );
   const [toolsTechnologiesToggleDisabled, settoolsTechnologiesToggleDisabled] =
     useState(initialId === null ? true : false);
   const [relatedDocumentToggleDisabled, setRelatedDocumentToggleDisabled] =
     useState(initialId === null ? true : false);
 
-  const formSubmitHandler = async (formData) => {
+  const formSubmitHandler = async formData => {
     let token = await getAuthToken();
     let beneficiaryID = await getBeneficiaryUserID();
 
     const countryListData = props.CountryList.data
       ? props.CountryList.data
-      : "";
+      : '';
     const phoneCountryData = countryListData.filter(
-      (country) =>
-        country.shortCountryCode === formData.countryName.toUpperCase()
+      country =>
+        country.shortCountryCode === formData.countryName.toUpperCase(),
     );
     const officeCountryCode = phoneCountryData[0]?.countryCode
       ? phoneCountryData[0]?.countryCode
       : null;
 
     let date = formData?.enddate ? formData.enddate : null;
-    let empEndDate = date === null ? "" : formData.enddate;
-    let toggleEndDate = +formData.togglebox === 1 ? "" : empEndDate;
-    console.log(initialId, "intial value");
+    let empEndDate = date === null ? '' : formData.enddate;
+    let toggleEndDate = +formData.togglebox === 1 ? '' : empEndDate;
+    console.log(initialId, 'intial value');
     const payload = {
       workExpDetailsReq: [
         {
@@ -125,12 +123,12 @@ const WorkExperience = (props) => {
         },
       ],
     };
-    console.log(payload, "payload");
+    console.log(payload, 'payload');
 
     setLoading(true);
     props
       .saveWorkDetails(token, beneficiaryID, payload)
-      .then(async (res) => {
+      .then(async res => {
         Toast.show(res.message, Toast.LONG);
         setInitialId(res.data.workExpDetailsReq[0].id);
         setClientsDisabled(false),
@@ -139,18 +137,18 @@ const WorkExperience = (props) => {
           setRelatedDocumentToggleDisabled(false);
         props
           .getExperience(token, beneficiaryID)
-          .then(async (res) => {
+          .then(async res => {
             setLoading(false);
             setClientsToggle(true);
             setEmploymentToggle(false);
           })
-          .catch((e) => {
-            console.log("error", e);
+          .catch(e => {
+            console.log('error', e);
             setLoading(false);
           });
       })
-      .catch((e) => {
-        console.log("error", e);
+      .catch(e => {
+        console.log('error', e);
         setLoading(false);
       });
   };
@@ -166,51 +164,49 @@ const WorkExperience = (props) => {
     setRelatedDocumentToggle(true);
     setToolsTechnologiesToggle(false);
   };
-  const toggleExpand = (title) => {
-    if (title == "Employment") {
+  const toggleExpand = title => {
+    if (title == 'Employment') {
       setEmploymentToggle(!employmentToggle);
-    } else if (title == "Clients") {
+    } else if (title == 'Clients') {
       setClientsToggle(!clientsToggle);
-    } else if (title == "List of Duties") {
+    } else if (title == 'List of Duties') {
       setListOfDutiesToggle(!listOfDutiesToggle);
-    } else if (title == "Tools & Technologies") {
+    } else if (title == 'Tools & Technologies') {
       setToolsTechnologiesToggle(!toolsTechnologiesToggle);
-    } else if (title == "Related Documents") {
+    } else if (title == 'Related Documents') {
       setRelatedDocumentToggle(!relatedDocumentToggle);
     }
   };
   return (
     <>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : null}
-        style={{ flex: 1, backgroundColor: "#ffff" }}
-      >
+        behavior={Platform.OS === 'ios' ? 'padding' : null}
+        style={{flex: 1, backgroundColor: '#ffff'}}>
         <Formik
           initialValues={{
-            enddate: routeData?.endDate || "",
-            fromdate: routeData?.startDate || "",
-            title: routeData?.designation || "",
-            type: routeData?.employmentType?.code || "",
-            curr: routeData?.currency || "",
-            salary: routeData?.salary?.toString() || "",
-            company: routeData?.companyName || "",
-            phoneNumber: routeData?.officeNo || "",
-            AddressLine1: routeData?.addressLine1 || "",
-            AddressLine2: routeData?.addressLine2 || "",
-            togglebox: Boolean(routeData?.isCurrentRole) || "",
-            countryName: routeData?.countryCode || "",
-            countrycode: routeData?.countryCode || "",
-            stateName: routeData?.stateProvinceName || "",
-            stateCode: routeData?.stateProvinceCode || "",
-            city: routeData?.city || "",
-            postalcode: routeData?.zipCode || "",
+            enddate: routeData?.endDate || '',
+            fromdate: routeData?.startDate || '',
+            title: routeData?.designation || '',
+            type: routeData?.employmentType?.code || '',
+            curr: routeData?.currency || '',
+            salary: routeData?.salary?.toString() || '',
+            company: routeData?.companyName || '',
+            phoneNumber: routeData?.officeNo || '',
+            AddressLine1: routeData?.addressLine1 || '',
+            AddressLine2: routeData?.addressLine2 || '',
+            togglebox: Boolean(routeData?.isCurrentRole) || '',
+            countryName: routeData?.countryCode || '',
+            countrycode: routeData?.countryCode || '',
+            stateName: routeData?.stateProvinceName || '',
+            stateCode: routeData?.stateProvinceCode || '',
+            city: routeData?.city || '',
+            postalcode: routeData?.zipCode || '',
           }}
           enableReinitialize={true}
           validateOnBlur={true}
           validateOnChange={true}
-          onSubmit={(values) => formSubmitHandler(values)}
-          validationSchema={ValidationSchema}
-        >
+          onSubmit={values => formSubmitHandler(values)}
+          validationSchema={ValidationSchema}>
           {({
             handleChange,
             handleBlur,
@@ -224,12 +220,11 @@ const WorkExperience = (props) => {
             <>
               <ScrollView
                 ContentContainerStyle={{
-                  backgroundColor: "#ffff",
-                }}
-              >
+                  backgroundColor: '#ffff',
+                }}>
                 <View style={styles.dashedLine} />
                 <EducationAccordion
-                  title={"Employment"}
+                  title={'Employment'}
                   data={
                     <Employment
                       values={values}
@@ -245,7 +240,7 @@ const WorkExperience = (props) => {
                     />
                   }
                   style={{
-                    body: { marginHorizontal: scale(10) },
+                    body: {marginHorizontal: scale(10)},
                   }}
                   removeEdit={true}
                   expanded={employmentToggle}
@@ -254,7 +249,7 @@ const WorkExperience = (props) => {
                 />
                 <View style={styles.dashedLine} />
                 <EducationAccordion
-                  title={"Clients"}
+                  title={'Clients'}
                   data={
                     <Clients
                       routeData={initialId}
@@ -262,7 +257,7 @@ const WorkExperience = (props) => {
                     />
                   }
                   style={{
-                    body: { marginHorizontal: scale(10) },
+                    body: {marginHorizontal: scale(10)},
                   }}
                   removeEdit={true}
                   expanded={clientsToggle}
@@ -271,7 +266,7 @@ const WorkExperience = (props) => {
                 />
                 <View style={styles.dashedLine} />
                 <EducationAccordion
-                  title={"List of Duties"}
+                  title={'List of Duties'}
                   data={
                     <ListOfDuties
                       routeData={initialId}
@@ -279,7 +274,7 @@ const WorkExperience = (props) => {
                     />
                   }
                   style={{
-                    body: { marginHorizontal: scale(10) },
+                    body: {marginHorizontal: scale(10)},
                   }}
                   removeEdit={true}
                   expanded={listOfDutiesToggle}
@@ -288,7 +283,7 @@ const WorkExperience = (props) => {
                 />
                 <View style={styles.dashedLine} />
                 <EducationAccordion
-                  title={"Tools & Technologies"}
+                  title={'Tools & Technologies'}
                   data={
                     <ToolsTechnologies
                       routeData={initialId}
@@ -296,7 +291,7 @@ const WorkExperience = (props) => {
                     />
                   }
                   style={{
-                    body: { marginHorizontal: scale(10) },
+                    body: {marginHorizontal: scale(10)},
                   }}
                   removeEdit={true}
                   expanded={toolsTechnologiesToggle}
@@ -305,10 +300,10 @@ const WorkExperience = (props) => {
                 />
                 <View style={styles.dashedLine} />
                 <EducationAccordion
-                  title={"Related Documents"}
+                  title={'Related Documents'}
                   data={<RelatedDocument routeData={initialId} />}
                   style={{
-                    body: { marginHorizontal: scale(10) },
+                    body: {marginHorizontal: scale(10)},
                   }}
                   removeEdit={true}
                   expanded={relatedDocumentToggle}
@@ -346,17 +341,15 @@ const WorkExperience = (props) => {
   );
 };
 
-const mapStateToProps = ({
-  studentReducer: { ExperienceList, CountryList },
-}) => ({
+const mapStateToProps = ({studentReducer: {ExperienceList, CountryList}}) => ({
   ExperienceList,
   CountryList,
 });
 const mapDispatchToProps = {
-  saveWorkDetails: (token, beneficiaryId, payload) =>
-    updateWorkDetails(token, beneficiaryId, payload),
-  getExperience: (token, beneficiaryId) =>
-    ExperienceDetails(token, beneficiaryId),
-  getstate: (code) => fetchStateList(code),
+  // saveWorkDetails: (token, beneficiaryId, payload) =>
+  //   updateWorkDetails(token, beneficiaryId, payload),
+  // getExperience: (token, beneficiaryId) =>
+  //   ExperienceDetails(token, beneficiaryId),
+  // getstate: code => fetchStateList(code),
 };
 export default connect(mapStateToProps, mapDispatchToProps)(WorkExperience);

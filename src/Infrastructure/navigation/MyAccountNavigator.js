@@ -10,6 +10,7 @@ import PersonalDetails from '../../presentation/components/MyAccount/PersonalDet
 import YourLifeStoryComponent from '../../presentation/components/MyAccount/YourLifeStoryComponent/YourLifeStoryComponent';
 import Education from '../../presentation/components/MyAccount/Education/Education';
 import EducationalDetailsListView from '../../presentation/components/MyAccount/EducationalDetails/EducationalDetailsListView';
+import EducationalDetails from '../../presentation/components/MyAccount/EducationalDetails/EducationalDetails';
 const HomeStack = createStackNavigator();
 
 const MyAccountNavigator = props => {
@@ -129,6 +130,39 @@ const MyAccountNavigator = props => {
             }}
           />
           <HomeStack.Screen
+            name="EducationalDetailsListView"
+            component={EducationalDetailsListView}
+            options={{
+              title: 'Educational Details',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
+            name="EducationalDetailsEdit"
+            // component={ComingSoon}
+            component={EducationalDetails}
+            options={{
+              title: 'Educational Details',
+              headerShown: true,
+              headerLeft: () => <Back />,
+              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
+              headerBackTitleVisible: false,
+              headerTitleStyle: {
+                fontSize: scale(18),
+                color: '#4D4F5C',
+                fontFamily: 'SourceSansPro-SemiBold',
+              },
+            }}
+          />
+          <HomeStack.Screen
             name="WorkExperience"
             component={ComingSoon}
             options={{
@@ -160,22 +194,7 @@ const MyAccountNavigator = props => {
               },
             }}
           />
-          <HomeStack.Screen
-            name="EducationalDetailsListView"
-            component={EducationalDetailsListView}
-            options={{
-              title: 'Educational Details',
-              headerShown: true,
-              headerLeft: () => <Back />,
-              headerStyle: {borderBottomWidth: 1, borderColor: '#00000029'},
-              headerBackTitleVisible: false,
-              headerTitleStyle: {
-                fontSize: scale(18),
-                color: '#4D4F5C',
-                fontFamily: 'SourceSansPro-SemiBold',
-              },
-            }}
-          />
+
           <HomeStack.Screen
             name="TrianingDetailsListView"
             component={ComingSoon}

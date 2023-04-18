@@ -1,27 +1,27 @@
-import { View, Text, TouchableOpacity, Modal, Pressable } from "react-native";
-import React, { useState } from "react";
-import styles from "./styles";
-import DropDownPicker from "react-native-dropdown-picker";
-import { CustomButton } from "../../../../Infrastructure/component/Custom";
-import { scale } from "../../../../Infrastructure/utils/screenUtility";
-import { useNavigation } from "@react-navigation/native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import { connect } from "react-redux";
-import DocumentPicker from "react-native-document-picker";
-import {
-  sendEducDocDataInfo,
-  getEducationInfo,
-  relatedDocDelete,
-} from "../../../../application/store/actions/student";
+import {View, Text, TouchableOpacity, Modal, Pressable} from 'react-native';
+import React, {useState} from 'react';
+import styles from './styles';
+import DropDownPicker from 'react-native-dropdown-picker';
+import {CustomButton} from '../../../../Infrastructure/component/Custom';
+import {scale} from '../../../../Infrastructure/utils/screenUtility';
+import {useNavigation} from '@react-navigation/native';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {connect} from 'react-redux';
+import DocumentPicker from 'react-native-document-picker';
+// import {
+//   sendEducDocDataInfo,
+//   getEducationInfo,
+//   relatedDocDelete,
+// } from '../../../../application/store/actions/student';
 import {
   getAuthToken,
   getBeneficiaryUserID,
-} from "../../../../Infrastructure/utils/storageUtility";
-import { decode as atob, encode as btoa } from "base-64";
-import RNFS from "react-native-fs";
-import { baseURL } from "../../../../application/config";
-import Toast from "react-native-simple-toast";
-import Loader from "../../../../Infrastructure/component/Loader/Loader";
+} from '../../../../Infrastructure/utils/storageUtility';
+import {decode as atob, encode as btoa} from 'base-64';
+import RNFS from 'react-native-fs';
+import {baseURL} from '../../../../application/config';
+import Toast from 'react-native-simple-toast';
+import Loader from '../../../../Infrastructure/component/Loader/Loader';
 const RelatedDocument = ({
   educationId,
   educdoctyp,
@@ -35,17 +35,17 @@ const RelatedDocument = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [educdoc, setEducdoc] = useState(
     educdoctyp?.data
-      ? educdoctyp.data.map((item) => {
+      ? educdoctyp.data.map(item => {
           return {
             label: item.name,
             value: item.code,
           };
         })
-      : []
+      : [],
   );
-  const [singleFile, setSingleFile] = useState("");
+  const [singleFile, setSingleFile] = useState('');
   const docToShow = educationalInfo?.data?.education
-    ? educationalInfo.data.education.filter((value) => {
+    ? educationalInfo.data.education.filter(value => {
         return value.id === educationId;
       })
     : [];
@@ -55,24 +55,24 @@ const RelatedDocument = ({
     const beneficiaryId = await getBeneficiaryUserID();
     const categoryName = `BENEDUDOC`;
     const fileCategory = value;
-    const entityId = educationId ? educationId : "";
+    const entityId = educationId ? educationId : '';
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
       });
       if (res[0].size >= 5000000) {
         Toast.show(
-          "The file is too large to upload, please try a file with less than 5MB",
-          Toast.LONG
+          'The file is too large to upload, please try a file with less than 5MB',
+          Toast.LONG,
         );
       } else {
         setStatus(true);
         let uri = decodeURI(res[0].uri);
         uri
-          ? RNFS.readFile(uri, "base64").then(async (base64data) => {
+          ? RNFS.readFile(uri, 'base64').then(async base64data => {
               const binary = atob(base64data);
               let formData = new FormData();
-              formData.append("file", {
+              formData.append('file', {
                 uri: uri,
                 type: res[0].type,
                 name: res[0].name,
@@ -81,21 +81,21 @@ const RelatedDocument = ({
               let resp = await fetch(
                 `${baseURL}student/v1/document/beneficiary/${beneficiaryId}/category/${categoryName}/entity/${entityId}/fileCategory/${fileCategory}`,
                 {
-                  method: "post",
+                  method: 'post',
                   body: formData,
                   headers: {
-                    "Content-Type": "multipart/form-data; ",
+                    'Content-Type': 'multipart/form-data; ',
                     Authorization: `Bearer ${authToken}`,
                   },
-                }
+                },
               );
               let responseJson = await resp.json();
               if (responseJson.status === 200) {
                 getEducationData(authToken, beneficiaryId)
-                  .then((res) => {
+                  .then(res => {
                     setStatus(false);
                   })
-                  .catch((e) => {
+                  .catch(e => {
                     setStatus(false);
                   });
                 setTimeout(() => {
@@ -104,7 +104,7 @@ const RelatedDocument = ({
               } else {
                 setStatus(false);
                 setTimeout(() => {
-                  Toast.show("Failed to update Document", Toast.SHORT);
+                  Toast.show('Failed to update Document', Toast.SHORT);
                 }, 1000);
               }
             })
@@ -115,14 +115,14 @@ const RelatedDocument = ({
       if (DocumentPicker.isCancel(err)) {
       } else {
         //For Unknown Error
-        alert("Unknown Error: " + JSON.stringify(err));
+        alert('Unknown Error: ' + JSON.stringify(err));
         throw err;
       }
     }
   };
   const navigation = useNavigation();
 
-  const deleteHandler = async (item) => {
+  const deleteHandler = async item => {
     const authToken = await getAuthToken();
     const beneficiaryId = await getBeneficiaryUserID();
     const categoryName = `BENEDUDOC`;
@@ -135,66 +135,62 @@ const RelatedDocument = ({
       beneficiaryId,
       categoryName,
       fileCategory,
-      fileId
+      fileId,
     )
-      .then((res) => {
+      .then(res => {
         getEducationData(authToken, beneficiaryId)
-          .then((res) => {
+          .then(res => {
             setStatus(false);
             setModalVisible(!modalVisible);
           })
-          .catch((e) => {
+          .catch(e => {
             setStatus(false);
           });
         Toast.show(res.message, Toast.SHORT);
       })
-      .catch((e) => {
+      .catch(e => {
         setStatus(false);
       });
   };
 
-  const renderItem = (item) => {
+  const renderItem = item => {
     return (
       <>
         <View
           key={item.id}
           style={{
             flex: 1,
-            flexDirection: "row",
+            flexDirection: 'row',
             height: scale(56),
-          }}
-        >
+          }}>
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
+              justifyContent: 'center',
               paddingLeft: scale(15),
-            }}
-          >
+            }}>
             <Text style={styles.formInputTitle}>{item.fileCategory.name}</Text>
           </View>
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "flex-start",
-            }}
-          >
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
             <Text style={styles.documentText}>{item.fileName}</Text>
           </View>
           <TouchableOpacity
             onPress={() => setModalVisible(true)}
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <AntDesign
               name="delete"
               size={20}
               style={{
-                color: "#00A8DB",
+                color: '#00A8DB',
               }}
             />
           </TouchableOpacity>
@@ -204,47 +200,41 @@ const RelatedDocument = ({
             visible={modalVisible}
             onRequestClose={() => {
               setModalVisible(!modalVisible);
-            }}
-          >
+            }}>
             <View
               style={{
                 flex: 1,
-                alignItems: "center",
-                flexDirection: "column",
-                justifyContent: "center",
-                backgroundColor: "#0000000D",
-              }}
-            >
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                backgroundColor: '#0000000D',
+              }}>
               <View
                 style={{
                   margin: scale(20),
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: '#FFFFFF',
                   padding: scale(20),
                   shadowOpacity: 0.25,
                   elevation: 5,
                   height: scale(213),
                   width: scale(328),
-                }}
-              >
+                }}>
                 <View
                   style={{
-                    flexDirection: "column",
-                  }}
-                >
+                    flexDirection: 'column',
+                  }}>
                   <View
                     style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
                     <Text
                       style={{
                         fontSize: scale(18),
-                        color: "#4D4F5C",
-                        fontFamily: "SourceSansPro-Semibold",
-                      }}
-                    >
+                        color: '#4D4F5C',
+                        fontFamily: 'SourceSansPro-Semibold',
+                      }}>
                       Confirm Delete
                     </Text>
 
@@ -253,7 +243,7 @@ const RelatedDocument = ({
                         name="close"
                         size={23}
                         style={{
-                          color: "grey",
+                          color: 'grey',
                           marginBottom: scale(10),
                         }}
                       />
@@ -263,38 +253,35 @@ const RelatedDocument = ({
                     style={{
                       marginVertical: scale(10),
                       borderBottomWidth: scale(1),
-                      borderBottomColor: "#00000029",
+                      borderBottomColor: '#00000029',
                     }}
                   />
                   <Text
                     style={{
                       fontSize: scale(16),
-                      color: "#4D4F5C",
-                      fontFamily: "SourceSansPro-Regular",
-                    }}
-                  >
+                      color: '#4D4F5C',
+                      fontFamily: 'SourceSansPro-Regular',
+                    }}>
                     Do you wish to Delete the Item?
                   </Text>
-                  <View style={{ flexDirection: "row", marginTop: scale(30) }}>
+                  <View style={{flexDirection: 'row', marginTop: scale(30)}}>
                     <TouchableOpacity
                       onPress={() => deleteHandler(item)}
                       style={{
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: "#00A0DA",
-                        width: "30%",
+                        backgroundColor: '#00A0DA',
+                        width: '30%',
                       }}
-                      disabled={false}
-                    >
+                      disabled={false}>
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: "SourceSansPro-SemiBold",
-                          color: "#FFFFFF",
-                        }}
-                      >
+                          fontFamily: 'SourceSansPro-SemiBold',
+                          color: '#FFFFFF',
+                        }}>
                         Confirm
                       </Text>
                     </TouchableOpacity>
@@ -302,22 +289,20 @@ const RelatedDocument = ({
                       onPress={() => setModalVisible(!modalVisible)}
                       style={{
                         marginLeft: scale(30),
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: "#EFEFEF",
-                        width: "30%",
+                        backgroundColor: '#EFEFEF',
+                        width: '30%',
                       }}
-                      disabled={false}
-                    >
+                      disabled={false}>
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: "SourceSansPro-SemiBold",
-                          color: "#656565",
-                        }}
-                      >
+                          fontFamily: 'SourceSansPro-SemiBold',
+                          color: '#656565',
+                        }}>
                         Cancel
                       </Text>
                     </TouchableOpacity>
@@ -335,7 +320,7 @@ const RelatedDocument = ({
     <>
       <Loader status={status} />
       <View style={styles.container}>
-        <View style={{ flexDirection: "column" }}>
+        <View style={{flexDirection: 'column'}}>
           <Text style={styles.formInputTitle}>Select Document Type</Text>
           <DropDownPicker
             name="document"
@@ -357,28 +342,25 @@ const RelatedDocument = ({
               flex: 1,
               marginTop: scale(30),
               marginBottom: scale(40),
-            }}
-          >
+            }}>
             <CustomButton
               onPress={selectOneFile}
               borderradius={scale(5)}
               style={{
-                width: "100%",
+                width: '100%',
                 marginTop: scale(8.5),
                 height: scale(49),
               }}
-              bgcolor={"#FFFFFF"}
-              borderradiuscolor={"#349beb"}
+              bgcolor={'#FFFFFF'}
+              borderradiuscolor={'#349beb'}
               borderwidth={1}
-              disabled={value ? false : true}
-            >
+              disabled={value ? false : true}>
               <Text
                 style={{
                   fontSize: scale(16),
-                  fontFamily: "SourceSansPro-SemiBold",
-                  color: "#10A0DA",
-                }}
-              >
+                  fontFamily: 'SourceSansPro-SemiBold',
+                  color: '#10A0DA',
+                }}>
                 UPLOAD
               </Text>
             </CustomButton>
@@ -386,83 +368,75 @@ const RelatedDocument = ({
           <View
             style={{
               flex: 1,
-              flexDirection: "row",
-              backgroundColor: "#EDF4FB",
+              flexDirection: 'row',
+              backgroundColor: '#EDF4FB',
               height: scale(56),
-            }}
-          >
+            }}>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
+                justifyContent: 'center',
                 paddingLeft: scale(15),
-                flexWrap: "wrap",
-              }}
-            >
+                flexWrap: 'wrap',
+              }}>
               <Text style={styles.formInputTitle}>Document Type</Text>
             </View>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "flex-start",
-              }}
-            >
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+              }}>
               <Text style={styles.formInputTitle}>Document Name</Text>
             </View>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
               <Text style={styles.formInputTitle}>Actions</Text>
             </View>
           </View>
           {docToShow[0]?.documents.length > 0 ? (
-            docToShow[0].documents.map((item) => {
+            docToShow[0].documents.map(item => {
               return renderItem(item);
             })
           ) : (
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
                 marginHorizontal: scale(10),
                 marginTop: scale(10),
-              }}
-            >
+              }}>
               <Text
                 style={{
-                  color: "#505050",
+                  color: '#505050',
                   fontSize: scale(14),
-                  fontFamily: "SourceSansPro-Regular",
-                }}
-              >
-                {"No Document Added by you."}
+                  fontFamily: 'SourceSansPro-Regular',
+                }}>
+                {'No Document Added by you.'}
               </Text>
             </View>
           )}
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("EducationalDetailsListView")}
+          onPress={() => navigation.navigate('EducationalDetailsListView')}
           style={{
             ...styles.button,
             backgroundColor:
               // '#A2D3EA'
-              "#00A0DA",
+              '#00A0DA',
             marginTop: scale(50),
           }}
-          disabled={false}
-        >
+          disabled={false}>
           <Text
             style={{
               fontSize: scale(16),
-              fontFamily: "SourceSansPro-SemiBold",
-              color: "#FFFFFF",
-            }}
-          >
+              fontFamily: 'SourceSansPro-SemiBold',
+              color: '#FFFFFF',
+            }}>
             SAVE
           </Text>
         </TouchableOpacity>
@@ -471,45 +445,43 @@ const RelatedDocument = ({
   );
 };
 
-const mapStateToProps = ({
-  studentReducer: { educdoctyp, educationalInfo },
-}) => ({
-  educdoctyp,
-  educationalInfo,
-});
-const mapDispatchToProps = {
-  sendEducDocData: (
-    authToken,
-    payload,
-    beneficiaryId,
-    categoryName,
-    entityId,
-    fileCategory
-  ) =>
-    sendEducDocDataInfo(
-      authToken,
-      payload,
-      beneficiaryId,
-      categoryName,
-      entityId,
-      fileCategory
-    ),
-  getEducationData: (authToken, beneficiaryId) =>
-    getEducationInfo(authToken, beneficiaryId),
-  DeleterelatedDoc: (
-    authToken,
-    beneficiaryId,
-    categoryName,
-    fileCategory,
-    fileId
-  ) =>
-    relatedDocDelete(
-      authToken,
-      beneficiaryId,
-      categoryName,
-      fileCategory,
-      fileId
-    ),
-};
+// const mapStateToProps = ({studentReducer: {educdoctyp, educationalInfo}}) => ({
+//   educdoctyp,
+//   educationalInfo,
+// });
+// const mapDispatchToProps = {
+//   sendEducDocData: (
+//     authToken,
+//     payload,
+//     beneficiaryId,
+//     categoryName,
+//     entityId,
+//     fileCategory,
+//   ) =>
+//     sendEducDocDataInfo(
+//       authToken,
+//       payload,
+//       beneficiaryId,
+//       categoryName,
+//       entityId,
+//       fileCategory,
+//     ),
+//   getEducationData: (authToken, beneficiaryId) =>
+//     getEducationInfo(authToken, beneficiaryId),
+//   DeleterelatedDoc: (
+//     authToken,
+//     beneficiaryId,
+//     categoryName,
+//     fileCategory,
+//     fileId,
+//   ) =>
+//     relatedDocDelete(
+//       authToken,
+//       beneficiaryId,
+//       categoryName,
+//       fileCategory,
+//       fileId,
+//     ),
+// };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RelatedDocument);
+export default connect(null, null)(RelatedDocument);

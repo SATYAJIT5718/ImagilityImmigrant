@@ -5,96 +5,92 @@ import {
   FlatList,
   Modal,
   Pressable,
-} from "react-native";
-import React, { useState } from "react";
-import styles from "./styles";
-import { scale } from "../../../../../Infrastructure/utils/screenUtility";
-import LifeCycleAccordion from "../../../../../Infrastructure/component/lifeCycleAccordion/LifeCycleAccordion";
-import { useNavigation } from "@react-navigation/native";
-import { connect } from "react-redux";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import {
-  deleteEducationInfo,
-  getEducationInfo,
-} from "../../../../../application/store/actions/student";
+} from 'react-native';
+import React, {useState} from 'react';
+import styles from './styles';
+import {scale} from '../../../../../Infrastructure/utils/screenUtility';
+import LifeCycleAccordion from '../../../../../Infrastructure/component/lifeCycleAccordion/LifeCycleAccordion';
+import {useNavigation} from '@react-navigation/native';
+import {connect} from 'react-redux';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+// import {
+//   deleteEducationInfo,
+//   getEducationInfo,
+// } from '../../../../../application/store/actions/student';
 import {
   getAuthToken,
   getBeneficiaryUserID,
-} from "../../../../../Infrastructure/utils/storageUtility";
-import Toast from "react-native-simple-toast";
-import Loader from "../../../../../Infrastructure/component/Loader/Loader";
-const ListView = (props) => {
+} from '../../../../../Infrastructure/utils/storageUtility';
+import Toast from 'react-native-simple-toast';
+import Loader from '../../../../../Infrastructure/component/Loader/Loader';
+const ListView = props => {
   const navigation = useNavigation();
   const [status, setStatus] = useState(false);
   const [pdfToShow, setPdfToShaow] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedItem, setSelectedItem] = useState("");
+  const [selectedItem, setSelectedItem] = useState('');
   const educationData = props.educationalInfo?.data?.education
     ? props.educationalInfo.data.education
     : [];
-  const deleteHandler = async (educationId) => {
+  const deleteHandler = async educationId => {
     const authToken = await getAuthToken();
     const beneficiaryId = await getBeneficiaryUserID();
-    console.log("educationId", educationId);
+    console.log('educationId', educationId);
     setStatus(true);
     await props
       .deleteEducationData(authToken, beneficiaryId, educationId)
-      .then((res) => {
+      .then(res => {
         props
           .getEducationData(authToken, beneficiaryId)
-          .then((res) => {
+          .then(res => {
             setModalVisible(false);
 
             setStatus(false);
           })
-          .catch((e) => {
+          .catch(e => {
             setStatus(false);
             setModalVisible(false);
           });
         Toast.show(res.message, Toast.SHORT);
       })
-      .catch((e) => {
+      .catch(e => {
         setStatus(false);
         setModalVisible(false);
       });
   };
-  const document = (item) => {
+  const document = item => {
     return (
       <>
         <View
           style={{
             flex: 1,
-            flexDirection: "row",
+            flexDirection: 'row',
             height: scale(56),
-          }}
-        >
+          }}>
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
+              justifyContent: 'center',
               paddingLeft: scale(15),
-              flexWrap: "wrap",
-            }}
-          >
+              flexWrap: 'wrap',
+            }}>
             <Text style={styles.formInputTitle}>{item.fileCategory.name}</Text>
           </View>
           <View
             style={{
               flex: 1,
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "flex-start",
+                justifyContent: 'center',
+                alignItems: 'flex-start',
                 paddingRight: scale(10),
-              }}
-            >
+              }}>
               <Text style={styles.documentText}>{item.fileName}</Text>
             </View>
           </View>
@@ -112,34 +108,30 @@ const ListView = (props) => {
             marginTop: index === 0 ? scale(10) : 0,
             marginHorizontal: scale(10),
             borderWidth: scale(1),
-            borderColor: "#D6D6D6",
+            borderColor: '#D6D6D6',
             height: scale(42),
-            flexDirection: "row",
-          }}
-        >
+            flexDirection: 'row',
+          }}>
           <View
             style={{
               flex: 0.3,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <View
               style={{
-                backgroundColor: "#EDF4FB",
+                backgroundColor: '#EDF4FB',
                 height: scale(21),
                 width: scale(22),
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
               <Text
                 style={{
-                  color: "#4A4A4A",
+                  color: '#4A4A4A',
                   fontSize: scale(14),
-                  fontFamily: "SourceSansPro-SemiBold",
-                }}
-              >
+                  fontFamily: 'SourceSansPro-SemiBold',
+                }}>
                 {index + 1}
               </Text>
             </View>
@@ -147,99 +139,91 @@ const ListView = (props) => {
           <View
             style={{
               flex: 2,
-              justifyContent: "center",
-              alignItems: "flex-start",
-            }}
-          >
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+            }}>
             <Text
               style={{
-                color: "#505050",
+                color: '#505050',
                 fontSize: scale(14),
-                fontFamily: "SourceSansPro-Regular",
-              }}
-            >
-              {item.courseName ? item.courseName : "bjbbkk"}
+                fontFamily: 'SourceSansPro-Regular',
+              }}>
+              {item.courseName ? item.courseName : 'bjbbkk'}
             </Text>
           </View>
         </View>
       </>
     );
   };
-  const renderEducationItem = (item) => {
+  const renderEducationItem = item => {
     const data = item?.courses[0]?.courseName
-      ? item.courses[0].courseName.split(",").map((item, index) => {
-          return { id: index, courseName: item };
+      ? item.courses[0].courseName.split(',').map((item, index) => {
+          return {id: index, courseName: item};
         })
       : [];
     return (
       <>
         <View
           style={{
-            flexDirection: "row",
+            flexDirection: 'row',
             height: scale(56),
-          }}
-        >
+          }}>
           <View
             style={{
               flex: 1,
-              flexDirection: "column",
-              justifyContent: "center",
+              flexDirection: 'column',
+              justifyContent: 'center',
               paddingLeft: scale(15),
-            }}
-          >
+            }}>
             <Text style={styles.accordianBodyText}>Start Year</Text>
             <Text style={styles.yearText}>
-              {item.startYear ? item.startYear : "--"}
+              {item.startYear ? item.startYear : '--'}
             </Text>
           </View>
-          <View style={{ flex: 1, justifyContent: "center" }}>
+          <View style={{flex: 1, justifyContent: 'center'}}>
             <Text style={styles.accordianBodyText}>End Year</Text>
             <Text style={styles.yearText}>
-              {item.endYear ? item.endYear : "--"}
+              {item.endYear ? item.endYear : '--'}
             </Text>
           </View>
         </View>
         <View
           style={{
-            flexDirection: "row",
+            flexDirection: 'row',
             height: scale(56),
-          }}
-        >
+          }}>
           <View
             style={{
               flex: 1,
-              flexDirection: "column",
-              justifyContent: "center",
+              flexDirection: 'column',
+              justifyContent: 'center',
               paddingLeft: scale(15),
-            }}
-          >
+            }}>
             <Text style={styles.accordianBodyText}>Grade</Text>
             <Text style={styles.yearText}>
-              {item.grade ? item.grade : "--"}
+              {item.grade ? item.grade : '--'}
             </Text>
           </View>
-          <View style={{ flex: 1, justifyContent: "center" }}>
+          <View style={{flex: 1, justifyContent: 'center'}}>
             <Text style={styles.accordianBodyText}>University</Text>
             <Text style={styles.yearText}>
-              {item.university ? item.university : "--"}
+              {item.university ? item.university : '--'}
             </Text>
           </View>
         </View>
 
         <View
           style={{
-            flexDirection: "row",
+            flexDirection: 'row',
             marginLeft: scale(10),
             marginTop: scale(20),
-          }}
-        >
+          }}>
           <Text
             style={{
               fontSize: scale(16),
-              color: "#505050",
-              fontFamily: "SourceSansPro-Semibold",
-            }}
-          >
+              color: '#505050',
+              fontFamily: 'SourceSansPro-Semibold',
+            }}>
             List of Cources
           </Text>
         </View>
@@ -253,75 +237,67 @@ const ListView = (props) => {
               marginHorizontal: scale(10),
               marginVertical: scale(10),
               borderWidth: scale(1),
-              borderColor: "#D6D6D6",
+              borderColor: '#D6D6D6',
               height: scale(42),
-              flexDirection: "row",
-            }}
-          >
+              flexDirection: 'row',
+            }}>
             <View
               style={{
                 flex: 2,
-                justifyContent: "center",
-                alignItems: "flex-start",
+                justifyContent: 'center',
+                alignItems: 'flex-start',
                 marginHorizontal: scale(10),
-              }}
-            >
+              }}>
               <Text
                 style={{
-                  color: "#505050",
+                  color: '#505050',
                   fontSize: scale(14),
-                  fontFamily: "SourceSansPro-Regular",
-                }}
-              >
-                {"No courses Added by you."}
+                  fontFamily: 'SourceSansPro-Regular',
+                }}>
+                {'No courses Added by you.'}
               </Text>
             </View>
           </View>
         ) : null}
 
-        <View style={{ flexDirection: "column", marginTop: scale(20) }}>
+        <View style={{flexDirection: 'column', marginTop: scale(20)}}>
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: 'row',
               marginLeft: scale(10),
               marginBottom: scale(10),
-            }}
-          >
+            }}>
             <Text
               style={{
                 fontSize: scale(16),
-                color: "#4A4A4A",
-                fontFamily: "SourceSansPro-Semibold",
-              }}
-            >
+                color: '#4A4A4A',
+                fontFamily: 'SourceSansPro-Semibold',
+              }}>
               List of Documents
             </Text>
           </View>
           <View
             style={{
               flex: 1,
-              flexDirection: "row",
-              backgroundColor: "#EDF4FB",
+              flexDirection: 'row',
+              backgroundColor: '#EDF4FB',
               height: scale(56),
-            }}
-          >
+            }}>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
+                justifyContent: 'center',
                 paddingLeft: scale(15),
-                flexWrap: "wrap",
-              }}
-            >
+                flexWrap: 'wrap',
+              }}>
               <Text style={styles.formInputTitle}>Document Type</Text>
             </View>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "flex-start",
-              }}
-            >
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+              }}>
               <Text style={styles.formInputTitle}>Document Name</Text>
             </View>
           </View>
@@ -335,20 +311,18 @@ const ListView = (props) => {
           ) : (
             <View
               style={{
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
                 marginHorizontal: scale(10),
                 marginVertical: scale(10),
-              }}
-            >
+              }}>
               <Text
                 style={{
-                  color: "#505050",
+                  color: '#505050',
                   fontSize: scale(14),
-                  fontFamily: "SourceSansPro-Regular",
-                }}
-              >
-                {"No Document Added by you."}
+                  fontFamily: 'SourceSansPro-Regular',
+                }}>
+                {'No Document Added by you.'}
               </Text>
             </View>
           )}
@@ -356,8 +330,8 @@ const ListView = (props) => {
       </>
     );
   };
-  const renderItem = ({ item, index }) => {
-    console.log("item----------", item);
+  const renderItem = ({item, index}) => {
+    console.log('item----------', item);
     return (
       <>
         {index === 0 ? (
@@ -365,30 +339,27 @@ const ListView = (props) => {
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
                 marginLeft: scale(20),
-              }}
-            >
+              }}>
               <Text style={styles.formInputTitle}>Degree</Text>
             </View>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "flex-end",
-              }}
-            >
+                justifyContent: 'center',
+                alignItems: 'flex-end',
+              }}>
               <Text style={styles.formInputTitle}>Field of Study</Text>
             </View>
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "flex-end",
+                justifyContent: 'center',
+                alignItems: 'flex-end',
                 paddingRight: scale(15),
-              }}
-            >
+              }}>
               <Text style={styles.formInputTitle}>Action</Text>
             </View>
           </View>
@@ -397,32 +368,31 @@ const ListView = (props) => {
         <View
           style={{
             paddingVertical: scale(5),
-          }}
-        >
+          }}>
           <LifeCycleAccordion
             title={item.degree}
-            Studytitle={item.fieldOfStudy ? item.fieldOfStudy : "--"}
+            Studytitle={item.fieldOfStudy ? item.fieldOfStudy : '--'}
             data={renderEducationItem(item)}
             style={{
-              body: { marginHorizontal: scale(10) },
+              body: {marginHorizontal: scale(10)},
               titleContent: {
                 marginLeft: scale(5),
-                fontFamily: "SourceSansPro-Regular",
+                fontFamily: 'SourceSansPro-Regular',
                 fontSize: scale(13),
-                color: "#505050",
-                overflow: "hidden",
+                color: '#505050',
+                overflow: 'hidden',
               },
               Studytitle: {
                 marginLeft: scale(11),
-                fontFamily: "SourceSansPro-Regular",
+                fontFamily: 'SourceSansPro-Regular',
                 fontSize: scale(13),
-                color: "#505050",
-                overflow: "hidden",
+                color: '#505050',
+                overflow: 'hidden',
               },
             }}
-            backgroundColor={index % 2 !== 0 ? "#F2F2F2" : null}
+            backgroundColor={index % 2 !== 0 ? '#F2F2F2' : null}
             edit={() =>
-              navigation.navigate("EducationalDetails", {
+              navigation.navigate('EducationalDetails', {
                 item: item,
                 edit: true,
               })
@@ -439,47 +409,41 @@ const ListView = (props) => {
             visible={modalVisible}
             onRequestClose={() => {
               setModalVisible(!modalVisible);
-            }}
-          >
+            }}>
             <View
               style={{
                 flex: 1,
-                alignItems: "center",
-                flexDirection: "column",
-                justifyContent: "center",
-                backgroundColor: "#0000000D",
-              }}
-            >
+                alignItems: 'center',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                backgroundColor: '#0000000D',
+              }}>
               <View
                 style={{
                   margin: scale(20),
-                  backgroundColor: "#FFFFFF",
+                  backgroundColor: '#FFFFFF',
                   padding: scale(20),
                   shadowOpacity: 0.25,
                   elevation: 5,
                   height: scale(213),
                   width: scale(328),
-                }}
-              >
+                }}>
                 <View
                   style={{
-                    flexDirection: "column",
-                  }}
-                >
+                    flexDirection: 'column',
+                  }}>
                   <View
                     style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}>
                     <Text
                       style={{
                         fontSize: scale(18),
-                        color: "#4D4F5C",
-                        fontFamily: "SourceSansPro-Semibold",
-                      }}
-                    >
+                        color: '#4D4F5C',
+                        fontFamily: 'SourceSansPro-Semibold',
+                      }}>
                       Confirm Delete
                     </Text>
 
@@ -488,7 +452,7 @@ const ListView = (props) => {
                         name="close"
                         size={23}
                         style={{
-                          color: "grey",
+                          color: 'grey',
                           marginBottom: scale(10),
                         }}
                       />
@@ -498,38 +462,35 @@ const ListView = (props) => {
                     style={{
                       marginVertical: scale(10),
                       borderBottomWidth: scale(1),
-                      borderBottomColor: "#00000029",
+                      borderBottomColor: '#00000029',
                     }}
                   />
                   <Text
                     style={{
                       fontSize: scale(16),
-                      color: "#4D4F5C",
-                      fontFamily: "SourceSansPro-Regular",
-                    }}
-                  >
+                      color: '#4D4F5C',
+                      fontFamily: 'SourceSansPro-Regular',
+                    }}>
                     Do you wish to Delete the File?
                   </Text>
-                  <View style={{ flexDirection: "row", marginTop: scale(30) }}>
+                  <View style={{flexDirection: 'row', marginTop: scale(30)}}>
                     <TouchableOpacity
                       onPress={() => deleteHandler(selectedItem)}
                       style={{
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: "#00A0DA",
-                        width: "30%",
+                        backgroundColor: '#00A0DA',
+                        width: '30%',
                       }}
-                      disabled={false}
-                    >
+                      disabled={false}>
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: "SourceSansPro-SemiBold",
-                          color: "#FFFFFF",
-                        }}
-                      >
+                          fontFamily: 'SourceSansPro-SemiBold',
+                          color: '#FFFFFF',
+                        }}>
                         Confirm
                       </Text>
                     </TouchableOpacity>
@@ -537,22 +498,20 @@ const ListView = (props) => {
                       onPress={() => setModalVisible(!modalVisible)}
                       style={{
                         marginLeft: scale(30),
-                        justifyContent: "center",
-                        alignItems: "center",
+                        justifyContent: 'center',
+                        alignItems: 'center',
                         padding: scale(12),
                         borderRadius: scale(5),
-                        backgroundColor: "#EFEFEF",
-                        width: "30%",
+                        backgroundColor: '#EFEFEF',
+                        width: '30%',
                       }}
-                      disabled={false}
-                    >
+                      disabled={false}>
                       <Text
                         style={{
                           fontSize: scale(14),
-                          fontFamily: "SourceSansPro-SemiBold",
-                          color: "#656565",
-                        }}
-                      >
+                          fontFamily: 'SourceSansPro-SemiBold',
+                          color: '#656565',
+                        }}>
                         Cancel
                       </Text>
                     </TouchableOpacity>
@@ -575,7 +534,7 @@ const ListView = (props) => {
             <FlatList
               data={educationData}
               renderItem={renderItem}
-              keyExtractor={(item) => item.id}
+              keyExtractor={item => item.id}
             />
           ) : (
             <View style={styles.noDataTextContainer}>
@@ -583,7 +542,7 @@ const ListView = (props) => {
                 name="warning"
                 size={60}
                 style={{
-                  color: "grey",
+                  color: 'grey',
                   marginBottom: scale(10),
                 }}
               />
@@ -595,26 +554,25 @@ const ListView = (props) => {
           )}
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("EducationalDetails")}
+          onPress={() => navigation.navigate('EducationalDetails')}
           style={{
             ...styles.button,
-            backgroundColor: "#00A0DA",
+            backgroundColor: '#00A0DA',
           }}
-          disabled={false}
-        >
+          disabled={false}>
           <Text style={styles.buttontext}>ADD DEGREE</Text>
         </TouchableOpacity>
       </View>
     </>
   );
 };
-const mapStateToProps = ({ studentReducer: { educationalInfo } }) => ({
-  educationalInfo,
-});
+// const mapStateToProps = ({studentReducer: {educationalInfo}}) => ({
+//   educationalInfo,
+// });
 const mapDispatchToProps = {
-  deleteEducationData: (authToken, beneficiaryId, educationId) =>
-    deleteEducationInfo(authToken, beneficiaryId, educationId),
-  getEducationData: (authToken, beneficiaryId) =>
-    getEducationInfo(authToken, beneficiaryId),
+  // deleteEducationData: (authToken, beneficiaryId, educationId) =>
+  //   deleteEducationInfo(authToken, beneficiaryId, educationId),
+  // getEducationData: (authToken, beneficiaryId) =>
+  //   getEducationInfo(authToken, beneficiaryId),
 };
-export default connect(mapStateToProps, mapDispatchToProps)(ListView);
+export default connect(null, mapDispatchToProps)(ListView);

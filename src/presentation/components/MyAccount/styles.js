@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     marginTop: scale(5),
   },
   dropdown: {
-    height: 40,
+    height: scale(40),
     width: scale(100),
     borderRadius: scale(5),
     borderColor: '#C3D0DE',

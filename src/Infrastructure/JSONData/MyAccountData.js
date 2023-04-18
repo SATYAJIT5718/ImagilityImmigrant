@@ -81,3 +81,72 @@ export const EducationDetails = [
     iconName: 'filetext1',
   },
 ];
+export const DegreeDetailsData = {
+  title: 'Education Details',
+  fields: [
+    {
+      name: 'Degree Details',
+      expanded: true,
+      contents: [
+        {
+          id: 11,
+          view: 'multi',
+          content: [
+            {
+              id: 20,
+              name: 'degree',
+              label: 'Degree',
+              type: 'text',
+              placeholder: 'Enter Degree',
+              required: true,
+              errorTile: 'Degree',
+              value: 'B.Tech',
+            },
+            {
+              id: 21,
+              name: 'sasda',
+              label: 'asdasd',
+              type: 'text',
+              placeholder: 'Enter Degree',
+              required: true,
+              errorTile: 'Degree',
+              value: 'B.Tech',
+            },
+          ],
+        },
+        {
+          id: 12,
+          view: 'single',
+          content: [
+            {
+              name: 'fieldOfStudy', //payload name
+              label: 'Field Of Study', // title / label name
+              type: 'text', // input type
+              placeholder: 'Enter Field Of Study',
+              secureTextEntry: false,
+              required: true,
+              errorTile: 'Field Of Study',
+              value: '',
+            },
+          ],
+        },
+        {
+          id: 13,
+          view: 'single',
+          content: [
+            {
+              name: 'grade', //payload name
+              label: 'Grade', // title / label name
+              type: 'text', // input type
+              placeholder: 'Enter Grade',
+              secureTextEntry: false,
+              required: false,
+              errorTile: 'Grade',
+              value: '',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};

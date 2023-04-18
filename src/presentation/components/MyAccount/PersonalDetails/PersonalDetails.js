@@ -690,6 +690,18 @@ const PersonalDetails = props => {
       if (item.type === 'date') {
         return (
           <View>
+            {item.label ? (
+              <Text
+                style={{
+                  fontSize: scale(14),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: '#24262F',
+                  marginVertical: scale(5),
+                }}>
+                {item.label}
+                {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+              </Text>
+            ) : null}
             <TouchableOpacity
               onPress={() => {
                 setFieldValue(

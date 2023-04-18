@@ -11,7 +11,7 @@ import PhoneInput from 'react-native-phone-number-input';
 import {SafeAreaView, KeyboardAvoidingView, Platform} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {scale} from '../../../../Infrastructure/utils/screenUtility';
-import {useFormik, ErrorMessage} from 'formik';
+import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {PersonalDetailsJSON} from '../../../../Infrastructure/JSONData/PersonalDetails';
 import Accordion from '../../../../Infrastructure/component/Accordion/Accordion';
@@ -230,9 +230,6 @@ const PersonalDetails = props => {
                 })
               : yup.string();
 
-            // schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required
-            //   ? yup.string().required('TOEFL Score Required')
-            //   : yup.string();
             break;
           case 'date':
             schema[itemz?.name] = itemz?.required
@@ -258,7 +255,7 @@ const PersonalDetails = props => {
                     .string()
                     .required(`${itemz?.content?.[1]?.errorTile} is required`),
                 })
-              : yup.string(); // schema[itemz?.content?.[0]?.name] = itemz?.content?.[0]?.required // ? yup.string().required('TOEFL Score Required') // : yup.string(); break;
+              : yup.string();
           default:
             break;
         }

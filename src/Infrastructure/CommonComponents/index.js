@@ -49,6 +49,8 @@ export const CustomCheckBox = props => {
 export const CustomDropdownPicker = props => {
   return (
     <DropDownPicker
+      // {...props}
+
       listMode={props.listMode}
       searchable={props.searchable}
       open={props.open}
@@ -75,6 +77,7 @@ export const CustomDropdownPicker = props => {
           width: '100%',
         }
       }
+      labelStyle={props.labelStyle}
     />
   );
 };

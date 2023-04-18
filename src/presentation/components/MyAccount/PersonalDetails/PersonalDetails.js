@@ -35,10 +35,10 @@ const PersonalDetails = props => {
           initialValue[itemz.name] = itemz?.value || '';
           break;
         case 'multi':
-          itemz.content.map(val => {
+          itemz?.content.map(val => {
             val.type === 'dropdown'
               ? ((initialValue[val?.name] = val?.value || ''),
-                (initialValue[val?.isOpenTitle] = false))
+                (initialValue[itemz?.content?.[0]?.isOpenTitle] = false))
               : (initialValue[val?.name] = val?.value || '');
           });
           break;
@@ -293,8 +293,34 @@ const PersonalDetails = props => {
   });
 
   console.log('initialValue', initialValue);
-  console.log('values', values);
 
+  const addressToggler = selectedValue => {
+    setFieldValue('foreignAddressDetails', selectedValue);
+    if (selectedValue === 'uca') {
+      setFieldValue('faAddress1', values.caAddress1),
+        setFieldValue('faAddress2', values.caAddress2);
+      setFieldValue('faCountry', values.caCountry);
+      setFieldValue('faState', values.caState);
+      setFieldValue('faCity', values.caCity);
+      setFieldValue('faLocality', values.caLocality);
+      setFieldValue('faPostalCode', values.caPostalCode);
+    } else if (selectedValue === 'upa') {
+      setFieldValue('faAddress1', values.paAddress1),
+        setFieldValue('faAddress2', values.paAddress2);
+      setFieldValue('faCountry', values.paCountry);
+      setFieldValue('faState', values.paState);
+      setFieldValue('faCity', values.paCity);
+      setFieldValue('faLocality', values.paLocality);
+      setFieldValue('faPostalCode', values.paPostalCode);
+    } else {
+      setFieldValue('faAddress1', ''), setFieldValue('faAddress2', '');
+      setFieldValue('faCountry', '');
+      setFieldValue('faState', '');
+      setFieldValue('faCity', '');
+      setFieldValue('faLocality', '');
+      setFieldValue('faPostalCode', '');
+    }
+  };
   const singleViewController = item => {
     {
       if (item.type === 'text') {
@@ -332,6 +358,9 @@ const PersonalDetails = props => {
                       borderRadius: 5,
                       padding: 10,
                       height: item.multiline ? scale(60) : scale(40),
+                      fontSize: scale(14),
+                      fontFamily: 'SourceSansPro-Regular',
+                      color: '#4D4F5C',
                     }
               }
               multiline={item.multiline}
@@ -388,6 +417,9 @@ const PersonalDetails = props => {
                       padding: 10,
                       marginBottom: 10,
                       height: scale(40),
+                      fontSize: scale(14),
+                      fontFamily: 'SourceSansPro-Regular',
+                      color: '#4D4F5C',
                     }
               }
               multiline={item.multiline}
@@ -439,6 +471,9 @@ const PersonalDetails = props => {
                       borderRadius: 5,
                       padding: 10,
                       height: item.multiline ? scale(60) : scale(40),
+                      color: '#4D4F5C',
+                      fontSize: scale(14),
+                      fontFamily: 'SourceSansPro-Regular',
                     }
               }
               multiline={item.multiline}
@@ -551,7 +586,7 @@ const PersonalDetails = props => {
               {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
             </Text>
             <CustomDropdownPicker
-              listMode={Platform.OS == 'ios' ? 'SCROLLVIEW' : 'SCROLLVIEW'}
+              listMode={Platform.OS == 'ios' ? 'MODAL' : 'MODAL'}
               searchable={true}
               open={values[item?.isOpenTitle]}
               value={values[item?.name]}
@@ -572,6 +607,9 @@ const PersonalDetails = props => {
                   color: '#4D4F5C',
                 }
               }
+              labelStyle={{
+                color: '#4D4F5C',
+              }}
               maxHeight={scale(250)}
               style={
                 item.style || {
@@ -581,6 +619,8 @@ const PersonalDetails = props => {
                   paddingVertical: -20,
                   width: '100%',
                   height: scale(40),
+                  fontSize: scale(14),
+                  fontFamily: 'SourceSansPro-Regular',
                 }
               }
             />
@@ -597,48 +637,6 @@ const PersonalDetails = props => {
               </Text>
             )}
           </View>
-        );
-      }
-      if (item.type === 'radio' && item.name !== 'maritalStatus') {
-        return (
-          <>
-            <View>
-              <Text
-                style={{
-                  fontSize: scale(14),
-                  fontFamily: 'SourceSansPro-Regular',
-                  color: '#24262F',
-                  marginTop: scale(5),
-                }}>
-                {item.label}
-                {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
-              </Text>
-              <CustomRadioButton
-                onValueChange={handleChange(`${item?.name}`)}
-                value={values[item?.name]}
-                itemList={item.data || []}
-                color="#0089CF"
-                uncheckedColor="grey"
-                radioTitleStyle={{
-                  fontSize: scale(14),
-                  color: '#4D4F5C',
-                  fontFamily: 'SourceSansPro-Regular',
-                }}
-              />
-              {touched[item?.name] && errors[item?.name] && (
-                <Text
-                  style={{
-                    fontSize: scale(10),
-                    fontFamily: 'SourceSansPro-Regular',
-                    color: 'red',
-                    marginLeft: scale(5),
-                    marginBottom: scale(5),
-                  }}>
-                  {errors[item?.name]}
-                </Text>
-              )}
-            </View>
-          </>
         );
       }
       if (item.type === 'button') {
@@ -729,6 +727,9 @@ const PersonalDetails = props => {
                       padding: 10,
                       flex: 1,
                       height: scale(40),
+                      color: '#4D4F5C',
+                      fontSize: scale(14),
+                      fontFamily: 'SourceSansPro-Regular',
                     }
                   }
                 />
@@ -866,6 +867,52 @@ const PersonalDetails = props => {
           </>
         );
       }
+      if (
+        item.type === 'radio' &&
+        item.name !== 'maritalStatus' &&
+        item.name !== 'foreignAddressDetails'
+      ) {
+        return (
+          <>
+            <View>
+              <Text
+                style={{
+                  fontSize: scale(14),
+                  fontFamily: 'SourceSansPro-Regular',
+                  color: '#24262F',
+                  marginTop: scale(5),
+                }}>
+                {item.label}
+                {item.required ? <Text style={{color: 'red'}}>*</Text> : null}
+              </Text>
+              <CustomRadioButton
+                onValueChange={handleChange(`${item?.name}`)}
+                value={values[item?.name]}
+                itemList={item.data || []}
+                color="#0089CF"
+                uncheckedColor="grey"
+                radioTitleStyle={{
+                  fontSize: scale(14),
+                  color: '#4D4F5C',
+                  fontFamily: 'SourceSansPro-Regular',
+                }}
+              />
+              {touched[item?.name] && errors[item?.name] && (
+                <Text
+                  style={{
+                    fontSize: scale(10),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: 'red',
+                    marginLeft: scale(5),
+                    marginBottom: scale(5),
+                  }}>
+                  {errors[item?.name]}
+                </Text>
+              )}
+            </View>
+          </>
+        );
+      }
       if (item.type === 'radio' && item.name === 'maritalStatus') {
         return (
           <>
@@ -956,6 +1003,9 @@ const PersonalDetails = props => {
                               padding: 10,
                               flex: 1,
                               height: scale(40),
+                              color: '#4D4F5C',
+                              fontSize: scale(14),
+                              fontFamily: 'SourceSansPro-Regular',
                             }
                           }
                         />
@@ -1051,6 +1101,9 @@ const PersonalDetails = props => {
                           color: '#4D4F5C',
                         }
                       }
+                      labelStyle={{
+                        color: '#4D4F5C',
+                      }}
                       maxHeight={scale(250)}
                       style={
                         item?.content?.[2].style || {
@@ -1122,6 +1175,9 @@ const PersonalDetails = props => {
                           color: '#4D4F5C',
                         }
                       }
+                      labelStyle={{
+                        color: '#4D4F5C',
+                      }}
                       maxHeight={scale(250)}
                       style={
                         item?.content?.[2].style || {
@@ -1187,6 +1243,9 @@ const PersonalDetails = props => {
                               borderWidth: 1,
                               borderRadius: 5,
                               padding: 10,
+                              color: '#4D4F5C',
+                              fontSize: scale(14),
+                              fontFamily: 'SourceSansPro-Regular',
                               height: item?.content?.[3]?.multiline
                                 ? scale(60)
                                 : scale(40),
@@ -1214,6 +1273,40 @@ const PersonalDetails = props => {
                   {/* city of marraige */}
                 </View>
               ) : null}
+            </View>
+          </>
+        );
+      }
+      if (item.type === 'radio' && item.name === 'foreignAddressDetails') {
+        return (
+          <>
+            <View>
+              <CustomRadioButton
+                onValueChange={value => {
+                  addressToggler(value);
+                }}
+                value={values[item?.name]}
+                itemList={item.data || []}
+                color="#0089CF"
+                uncheckedColor="grey"
+                radioTitleStyle={{
+                  fontSize: scale(14),
+                  color: '#4D4F5C',
+                  fontFamily: 'SourceSansPro-Regular',
+                }}
+              />
+              {touched[item?.name] && errors[item?.name] && (
+                <Text
+                  style={{
+                    fontSize: scale(10),
+                    fontFamily: 'SourceSansPro-Regular',
+                    color: 'red',
+                    marginLeft: scale(5),
+                    marginBottom: scale(5),
+                  }}>
+                  {errors[item?.name]}
+                </Text>
+              )}
             </View>
           </>
         );
@@ -1270,6 +1363,9 @@ const PersonalDetails = props => {
                         borderWidth: 1,
                         borderRadius: 5,
                         padding: 10,
+                        color: '#4D4F5C',
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
                         height: item?.content?.[0]?.multiline
                           ? scale(60)
                           : scale(40),
@@ -1321,7 +1417,21 @@ const PersonalDetails = props => {
                 onBlur={handleBlur(`${item.content?.[0]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[0]?.name}`)}
                 autoCorrect={false}
-                style={item.content?.[0]?.style ? item.content?.[0]?.style : {}}
+                style={
+                  item.content?.[0]?.style
+                    ? item.content?.[0]?.style
+                    : {
+                        backgroundColor: 'white',
+                        borderColor: '#C3D0DE',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        color: '#4D4F5C',
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
+                        height: scale(40),
+                      }
+                }
                 multiline={item.content?.[0]?.multiline}
                 secureTextEntry={item.content?.[0]?.secureTextEntry}
                 keyboardType={item.content?.[0]?.keyboardType || 'default'}
@@ -1378,6 +1488,9 @@ const PersonalDetails = props => {
                     color: '#4D4F5C',
                   }
                 }
+                labelStyle={{
+                  color: '#4D4F5C',
+                }}
                 maxHeight={scale(250)}
                 style={
                   item.content?.[0]?.style || {
@@ -1447,6 +1560,9 @@ const PersonalDetails = props => {
                         borderWidth: 1,
                         borderRadius: 5,
                         padding: 10,
+                        color: '#4D4F5C',
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
                         height: item?.content?.[0]?.multiline
                           ? scale(60)
                           : scale(40),
@@ -1498,7 +1614,21 @@ const PersonalDetails = props => {
                 onBlur={handleBlur(`${item.content?.[1]?.name}`)}
                 onChangeText={handleChange(`${item.content?.[1]?.name}`)}
                 autoCorrect={false}
-                style={item.content?.[1]?.style ? item.content?.[1]?.style : {}}
+                style={
+                  item.content?.[1]?.style
+                    ? item.content?.[1]?.style
+                    : {
+                        backgroundColor: 'white',
+                        borderColor: '#C3D0DE',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        padding: 10,
+                        color: '#4D4F5C',
+                        fontSize: scale(14),
+                        fontFamily: 'SourceSansPro-Regular',
+                        height: scale(40),
+                      }
+                }
                 multiline={item.content?.[1]?.multiline}
                 secureTextEntry={item.content?.[1]?.secureTextEntry}
                 keyboardType={item.content?.[1]?.keyboardType || 'default'}
@@ -1555,6 +1685,9 @@ const PersonalDetails = props => {
                     color: '#4D4F5C',
                   }
                 }
+                labelStyle={{
+                  color: '#4D4F5C',
+                }}
                 maxHeight={scale(250)}
                 style={
                   item.content?.[1]?.style || {

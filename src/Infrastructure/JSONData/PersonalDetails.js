@@ -9,6 +9,7 @@ export const PersonalDetailsJSON = {
         {
           id: 1,
           view: 'multi',
+          type: 'multi',
           content: [
             {
               id: 11,
@@ -58,6 +59,7 @@ export const PersonalDetailsJSON = {
         {
           id: 2,
           view: 'multi',
+          type: 'multi',
           content: [
             {
               id: 1,
@@ -124,7 +126,7 @@ export const PersonalDetailsJSON = {
             {
               id: 1,
               name: 'aliasTitle',
-              label: 'Title',
+              label: 'Alias Title',
               type: 'dropdown',
               isOpenTitle: 'isAliasTitleOpen',
               required: true,
@@ -291,7 +293,7 @@ export const PersonalDetailsJSON = {
           type: 'radio',
           required: true,
           errorTile: 'Marital Status',
-          value: 'MARRIED',
+          value: 'SINGLE',
           data: [
             {
               id: 19,
@@ -481,13 +483,13 @@ export const PersonalDetailsJSON = {
           data: [
             {
               id: 1,
-              value: 'dummy1',
-              label: 'dummy1',
+              value: 'IN',
+              label: 'India',
             },
             {
               id: 2,
-              value: 'dummy2',
-              label: 'dummy2',
+              value: 'US',
+              label: 'USA',
             },
             {
               id: 3,
@@ -512,27 +514,27 @@ export const PersonalDetailsJSON = {
           isOpenTitle: 'isOPENcastate',
           errorTile: 'State',
           placeholder: 'Select',
-          value: 'dummy2',
+          value: 'DL',
           data: [
             {
               id: 1,
-              value: 'dummy1',
-              label: 'dummy1',
+              value: 'OD',
+              label: 'Odisha',
             },
             {
               id: 2,
-              value: 'dummy2',
-              label: 'dummy2',
+              value: 'KA',
+              label: 'Karnataka',
             },
             {
               id: 3,
-              value: 'dummy3',
-              label: 'dummy3',
+              value: 'DL',
+              label: 'Delhi',
             },
             {
               id: 4,
-              value: 'dummy4',
-              label: 'dummy4',
+              value: 'MI',
+              label: 'Mumbai',
             },
           ],
         },
@@ -649,27 +651,27 @@ export const PersonalDetailsJSON = {
           isOpenTitle: 'isOPENpastate',
           errorTile: 'State',
           placeholder: 'Select',
-          value: 'DKL',
+          value: 'KA',
           data: [
             {
               id: 1,
-              value: 'DKL',
-              label: 'Dhenkanal',
+              value: 'OD',
+              label: 'Odisha',
             },
             {
               id: 2,
-              value: 'dummy2',
-              label: 'dummy2',
+              value: 'KA',
+              label: 'Karnataka',
             },
             {
               id: 3,
-              value: 'dummy3',
-              label: 'dummy3',
+              value: 'DL',
+              label: 'Delhi',
             },
             {
               id: 4,
-              value: 'dummy4',
-              label: 'dummy4',
+              value: 'MI',
+              label: 'Mumbai',
             },
           ],
         },
@@ -742,7 +744,7 @@ export const PersonalDetailsJSON = {
               value: 'newFAddress',
               uncheckedColor: 'grey',
               color: '#0089CF',
-              title: 'Add new foreign address',
+              title: 'Use new foreign address',
             },
           ],
         },
@@ -780,16 +782,17 @@ export const PersonalDetailsJSON = {
           placeholder: 'Select',
           zIndex: 100,
           isOpenTitle: 'isOPENfacountry',
+          value: 'IN',
           data: [
             {
               id: 1,
-              value: 'dummy1',
-              label: 'dummy1',
+              value: 'IN',
+              label: 'India',
             },
             {
               id: 2,
-              value: 'dummy2',
-              label: 'dummy2',
+              value: 'US',
+              label: 'USA',
             },
             {
               id: 3,
@@ -813,26 +816,27 @@ export const PersonalDetailsJSON = {
           placeholder: 'Select',
           zIndex: 90,
           isOpenTitle: 'isOPENfastate',
+          value: 'OD',
           data: [
             {
               id: 1,
-              value: 'dummy1',
-              label: 'dummy1',
+              value: 'OD',
+              label: 'Odisha',
             },
             {
               id: 2,
-              value: 'dummy2',
-              label: 'dummy2',
+              value: 'KA',
+              label: 'Karnataka',
             },
             {
               id: 3,
-              value: 'dummy3',
-              label: 'dummy3',
+              value: 'DL',
+              label: 'Delhi',
             },
             {
               id: 4,
-              value: 'dummy4',
-              label: 'dummy4',
+              value: 'MI',
+              label: 'Mumbai',
             },
           ],
         },
